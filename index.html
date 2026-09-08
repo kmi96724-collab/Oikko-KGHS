@@ -4,12 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oikko KGHS - ক্যাম্পাস সোশ্যাল নেটওয়ার্ক</title>
-  
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  
   <style>
     :root {
       --bg-canvas: #F5F5F0;
@@ -24,9 +22,8 @@
       background-color: var(--bg-canvas);
       color: var(--text-primary);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
     }
+    /* Custom scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -42,24 +39,24 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background-color: #2563eb;
+      background-color: #3b82f6;
       color: white;
       border-radius: 9999px;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-[#5A5A40] selection:text-white">
+<body class="min-h-screen flex flex-col">
 
-  <!-- Toast নোটিফিকেশন কন্টেইনার -->
+  <!-- Toast Container -->
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- মূল অ্যাপ কন্টেইনার -->
+  <!-- App Main Wrapper (rendered dynamically by JavaScript) -->
   <div id="app" class="min-h-screen flex flex-col"></div>
 
-  <!-- প্রোফাইল ও এডিট মোডাল কন্টেইনার -->
+  <!-- Profile Modal Container -->
   <div id="modal-container"></div>
 
-  <!-- Firebase Cloud Firestore ইন্টিগ্রেশন -->
+  <!-- Firebase Initialization with Cloud Firestore -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
@@ -67,7 +64,7 @@
       getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, getDoc 
     } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
-    // আপনার ফায়ারবেস কনফিগারেশন
+    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAZSen5Nd_aKrsdZGr6MJ_DkCUoujTGLSw",
       authDomain: "oikko-kghs.firebaseapp.com",
@@ -78,11 +75,12 @@
       measurementId: "G-CBL3544S4S"
     };
 
-    // ফায়ারবেস ও ফায়ারস্টোর শুরু করা
+    // Initialize Firebase & Cloud Firestore
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const db = getFirestore(app);
 
+    // Global reference for application scripts
     window.firebaseApp = app;
     window.firebaseAnalytics = analytics;
     window.firebaseDb = db;
@@ -90,16 +88,15 @@
       collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, getDoc
     };
 
+    // Start Realtime Firestore Sync if application logic is loaded
     if (typeof window.initFirebaseSync === 'function') {
       window.initFirebaseSync();
     }
   </script>
 
-  <!-- অ্যাপ্লিকেশন মূল স্ক্রিপ্ট -->
+  <!-- Application Logic -->
   <script>
-    // ==========================================
-    // ১. ইনিশিয়াল ডাটা (অ্যাডমিন ও ডেমো শিক্ষার্থী)
-    // ==========================================
+    // --- 1. Initial Data (Matches React State) ---
     const ADMIN_DATA = {
       id: 'user-admin-1',
       studentId: 'ADMIN001',
@@ -152,6 +149,31 @@
         isVerified: false,
         role: 'student',
         createdAt: '2024-01-05T10:00:00.000Z'
+      },
+      {
+        id: 'user_02',
+        studentId: 'STU202402',
+        fullName: 'সুমাইয়া জাহান',
+        fatherName: 'মোজাম্মেল হক',
+        motherName: 'পারভীন আক্তার',
+        studentClass: '১০ম শ্রেনি',
+        roll: '০৩',
+        section: 'মানবিক - খ',
+        shift: 'দিবা',
+        birthRegistrationNumber: '20089876543210123',
+        dateOfBirth: '2008-09-21',
+        bloodGroup: 'A+',
+        religion: 'ইসলাম',
+        presentAddress: 'উত্তরা সেক্টর ৭, ঢাকা',
+        permanentAddress: 'কুমিল্লা সদর, কুমিল্লা',
+        mobileNumber: '01799887766',
+        email: 'sumaiya.jahan@gmail.com',
+        facebookLink: 'https://facebook.com/sumaiya.connect',
+        password: 'user123',
+        profilePicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
+        isVerified: false,
+        role: 'student',
+        createdAt: '2024-01-10T12:00:00.000Z'
       }
     ];
 
@@ -162,29 +184,37 @@
         authorStudentId: 'STU202401',
         authorName: 'তানভীর আহমেদ',
         authorAvatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400',
-        content: 'আমাদের বাৎসরিক বিজ্ঞান মেলার প্রস্তুতি কেমন চলছে সবার? প্রজেক্ট সাবমিশনের শেষ তারিখ আগামী ১৫ তারিখ!',
+        content: 'আমাদের বাৎসরিক ক্রীড়া প্রতিযোগিতা ও বিজ্ঞান মেলার প্রস্তুতি কেমন চলছে সবার? প্রজেক্ট সাবমিশনের শেষ তারিখ আগামী ১৫ তারিখ!',
         imageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800',
         likes: ['ADMIN001'],
         comments: [
           {
             id: 'c_01',
-            authorId: 'user-admin-1',
-            authorStudentId: 'ADMIN001',
-            authorName: 'Khan Mohammad Ismail',
-            authorAvatar: ADMIN_DATA.profilePicture,
-            content: 'খুব ভালো উদ্যোগ! কোনো সহায়তার প্রয়োজন হলে জানাবে।',
-            likes: [],
-            replies: [],
-            createdAt: '২০২৪-০৩-১০'
+            authorId: 'user_02',
+            authorStudentId: 'STU202402',
+            authorName: 'সুমাইয়া জাহান',
+            authorAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
+            content: 'আমাদের রোবটিক্স প্রজেক্টের কাজ প্রায় শেষ!',
+            createdAt: '২০২৪-০৩-১২'
           }
         ],
         createdAt: '২০২৪-০৩-১০'
+      },
+      {
+        id: 'post_02',
+        authorId: 'user-admin-1',
+        authorStudentId: 'ADMIN001',
+        authorName: 'Khan Mohammad Ismail',
+        authorAvatar: ADMIN_DATA.profilePicture,
+        content: 'জরুরি নোটিশ: আগামী রবিবার থেকে অর্ধবার্ষিক পরীক্ষার রুটিন প্রকাশিত হবে। সকল শিক্ষার্থীকে নির্ধারিত সময়ের মধ্যে নিজেদের আইডি কার্ড ও তথ্য আপডেট করার নির্দেশ দেওয়া হচ্ছে। নিয়ম শৃঙ্খলা মেনে চলুন।',
+        imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800',
+        likes: ['STU202401'],
+        comments: [],
+        createdAt: '২০২৪-০৩-০৯'
       }
     ];
 
-    // ==========================================
-    // ২. লোকাল স্টোরেজ ও মিডিয়া হেল্পার
-    // ==========================================
+    // --- 2. LocalStorage Helpers ---
     function loadUsers() {
       try {
         const d = localStorage.getItem('student_portal_users');
@@ -193,6 +223,7 @@
           return INITIAL_USERS;
         }
         const parsed = JSON.parse(d);
+        // Ensure admin matches
         const aIdx = parsed.findIndex(u => u.role === 'admin' || u.studentId === 'ADMIN001');
         if (aIdx !== -1) parsed[aIdx] = { ...parsed[aIdx], ...ADMIN_DATA };
         else parsed.unshift(ADMIN_DATA);
@@ -241,61 +272,159 @@
       else localStorage.setItem('student_portal_current_user', JSON.stringify(u));
     }
 
-    // ডিভাইস থেকে ফাইল পড়ার হেল্পার
-    function readFileAsDataURL(file) {
+    // --- Device Media File Helpers (Photo & Video) ---
+    function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.82) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+            if (width > height) {
+              if (width > maxWidth) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              }
+            } else {
+              if (height > maxHeight) {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = () => resolve(e.target.result);
+          img.src = e.target.result;
+        };
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
     }
 
-    // ছবি সাইজ কম্প্রেস হেল্পার
-    async function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.8) {
-      const dataUrl = await readFileAsDataURL(file);
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          if (width > maxWidth || height > maxHeight) {
-            if (width / height > maxWidth / maxHeight) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
-            } else {
-              width = Math.round((width * maxHeight) / height);
-              height = maxHeight;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        };
-        img.src = dataUrl;
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
     }
 
-    // ==========================================
-    // ৩. অ্যাপ স্টেট
-    // ==========================================
+    // --- 3. App State ---
     let state = {
       users: loadUsers(),
       posts: loadPosts(),
       currentUser: loadCurrentUser(),
-      authMode: 'user_login',
-      activeView: 'feed',
+      authMode: 'user_login', // 'user_login' | 'admin_login' | 'register'
+      activeView: 'feed',     // 'feed' | 'admin'
       searchQuery: '',
-      selectedMedia: null, // { type: 'image' | 'video', url: string, name: string }
+      selectedMedia: null,    // { type: 'image' | 'video', url: string, name: string }
+      selectedStudentForProfile: null,
       authError: '',
-      cloudStatus: 'connecting'
+      cloudStatus: 'connecting', // 'connecting' | 'connected' | 'offline'
+      expandedComments: {}   // { [postId]: boolean }
     };
 
-    // ফায়ারবেস ক্লাউড ফায়ারস্টোর লাইভ সিঙ্ক
+    // --- কমেন্ট ভিউ টগল (শুধু প্রথম কমেন্ট নাকি সকল কমেন্ট দেখানো হবে) ---
+    function toggleAllComments(postId) {
+      state.expandedComments[postId] = !state.expandedComments[postId];
+      renderApp();
+    }
+    window.toggleAllComments = toggleAllComments;
+
+    // --- অডিও নোটিফিকেশন সাউন্ড হেল্পার ---
+    function playNotificationSound() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1); // A5
+        gain.gain.setValueAtTime(0.18, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.35);
+      } catch (e) {
+        console.warn('AudioContext sound note:', e);
+      }
+    }
+
+    // --- ডিভাইস নোটিফিকেশন পারমিশন ও পুশ সেন্ডার ---
+    function requestNotificationPermission() {
+      if ('Notification' in window) {
+        if (Notification.permission === 'default') {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              showToast('ডিভাইস নোটিফিকেশন সফলভাবে চালু করা হয়েছে!', 'success');
+              playNotificationSound();
+            }
+          });
+        } else if (Notification.permission === 'granted') {
+          showToast('ডিভাইস নোটিফিকেশন সক্রিয় আছে', 'info');
+        } else {
+          showToast('ব্রাউজারের সেটিংস থেকে নোটিফিকেশন অনুমোদন করুন', 'info');
+        }
+      }
+    }
+    window.requestNotificationPermission = requestNotificationPermission;
+
+    function sendDeviceNotification(title, options = {}) {
+      // ১. মোবাইল ভাইব্রেশন
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate([180, 80, 180]); } catch (e) {}
+      }
+
+      // ২. অডিও বেল সাউন্ড
+      playNotificationSound();
+
+      // ৩. ডিভাইসের আসল সিস্টেম নোটিফিকেশন (মোবাইল / ডেক্সটপ পপআপ)
+      if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+          try {
+            const notif = new Notification(title, {
+              body: options.body || '',
+              icon: options.icon || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
+              badge: options.icon || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
+              silent: false,
+              ...options
+            });
+            notif.onclick = function() {
+              window.focus();
+              this.close();
+            };
+          } catch (e) {
+            console.warn('Native notification trigger error:', e);
+          }
+        } else if (Notification.permission === 'default') {
+          Notification.requestPermission().then(p => {
+            if (p === 'granted') {
+              try {
+                new Notification(title, options);
+              } catch (e) {}
+            }
+          });
+        }
+      }
+
+      // ৪. ইন-অ্যাপ লাইভ টোস্ট অ্যালার্ট
+      showToast(`🔔 ${title}: ${options.body || ''}`, 'info');
+    }
+    window.sendDeviceNotification = sendDeviceNotification;
+
+    // --- 3.1 Firebase Firestore Realtime Synchronizer ---
     let isFirebaseSyncInitialized = false;
+    window._prevPostCommentCount = window._prevPostCommentCount || {};
 
     function initFirebaseSync() {
       if (!window.firebaseDb || !window.fb || isFirebaseSyncInitialized) return;
@@ -303,34 +432,60 @@
       const db = window.firebaseDb;
       const { collection, onSnapshot, doc, setDoc } = window.fb;
 
+      // ১. রিয়েল-টাইমে পোস্ট সিঙ্ক (সব মোবাইল ও ডিভাইসের জন্য)
       try {
         const postsCol = collection(db, 'posts');
         onSnapshot(postsCol, (snapshot) => {
           if (!snapshot.empty) {
             const cloudPosts = [];
             snapshot.forEach(docSnap => {
-              cloudPosts.push({ id: docSnap.id, ...docSnap.data() });
+              const pData = { id: docSnap.id, ...docSnap.data() };
+              cloudPosts.push(pData);
+
+              // রিয়েল-টাইমে অন্য ডিভাইস থেকে নতুন কমেন্ট আসলে ডিভাইসে নোটিফিকেশন পাঠানো
+              const currentComments = pData.comments || [];
+              if (window._prevPostCommentCount[pData.id] !== undefined) {
+                const prevCount = window._prevPostCommentCount[pData.id];
+                if (currentComments.length > prevCount) {
+                  const newestComment = currentComments[currentComments.length - 1];
+                  // যদি পোস্টের লেখক স্বয়ং লগইন করা ইউজার হন এবং মন্তব্যকারী অন্য কেউ হন
+                  if (state.currentUser && (pData.authorStudentId === state.currentUser.studentId || pData.authorId === state.currentUser.id)) {
+                    if (newestComment.authorStudentId !== state.currentUser.studentId) {
+                      sendDeviceNotification(`${newestComment.authorName} আপনার পোস্টে মন্তব্য করেছেন!`, {
+                        body: `"${newestComment.content}"`,
+                        icon: newestComment.authorAvatar
+                      });
+                    }
+                  }
+                }
+              }
+              window._prevPostCommentCount[pData.id] = currentComments.length;
             });
+
+            // লেটেস্ট পোস্ট সবার আগে সাজানো
             cloudPosts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             state.posts = cloudPosts;
             savePosts(cloudPosts);
             state.cloudStatus = 'connected';
             renderApp();
           } else {
+            // ক্লাউড সম্পূর্ণ খালি থাকলে প্রাথমিক পোস্ট ক্লাউডে জমা করা
             INITIAL_POSTS.forEach(p => {
               setDoc(doc(db, 'posts', p.id), { ...p, timestamp: Date.now() }).catch(console.warn);
             });
             state.cloudStatus = 'connected';
             renderApp();
           }
-        }, () => {
+        }, (error) => {
+          console.warn('Firebase posts onSnapshot note:', error);
           state.cloudStatus = 'offline';
           renderApp();
         });
       } catch (err) {
-        console.warn('Posts listener:', err);
+        console.warn('Posts listener exception:', err);
       }
 
+      // ২. রিয়েল-টাইমে ইউজার ও ভেরিফিকেশন ডাটা সিঙ্ক
       try {
         const usersCol = collection(db, 'users');
         onSnapshot(usersCol, (snapshot) => {
@@ -340,6 +495,7 @@
               cloudUsers.push({ id: docSnap.id, ...docSnap.data() });
             });
             
+            // এডমিন প্রোফাইল নিশ্চিত করা
             const hasAdmin = cloudUsers.some(u => u.role === 'admin' || u.studentId === 'ADMIN001');
             if (!hasAdmin) {
               cloudUsers.unshift(ADMIN_DATA);
@@ -349,6 +505,7 @@
             state.users = cloudUsers;
             saveUsers(cloudUsers);
 
+            // কারেন্ট সেশন ইউজারের তথ্য আপডেট
             if (state.currentUser) {
               const fresh = cloudUsers.find(u => u.id === state.currentUser.id || u.studentId === state.currentUser.studentId);
               if (fresh) {
@@ -359,25 +516,29 @@
             state.cloudStatus = 'connected';
             renderApp();
           } else {
+            // ইনিশিয়াল ইউজারদের ফায়ারবেসে সিঙ্ক করা
             INITIAL_USERS.forEach(u => {
               setDoc(doc(db, 'users', u.id), u).catch(console.warn);
             });
             state.cloudStatus = 'connected';
             renderApp();
           }
-        }, console.warn);
+        }, (error) => {
+          console.warn('Firebase users onSnapshot note:', error);
+        });
       } catch (err) {
-        console.warn('Users listener:', err);
+        console.warn('Users listener exception:', err);
       }
     }
     window.initFirebaseSync = initFirebaseSync;
 
-    // টোস্ট নোটিফিকেশন
+    // --- 4. Toast Notification ---
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
+      const isSuccess = type === 'success';
       const isError = type === 'error';
-      const bg = isError ? 'bg-red-600' : type === 'info' ? 'bg-slate-800' : 'bg-[#5A5A40]';
+      const bg = isError ? 'bg-red-600' : isSuccess ? 'bg-[#5A5A40]' : 'bg-slate-800';
       
       toast.className = `${bg} text-white px-4 py-3 rounded-xl shadow-lg text-xs sm:text-sm font-medium flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto`;
       toast.innerHTML = `<span>${message}</span>`;
@@ -393,6 +554,7 @@
       }, 3200);
     }
 
+    // --- 5. Verified Badge Helper ---
     function getVerifiedBadgeHTML(size = 'sm') {
       const dim = size === 'md' ? 'w-4 h-4' : 'w-3.5 h-3.5';
       return `<span class="badge-verified ${dim} inline-flex items-center justify-center shadow-xs" title="ভেরিফাইড শিক্ষার্থী">
@@ -402,9 +564,8 @@
       </span>`;
     }
 
-    // ==========================================
-    // ৪. মূল রেন্ডারার
-    // ==========================================
+    // --- 6. Render Functions ---
+
     function renderApp() {
       const app = document.getElementById('app');
       if (!state.currentUser) {
@@ -414,12 +575,13 @@
       } else {
         app.innerHTML = renderNavbar() + renderFeedView();
       }
-      if (window.lucide) lucide.createIcons();
+      lucide.createIcons();
     }
 
+    // --- AUTH SCREEN ---
     function renderAuthScreen() {
-      const isUser = state.authMode === 'user_login';
-      const isAdmin = state.authMode === 'admin_login';
+      const isUserLogin = state.authMode === 'user_login' || state.authMode === 'login';
+      const isAdminLogin = state.authMode === 'admin_login';
       const isReg = state.authMode === 'register';
 
       return `
@@ -428,36 +590,44 @@
           <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#5A5A40] text-white shadow-md mb-3">
             <i data-lucide="graduation-cap" class="w-9 h-9"></i>
           </div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-[#42422F] tracking-tight">Oikko</h1>
-          <p class="text-xs sm:text-sm text-[#8A8A6A] mt-1">ক্যাম্পাস সোশ্যাল নেটওয়ার্ক ও ভেরিফিকেশন সিস্টেম</p>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-[#42422F] tracking-tight">
+            Oikko
+          </h1>
+          <p class="text-xs sm:text-sm text-[#8A8A6A] mt-1">
+            ক্যাম্পাস সোশ্যাল নেটওয়ার্ক ও শিক্ষার্থী ভেরিফিকেশন সিস্টেম
+          </p>
         </div>
 
         <div class="sm:mx-auto sm:w-full sm:max-w-xl">
           <div class="bg-white shadow-sm rounded-2xl border border-[#E2E2D5] overflow-hidden">
+            <!-- Navigation Tabs: User Login | Admin Login | Register -->
             <div class="flex border-b border-[#F0F0E0] bg-[#F9F9F4] p-1.5 gap-1.5 text-xs sm:text-sm font-semibold">
-              <button onclick="setAuthTab('user_login')" class="flex-1 py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all ${isUser ? 'bg-white text-[#5A5A40] shadow-xs border border-[#E2E2D5] font-bold' : 'text-[#8A8A6A] hover:text-[#42422F]'}">
-                <i data-lucide="user" class="w-4 h-4"></i>
+              <button onclick="setAuthTab('user_login')" class="flex-1 py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all ${isUserLogin ? 'bg-white text-[#5A5A40] shadow-xs border border-[#E2E2D5] font-bold' : 'text-[#8A8A6A] hover:text-[#42422F]'}">
+                <i data-lucide="user" class="w-4 h-4 text-[#5A5A40]"></i>
                 <span>ইউজার লগইন</span>
               </button>
-              <button onclick="setAuthTab('admin_login')" class="flex-1 py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all ${isAdmin ? 'bg-white text-red-600 shadow-xs border border-[#E2E2D5] font-bold' : 'text-[#8A8A6A] hover:text-[#42422F]'}">
-                <i data-lucide="shield-check" class="w-4 h-4 text-red-500"></i>
+
+              <button onclick="setAuthTab('admin_login')" class="flex-1 py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all ${isAdminLogin ? 'bg-white text-red-700 shadow-xs border border-red-200 font-bold' : 'text-[#8A8A6A] hover:text-red-600'}">
+                <i data-lucide="shield-check" class="w-4 h-4 text-red-600"></i>
                 <span>এডমিন লগইন</span>
               </button>
+
               <button onclick="setAuthTab('register')" class="flex-1 py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all ${isReg ? 'bg-white text-[#5A5A40] shadow-xs border border-[#E2E2D5] font-bold' : 'text-[#8A8A6A] hover:text-[#42422F]'}">
-                <i data-lucide="user-plus" class="w-4 h-4"></i>
-                <span>রেজিস্ট্রেশন</span>
+                <i data-lucide="user-plus" class="w-4 h-4 text-[#5A5A40]"></i>
+                <span>নতুন একাউন্ট</span>
               </button>
             </div>
 
+            <!-- Content Area -->
             <div class="p-6 sm:p-8">
               ${state.authError ? `
-                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm rounded-xl flex items-center gap-2">
-                  <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                <div class="mb-5 p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm rounded-xl flex items-center gap-2">
+                  <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-red-600"></i>
                   <span>${state.authError}</span>
                 </div>
               ` : ''}
 
-              ${(isUser || isAdmin) ? renderLoginForm(isAdmin) : renderRegisterForm()}
+              ${isAdminLogin ? renderAdminLoginForm() : (isUserLogin ? renderUserLoginForm() : renderRegisterForm())}
             </div>
           </div>
         </div>
@@ -465,27 +635,33 @@
       `;
     }
 
-    function renderLoginForm(isAdmin) {
+    function renderUserLoginForm() {
       return `
-        <form onsubmit="handleLoginSubmit(event, ${isAdmin})" class="space-y-4">
+        <form onsubmit="handleUserLoginSubmit(event)" class="space-y-4">
           <div class="text-center mb-4">
-            <h2 class="text-lg font-bold text-[#42422F]">${isAdmin ? 'অ্যাডমিনিস্ট্রেটর পোর্টাল' : 'শিক্ষার্থী লগইন'}</h2>
-            <p class="text-xs text-[#8A8A6A] mt-0.5">লগইন করতে আইডি নাম্বার, মোবাইল নাম্বার ও পাসওয়ার্ড প্রদান করুন</p>
+            <h2 class="text-lg font-bold text-[#42422F]">
+              ইউজার লগইন
+            </h2>
+            <p class="text-xs text-[#8A8A6A] mt-0.5">
+              প্রবেশ করতে আপনার স্টুডেন্ট আইডি ও পাসওয়ার্ড লিখুন
+            </p>
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-[#42422F] mb-1">${isAdmin ? 'এডমিন আইডি' : 'স্টুডেন্ট আইডি নাম্বার'}</label>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">
+              স্টুডেন্ট আইডি নম্বর
+            </label>
             <div class="relative">
               <i data-lucide="id-card" class="w-4 h-4 text-[#8A8A6A] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-              <input id="login-id" type="text" required placeholder="${isAdmin ? 'ADMIN001' : 'স্টুডেন্ট আইডি'}" autocomplete="off" class="w-full pl-10 pr-3 py-2.5 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs sm:text-sm text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40] uppercase font-mono" />
+              <input id="login-user-id" type="text" required placeholder="আপনার স্টুডেন্ট আইডি বা মোবাইল নম্বর" value="" class="w-full pl-10 pr-3 py-2.5 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs sm:text-sm text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40] uppercase font-mono" />
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-[#42422F] mb-1">মোবাইল নাম্বার</label>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">মোবাইল নম্বর (ঐচ্ছিক)</label>
             <div class="relative">
               <i data-lucide="phone" class="w-4 h-4 text-[#8A8A6A] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-              <input id="login-mobile" type="tel" required placeholder="01XXXXXXXXX" autocomplete="off" class="w-full pl-10 pr-3 py-2.5 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs sm:text-sm text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40] font-mono" />
+              <input id="login-user-mobile" type="tel" placeholder="01XXXXXXXXX" value="" class="w-full pl-10 pr-3 py-2.5 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs sm:text-sm text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40] font-mono" />
             </div>
           </div>
 
@@ -493,14 +669,80 @@
             <label class="block text-xs font-bold text-[#42422F] mb-1">পাসওয়ার্ড</label>
             <div class="relative">
               <i data-lucide="lock" class="w-4 h-4 text-[#8A8A6A] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-              <input id="login-password" type="password" required placeholder="••••••••" autocomplete="current-password" class="w-full pl-10 pr-3 py-2.5 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs sm:text-sm text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+              <input id="login-user-password" type="password" required placeholder="••••••••" value="" class="w-full pl-10 pr-3 py-2.5 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs sm:text-sm text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
             </div>
           </div>
 
-          <button type="submit" class="w-full py-3 px-4 rounded-xl text-white text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center justify-center gap-2 ${isAdmin ? 'bg-red-600 hover:bg-red-700' : 'bg-[#5A5A40] hover:bg-[#4A4A33]'}">
+          <button type="submit" class="w-full py-3 px-4 rounded-xl text-white text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center justify-center gap-2 bg-[#5A5A40] hover:bg-[#4A4A33]">
             <i data-lucide="log-in" class="w-4 h-4"></i>
-            <span>${isAdmin ? 'এডমিন হিসেবে প্রবেশ করুন' : 'লগইন করুন'}</span>
+            <span>ইউজার লগইন করুন</span>
           </button>
+
+          <div class="pt-2 flex items-center justify-between text-xs text-[#8A8A6A]">
+            <button type="button" onclick="setAuthTab('admin_login')" class="hover:text-red-600 font-semibold flex items-center gap-1">
+              <i data-lucide="shield" class="w-3.5 h-3.5 text-red-600"></i>
+              <span>এডমিন লগইন</span>
+            </button>
+            <button type="button" onclick="setAuthTab('register')" class="hover:text-[#5A5A40] font-bold">
+              নতুন শিক্ষার্থী রেজিস্ট্রেশন
+            </button>
+          </div>
+        </form>
+      `;
+    }
+
+    function renderAdminLoginForm() {
+      return `
+        <form onsubmit="handleAdminLoginSubmit(event)" class="space-y-4">
+          <div class="text-center mb-4">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-red-50 text-red-700 mb-2 border border-red-200">
+              <i data-lucide="shield-check" class="w-6 h-6 text-red-600"></i>
+            </div>
+            <h2 class="text-lg font-bold text-red-800">
+              এডমিন লগইন পোর্টাল
+            </h2>
+            <p class="text-xs text-[#8A8A6A] mt-0.5">
+              শুধুমাত্র অনুমোদিত প্রধান এডমিনের জন্য সংরক্ষিত
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">
+              এডমিন আইডি
+            </label>
+            <div class="relative">
+              <i data-lucide="shield" class="w-4 h-4 text-red-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input id="login-admin-id" type="text" required placeholder="ADMIN001" value="" class="w-full pl-10 pr-3 py-2.5 bg-[#F5F5F0] border border-red-200 rounded-xl text-xs sm:text-sm text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500 font-mono" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">মোবাইল</label>
+            <div class="relative">
+              <i data-lucide="lock" class="w-4 h-4 text-red-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input id="login-admin-mobile" type="text" required placeholder="মোবাইল নম্বর" value="" class="w-full pl-10 pr-3 py-2.5 bg-[#F5F5F0] border border-red-200 rounded-xl text-xs sm:text-sm text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">এডমিন পাসওয়ার্ড</label>
+            <div class="relative">
+              <i data-lucide="lock" class="w-4 h-4 text-red-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input id="login-admin-password" type="password" required placeholder="••••••••" value="" class="w-full pl-10 pr-3 py-2.5 bg-[#F5F5F0] border border-red-200 rounded-xl text-xs sm:text-sm text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" />
+            </div>
+          </div>
+
+          <button type="submit" class="w-full py-3 px-4 rounded-xl text-white text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center justify-center gap-2 bg-red-700 hover:bg-red-800">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+            <span>এডমিন প্যানেলে প্রবেশ করুন</span>
+          </button>
+
+          <div class="pt-2 flex items-center justify-between text-xs text-[#8A8A6A]">
+            <button type="button" onclick="setAuthTab('user_login')" class="hover:text-[#5A5A40] font-semibold flex items-center gap-1">
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+              <span>শিক্ষার্থী ইউজার লগইন</span>
+            </button>
+          </div>
         </form>
       `;
     }
@@ -531,7 +773,7 @@
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">শ্রেণি *</label>
+              <label class="block text-xs font-bold text-[#42422F] mb-1">শ্রেনি *</label>
               <select id="reg-class" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
                 <option value="৬ষ্ঠ শ্রেনি">৬ষ্ঠ শ্রেনি</option>
                 <option value="৭ম শ্রেনি">৭ম শ্রেনি</option>
@@ -544,11 +786,11 @@
             </div>
             <div>
               <label class="block text-xs font-bold text-[#42422F] mb-1">রোল *</label>
-              <input id="reg-roll" required placeholder="০১" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+              <input id="reg-roll" required placeholder="যেমন: ০৫" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
             </div>
             <div>
               <label class="block text-xs font-bold text-[#42422F] mb-1">শাখা *</label>
-              <input id="reg-section" required placeholder="ক / বিজ্ঞান" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+              <input id="reg-section" required placeholder="ক / মেঘনা" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
             </div>
             <div>
               <label class="block text-xs font-bold text-[#42422F] mb-1">শিফট *</label>
@@ -579,14 +821,24 @@
             <div>
               <label class="block text-xs font-bold text-[#42422F] mb-1">রক্তের গ্রুপ *</label>
               <select id="reg-blood" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
-                <option value="A+">A+</option><option value="B+">B+</option><option value="O+" selected>O+</option><option value="AB+">AB+</option>
-                <option value="A-">A-</option><option value="B-">B-</option><option value="O-">O-</option><option value="AB-">AB-</option>
+                <option value="A+">A+</option>
+                <option value="B+">B+</option>
+                <option value="O+" selected>O+</option>
+                <option value="AB+">AB+</option>
+                <option value="A-">A-</option>
+                <option value="B-">B-</option>
+                <option value="O-">O-</option>
+                <option value="AB-">AB-</option>
               </select>
             </div>
             <div>
               <label class="block text-xs font-bold text-[#42422F] mb-1">ধর্ম *</label>
               <select id="reg-religion" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
-                <option value="ইসলাম" selected>ইসলাম</option><option value="সনাতন">সনাতন</option><option value="খ্রিস্টান">খ্রিস্টান</option><option value="বৌদ্ধ">বৌদ্ধ</option><option value="অন্যান্য">অন্যান্য</option>
+                <option value="ইসলাম" selected>ইসলাম</option>
+                <option value="সনাতন">সনাতন</option>
+                <option value="খ্রিস্টান">খ্রিস্টান</option>
+                <option value="বৌদ্ধ">বৌদ্ধ</option>
+                <option value="অন্যান্য">অন্যান্য</option>
               </select>
             </div>
           </div>
@@ -594,17 +846,17 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-[#42422F] mb-1">বর্তমান ঠিকানা *</label>
-              <input id="reg-present" required placeholder="বর্তমান ঠিকানা" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+              <input id="reg-present" required placeholder="বর্তমান ঠিকানা লিখুন" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
             </div>
             <div>
               <label class="block text-xs font-bold text-[#42422F] mb-1">স্থায়ী ঠিকানা *</label>
-              <input id="reg-permanent" required placeholder="স্থায়ী ঠিকানা" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+              <input id="reg-permanent" required placeholder="স্থায়ী ঠিকানা লিখুন" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">মোবাইল নম্বর *</label>
+              <label class="block text-xs font-bold text-[#42422F] mb-1">মোবাইল নাম্বার *</label>
               <input id="reg-mobile" type="tel" required placeholder="017xxxxxxxx" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs font-mono focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
             </div>
             <div>
@@ -628,18 +880,30 @@
             </div>
           </div>
 
-          <!-- প্রোফাইল ছবি (ডিভাইস থেকে সরাসরি আপলোড) -->
+          <!-- Profile Picture (Device Upload or URL) -->
           <div>
-            <label class="block text-xs font-bold text-[#42422F] mb-1">প্রোফাইল ছবি (ডিভাইস থেকে সরাসরি আপলোড)</label>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">
+              প্রোফাইল ছবি (আপনার ডিভাইস থেকে আপলোড করুন)
+            </label>
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-[#F9F9F4] p-3 rounded-xl border border-[#E2E2D5]">
-              <img id="reg-avatar-preview" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400" class="w-12 h-12 rounded-full object-cover border-2 border-[#E2E2D5] shrink-0 shadow-xs" />
+              <img
+                id="reg-avatar-preview"
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80"
+                alt="Avatar preview"
+                onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80'"
+                class="w-12 h-12 rounded-full object-cover border-2 border-[#E2E2D5] shrink-0 shadow-xs"
+              />
               <div class="flex-1 space-y-1.5 w-full">
                 <input type="file" id="reg-avatar-file" accept="image/*" onchange="handleProfileAvatarFileSelect(event, 'reg')" class="hidden" />
-                <button type="button" onclick="document.getElementById('reg-avatar-file').click()" class="px-3.5 py-1.5 bg-[#5A5A40] hover:bg-[#4A4A33] text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5">
+                <button type="button" onclick="document.getElementById('reg-avatar-file').click()" class="px-3 py-1.5 bg-[#5A5A40] hover:bg-[#4A4A33] text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5">
                   <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                  <span>ডিভাইস থেকে ছবি আপলোড</span>
+                  <span>ডিভাইস / গ্যালারি থেকে ছবি বাছুন</span>
                 </button>
-                <input id="reg-profile-picture" type="text" placeholder="অথবা ছবির URL দিন" class="w-full px-3 py-1.5 bg-white border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                <input
+                  id="reg-profile-picture"
+                  type="hidden"
+                  value="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80"
+                />
               </div>
             </div>
           </div>
@@ -652,12 +916,14 @@
       `;
     }
 
+    // --- NAVBAR ---
     function renderNavbar() {
       const u = state.currentUser;
       const isAdmin = u.role === 'admin';
       return `
         <header class="sticky top-0 z-40 bg-[#5A5A40] text-white border-b border-[#4A4A33] shadow-md transition-all">
           <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <!-- Brand -->
             <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('feed')">
               <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white shadow-inner">
                 <i data-lucide="graduation-cap" class="w-6 h-6"></i>
@@ -667,11 +933,13 @@
                   <span class="font-bold text-lg text-white tracking-tight leading-none">Oikko</span>
                   <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-white/20 text-white border border-white/30">Campus</span>
                 </div>
-                <p class="text-xs text-[#D1D1C2] hidden sm:block">ক্যাম্পাস সামাজিক নেটওয়ার্ক</p>
+                <p class="text-xs text-[#D1D1C2] hidden sm:block">স্কুল ও কলেজ সামাজিক নেটওয়ার্ক</p>
               </div>
             </div>
 
+            <!-- Right Controls -->
             <div class="flex items-center gap-2.5 sm:gap-3">
+              <!-- Realtime Cloud Status Indicator -->
               <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/20 text-[11px] font-medium border border-white/10" title="ফায়ারবেস ক্লাউড স্ট্যাটাস">
                 <span class="w-2 h-2 rounded-full ${state.cloudStatus === 'connected' ? 'bg-emerald-400 animate-pulse' : state.cloudStatus === 'connecting' ? 'bg-amber-400' : 'bg-rose-400'}"></span>
                 <span class="hidden md:inline">${state.cloudStatus === 'connected' ? 'অনলাইন' : state.cloudStatus === 'connecting' ? 'সংযুক্ত হচ্ছে...' : 'অফলাইন'}</span>
@@ -684,11 +952,17 @@
                 </button>
               ` : ''}
 
-              <div class="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-xl border border-white/20 cursor-pointer hover:bg-white/20 transition-all" onclick="openProfileModal('${u.id}')" title="আপনার প্রোফাইল দেখুন">
+              <!-- User Tag & Logout -->
+              <div class="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-xl border border-white/20">
                 <img src="${u.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200'}" class="w-7 h-7 rounded-full object-cover border border-white/40" />
                 <span class="text-xs font-bold text-white hidden sm:inline">${u.fullName}</span>
                 ${u.isVerified ? getVerifiedBadgeHTML('sm') : ''}
               </div>
+
+              <!-- Notification Bell Button -->
+              <button onclick="requestNotificationPermission()" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors" title="ডিভাইস নোটিফিকেশন সক্রিয় করুন">
+                <i data-lucide="bell" class="w-4 h-4"></i>
+              </button>
 
               <button onclick="handleLogout()" title="লগআউট" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors">
                 <i data-lucide="log-out" class="w-4 h-4"></i>
@@ -699,6 +973,7 @@
       `;
     }
 
+    // --- FEED VIEW ---
     function renderFeedView() {
       const u = state.currentUser;
       const verifiedStudents = state.users.filter(usr => usr.isVerified && usr.role !== 'admin');
@@ -707,15 +982,16 @@
         <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- বাম পাশের সাইডবার -->
+            <!-- Left Sidebar -->
             <div class="hidden lg:block lg:col-span-4 space-y-5">
+              <!-- Current User Identity Card -->
               <div class="bg-white rounded-2xl p-5 shadow-xs border border-[#E2E2D5]">
                 <div class="text-center">
-                  <div class="relative inline-block mx-auto mb-3 cursor-pointer group" onclick="openProfileModal('${u.id}')">
-                    <img src="${u.profilePicture}" class="w-20 h-20 rounded-2xl object-cover border-2 border-[#E2E2D5] shadow-xs group-hover:ring-2 group-hover:ring-[#5A5A40] transition-all" />
+                  <div class="relative inline-block mx-auto mb-3">
+                    <img src="${u.profilePicture}" class="w-20 h-20 rounded-2xl object-cover border-2 border-[#E2E2D5] shadow-xs" />
                     ${u.isVerified ? `<div class="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-xs">${getVerifiedBadgeHTML('md')}</div>` : ''}
                   </div>
-                  <h3 class="font-bold text-base text-[#42422F] flex items-center justify-center gap-1.5 cursor-pointer hover:underline" onclick="openProfileModal('${u.id}')">
+                  <h3 class="font-bold text-base text-[#42422F] flex items-center justify-center gap-1.5">
                     <span>${u.fullName}</span>
                     ${u.isVerified ? getVerifiedBadgeHTML('sm') : ''}
                   </h3>
@@ -754,7 +1030,7 @@
                 </div>
               </div>
 
-              <!-- ভেরিফাইড শিক্ষার্থী তালিকা -->
+              <!-- Verified Students Widget -->
               <div class="bg-white rounded-2xl p-5 shadow-xs border border-[#E2E2D5]">
                 <div class="flex items-center gap-2 mb-3">
                   <div class="p-1.5 rounded-lg bg-[#F5F5F0] text-[#5A5A40]">
@@ -783,10 +1059,10 @@
               </div>
             </div>
 
-            <!-- ডান পাশের পোস্ট কম্পোজার ও ফিড -->
+            <!-- Right Feed Content -->
             <div class="lg:col-span-8 space-y-5">
               
-              <!-- পোস্ট ক্রিয়েটর বক্স (ডিভাইস থেকে ছবি/ভিডিও আপলোড সহ) -->
+              <!-- Post Creator Box -->
               <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-[#E2E2D5]">
                 <form onsubmit="handleCreatePost(event)">
                   <div class="flex gap-3">
@@ -796,10 +1072,10 @@
                     </div>
                   </div>
 
-                  <!-- হিডেন ডিভাইস ফাইল ইনপুট -->
+                  <!-- Device Media File Input (Hidden) -->
                   <input type="file" id="post-media-file" accept="image/*,video/*" onchange="handleMediaFileSelect(event)" class="hidden" />
 
-                  <!-- নির্বাচিত ছবি বা ভিডিও প্রিভিউ বক্স -->
+                  <!-- Selected Media Preview Container -->
                   <div id="post-media-preview-container" class="mt-3 ${state.selectedMedia ? '' : 'hidden'}">
                     ${renderMediaPreviewHTML()}
                   </div>
@@ -820,22 +1096,22 @@
                 </form>
               </div>
 
-              <!-- পোস্ট তালিকা হেডার -->
+              <!-- Posts List Header -->
               <div class="flex items-center justify-between px-1">
                 <h3 class="text-xs sm:text-sm font-bold text-[#42422F] flex items-center gap-2">
                   <i data-lucide="book-open" class="w-4 h-4 text-[#5A5A40]"></i>
-                  <span>সকল শিক্ষার্থীর শেয়ারকৃত পোস্ট (${state.posts.length})</span>
+                  <span>পোস্ট</span>
                 </h3>
                 <span class="text-[11px] text-[#8A8A6A]">সর্বশেষ পোস্ট আগে</span>
               </div>
 
-              <!-- পোস্ট ফিড -->
+              <!-- Posts Feed -->
               <div class="space-y-4">
                 ${state.posts.length === 0 ? `
                   <div class="bg-white rounded-2xl p-12 text-center border border-[#E2E2D5]">
                     <i data-lucide="megaphone" class="w-10 h-10 text-[#8A8A6A] mx-auto mb-3 opacity-60"></i>
                     <h4 class="text-base font-bold text-[#42422F]">এখনো কোনো পোস্ট করা হয়নি</h4>
-                    <p class="text-xs text-[#8A8A6A] mt-1">প্রথম পোস্ট হিসেবে ক্যাম্পাস নিয়ে কিছু শেয়ার করুন!</p>
+                    <p class="text-xs text-[#8A8A6A] mt-1 max-w-sm mx-auto">প্রথম পোস্ট হিসেবে ক্যাম্পাস নিয়ে কিছু শেয়ার করুন!</p>
                   </div>
                 ` : state.posts.map(post => renderPostCard(post)).join('')}
               </div>
@@ -847,9 +1123,7 @@
       `;
     }
 
-    // ==========================================
-    // ৫. পোস্ট কার্ড ও কমেন্ট-রিপ্লাই সিস্টেম
-    // ==========================================
+    // --- POST CARD ---
     function renderPostCard(post) {
       const u = state.currentUser;
       const isAuthor = post.authorStudentId === u.studentId;
@@ -858,6 +1132,7 @@
       const isLiked = (post.likes || []).includes(u.studentId);
       const authorIdentifier = post.authorStudentId || post.authorId;
 
+      // শুধুমাত্র ভেরিফাইড হলে বা এডমিন হলে ব্লু ব্যাজ প্রদর্শিত হবে
       const authorUser = state.users.find(usr => 
         (usr.studentId && usr.studentId === post.authorStudentId) || 
         (usr.id && usr.id === post.authorId)
@@ -867,6 +1142,7 @@
       return `
         <div class="bg-white rounded-2xl shadow-xs border border-[#E2E2D5] overflow-hidden transition-all">
           <div class="p-4 sm:p-5">
+            <!-- Header -->
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center gap-3 cursor-pointer group" onclick="openProfileModal('${authorIdentifier}')" title="${post.authorName}-এর প্রোফাইল দেখুন">
                 <img src="${post.authorAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200'}" class="w-10 h-10 rounded-full object-cover border border-[#E2E2D5] group-hover:ring-2 group-hover:ring-[#5A5A40] transition-all" />
@@ -890,10 +1166,10 @@
               ` : ''}
             </div>
 
-            <!-- পোস্ট কনটেন্ট -->
+            <!-- Content Body -->
             ${post.content ? `<p class="text-xs sm:text-sm text-[#42422F] whitespace-pre-line leading-relaxed mb-3">${post.content}</p>` : ''}
 
-            <!-- ডিভাইস ভিডিও বা ছবি রেন্ডারিং -->
+            <!-- Video or Image Media from Device -->
             ${(post.videoUrl || post.mediaType === 'video') ? `
               <div class="rounded-xl overflow-hidden mb-3 border border-[#E2E2D5] bg-black">
                 <video src="${post.videoUrl || post.imageUrl}" controls playsinline class="w-full max-h-96 object-contain"></video>
@@ -904,111 +1180,135 @@
               </div>
             ` : ''}
 
-            <!-- পোস্ট রিঅ্যাকশন বার -->
+            <!-- Post Reactions Bar -->
             <div class="pt-3 border-t border-[#F0F0E0] flex items-center justify-between text-xs">
               <div class="flex items-center gap-3">
                 <button onclick="handleToggleLike('${post.id}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors font-semibold ${isLiked ? 'text-blue-600 bg-blue-50' : 'text-[#8A8A6A] hover:bg-[#F5F5F0]' }">
                   <i data-lucide="thumbs-up" class="w-4 h-4 ${isLiked ? 'fill-blue-600' : ''}"></i>
                   <span>${(post.likes || []).length} পছন্দ</span>
                 </button>
-                <span class="text-[#8A8A6A] flex items-center gap-1">
+                <button type="button" onclick="toggleAllComments('${post.id}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors font-semibold text-[#8A8A6A] hover:bg-[#F5F5F0] hover:text-[#42422F]" title="মন্তব্য দেখতে বা সংক্ষেপ করতে ক্লিক করুন">
                   <i data-lucide="message-square" class="w-4 h-4"></i>
-                  <span>${(post.comments || []).length} মন্তব্য</span>
-                </span>
+                  <span>${(post.comments || []).length} মন্তব্য ${(post.comments || []).length > 1 ? (state.expandedComments[post.id] ? '(সংক্ষেপ)' : '(সকল দেখুন)') : ''}</span>
+                </button>
               </div>
             </div>
 
-            <!-- কমেন্ট ও রিপ্লাই সেকশন -->
+            <!-- Comments & Replies Section -->
             <div class="mt-3 pt-3 border-t border-[#F0F0E0] space-y-3">
-              ${(post.comments || []).map(c => {
-                const commentAuthorId = c.authorStudentId || c.authorId;
-                const commentAuthor = state.users.find(usr => 
-                  (usr.studentId && usr.studentId === c.authorStudentId) || 
-                  (usr.id && usr.id === c.authorId)
-                );
-                const isCommentVerified = (commentAuthor && Boolean(commentAuthor.isVerified)) || (c.authorStudentId === 'ADMIN001');
-                const isCommentLiked = (c.likes || []).includes(u.studentId);
-                const replies = c.replies || [];
+              ${(() => {
+                const allComments = post.comments || [];
+                if (allComments.length === 0) {
+                  return '<p class="text-xs text-[#8A8A6A] py-1 text-center">এখনো কোনো মন্তব্য নেই। প্রথম মন্তব্যটি আপনি করুন!</p>';
+                }
 
-                return `
-                <div class="bg-[#F9F9F4] p-3 rounded-xl border border-[#F0F0E0]">
-                  <div class="flex items-start gap-2.5">
-                    <img onclick="openProfileModal('${commentAuthorId}')" src="${c.authorAvatar}" class="w-7 h-7 rounded-full object-cover border border-[#E2E2D5] mt-0.5 cursor-pointer hover:ring-2 hover:ring-[#5A5A40] transition-all shrink-0" title="${c.authorName}-এর প্রোফাইল দেখুন" />
-                    <div class="flex-1 text-xs min-w-0">
-                      <div class="flex items-center justify-between gap-1">
-                        <span onclick="openProfileModal('${commentAuthorId}')" class="font-bold text-[#42422F] cursor-pointer hover:underline hover:text-[#5A5A40] flex items-center gap-1 truncate">
-                          <span>${c.authorName}</span>
-                          ${isCommentVerified ? getVerifiedBadgeHTML('sm') : ''}
-                        </span>
-                        <span class="text-[10px] text-[#8A8A6A] shrink-0">${c.createdAt}</span>
-                      </div>
-                      <p class="text-[#42422F] mt-1 break-words">${c.content}</p>
+                const isExpanded = Boolean(state.expandedComments[post.id]);
+                // ডিফল্টভাবে শুধু প্রথম কমেন্ট দেখা যাবে, এক্সপ্যান্ড করলে সব দেখা যাবে
+                const displayedComments = isExpanded ? allComments : [allComments[0]];
+                const hiddenCount = allComments.length - 1;
 
-                      <!-- কমেন্টে লাইক ও রিপ্লাই অ্যাকশন বাটন -->
-                      <div class="flex items-center gap-3 mt-2 text-[11px]">
-                        <button type="button" onclick="handleToggleCommentLike('${post.id}', '${c.id}')" class="flex items-center gap-1 font-semibold transition-colors ${isCommentLiked ? 'text-blue-600 font-bold' : 'text-[#8A8A6A] hover:text-[#42422F]'}">
-                          <i data-lucide="thumbs-up" class="w-3 h-3 ${isCommentLiked ? 'fill-blue-600' : ''}"></i>
-                          <span>${(c.likes || []).length > 0 ? (c.likes || []).length + ' লাইক' : 'লাইক'}</span>
-                        </button>
+                const commentsHTML = displayedComments.map(c => {
+                  const commentAuthorId = c.authorStudentId || c.authorId;
+                  const commentAuthor = state.users.find(usr => 
+                    (usr.studentId && usr.studentId === c.authorStudentId) || 
+                    (usr.id && usr.id === c.authorId)
+                  );
+                  const isCommentVerified = (commentAuthor && Boolean(commentAuthor.isVerified)) || (c.authorStudentId === 'ADMIN001');
+                  const isCommentLiked = (c.likes || []).includes(u.studentId);
+                  const replies = c.replies || [];
 
-                        <button type="button" onclick="toggleReplyInput('${c.id}')" class="flex items-center gap-1 font-semibold text-[#8A8A6A] hover:text-[#5A5A40] transition-colors">
-                          <i data-lucide="reply" class="w-3 h-3"></i>
-                          <span>রিপ্লাই (${replies.length})</span>
-                        </button>
-                      </div>
+                  return `
+                  <div class="bg-[#F9F9F4] p-3 rounded-xl border border-[#F0F0E0]">
+                    <div class="flex items-start gap-2.5">
+                      <img onclick="openProfileModal('${commentAuthorId}')" src="${c.authorAvatar}" class="w-7 h-7 rounded-full object-cover border border-[#E2E2D5] mt-0.5 cursor-pointer hover:ring-2 hover:ring-[#5A5A40] transition-all shrink-0" title="${c.authorName}-এর প্রোফাইল দেখুন" />
+                      <div class="flex-1 text-xs min-w-0">
+                        <div class="flex items-center justify-between gap-1">
+                          <span onclick="openProfileModal('${commentAuthorId}')" class="font-bold text-[#42422F] cursor-pointer hover:underline hover:text-[#5A5A40] flex items-center gap-1 truncate">
+                            <span>${c.authorName}</span>
+                            ${isCommentVerified ? getVerifiedBadgeHTML('sm') : ''}
+                          </span>
+                          <span class="text-[10px] text-[#8A8A6A] shrink-0">${c.createdAt}</span>
+                        </div>
+                        <p class="text-[#42422F] mt-1 break-words">${c.content}</p>
 
-                      <!-- সাব-রিপ্লাই তালিকা -->
-                      ${replies.length > 0 ? `
-                        <div class="mt-2.5 pt-2 border-t border-[#EAEAE0] space-y-2">
-                          ${replies.map(r => {
-                            const replyAuthorId = r.authorStudentId || r.authorId;
-                            const replyAuthor = state.users.find(usr => 
-                              (usr.studentId && usr.studentId === r.authorStudentId) || 
-                              (usr.id && usr.id === r.authorId)
-                            );
-                            const isReplyVerified = (replyAuthor && Boolean(replyAuthor.isVerified)) || (r.authorStudentId === 'ADMIN001');
-                            const isReplyLiked = (r.likes || []).includes(u.studentId);
+                        <!-- Comment Actions: Like & Reply -->
+                        <div class="flex items-center gap-3 mt-2 text-[11px]">
+                          <button type="button" onclick="handleToggleCommentLike('${post.id}', '${c.id}')" class="flex items-center gap-1 font-semibold transition-colors ${isCommentLiked ? 'text-blue-600 font-bold' : 'text-[#8A8A6A] hover:text-[#42422F]'}">
+                            <i data-lucide="thumbs-up" class="w-3 h-3 ${isCommentLiked ? 'fill-blue-600' : ''}"></i>
+                            <span>${(c.likes || []).length > 0 ? (c.likes || []).length + ' লাইক' : 'লাইক'}</span>
+                          </button>
 
-                            return `
-                              <div class="flex items-start gap-2 bg-white p-2 rounded-lg border border-[#E2E2D5]/70">
-                                <img onclick="openProfileModal('${replyAuthorId}')" src="${r.authorAvatar}" class="w-5 h-5 rounded-full object-cover border border-[#E2E2D5] mt-0.5 cursor-pointer shrink-0" />
-                                <div class="flex-1 min-w-0">
-                                  <div class="flex items-center justify-between gap-1">
-                                    <span onclick="openProfileModal('${replyAuthorId}')" class="font-bold text-[#42422F] text-[11px] cursor-pointer hover:underline flex items-center gap-1 truncate">
-                                      <span>${r.authorName}</span>
-                                      ${isReplyVerified ? getVerifiedBadgeHTML('sm') : ''}
-                                    </span>
-                                    <span class="text-[9px] text-[#8A8A6A] shrink-0">${r.createdAt}</span>
-                                  </div>
-                                  <p class="text-[#42422F] text-[11px] mt-0.5 break-words">${r.content}</p>
-                                  <div class="mt-1 flex items-center gap-2">
-                                    <button type="button" onclick="handleToggleReplyLike('${post.id}', '${c.id}', '${r.id}')" class="flex items-center gap-1 text-[10px] font-semibold ${isReplyLiked ? 'text-blue-600 font-bold' : 'text-[#8A8A6A] hover:text-blue-600'}">
-                                      <i data-lucide="thumbs-up" class="w-2.5 h-2.5 ${isReplyLiked ? 'fill-blue-600' : ''}"></i>
-                                      <span>${(r.likes || []).length > 0 ? (r.likes || []).length + ' লাইক' : 'লাইক'}</span>
-                                    </button>
+                          <button type="button" onclick="toggleReplyInput('${c.id}')" class="flex items-center gap-1 font-semibold text-[#8A8A6A] hover:text-[#5A5A40] transition-colors">
+                            <i data-lucide="reply" class="w-3 h-3"></i>
+                            <span>রিপ্লাই (${replies.length})</span>
+                          </button>
+                        </div>
+
+                        <!-- Sub-replies List -->
+                        ${replies.length > 0 ? `
+                          <div class="mt-2.5 pt-2 border-t border-[#EAEAE0] space-y-2">
+                            ${replies.map(r => {
+                              const replyAuthorId = r.authorStudentId || r.authorId;
+                              const replyAuthor = state.users.find(usr => 
+                                (usr.studentId && usr.studentId === r.authorStudentId) || 
+                                (usr.id && usr.id === r.authorId)
+                              );
+                              const isReplyVerified = (replyAuthor && Boolean(replyAuthor.isVerified)) || (r.authorStudentId === 'ADMIN001');
+                              const isReplyLiked = (r.likes || []).includes(u.studentId);
+
+                              return `
+                                <div class="flex items-start gap-2 bg-white p-2 rounded-lg border border-[#E2E2D5]/70">
+                                  <img onclick="openProfileModal('${replyAuthorId}')" src="${r.authorAvatar}" class="w-5 h-5 rounded-full object-cover border border-[#E2E2D5] mt-0.5 cursor-pointer shrink-0" />
+                                  <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1">
+                                      <span onclick="openProfileModal('${replyAuthorId}')" class="font-bold text-[#42422F] text-[11px] cursor-pointer hover:underline flex items-center gap-1 truncate">
+                                        <span>${r.authorName}</span>
+                                        ${isReplyVerified ? getVerifiedBadgeHTML('sm') : ''}
+                                      </span>
+                                      <span class="text-[9px] text-[#8A8A6A] shrink-0">${r.createdAt}</span>
+                                    </div>
+                                    <p class="text-[#42422F] text-[11px] mt-0.5 break-words">${r.content}</p>
+                                    <div class="mt-1 flex items-center gap-2">
+                                      <button type="button" onclick="handleToggleReplyLike('${post.id}', '${c.id}', '${r.id}')" class="flex items-center gap-1 text-[10px] font-semibold ${isReplyLiked ? 'text-blue-600 font-bold' : 'text-[#8A8A6A] hover:text-blue-600'}">
+                                        <i data-lucide="thumbs-up" class="w-2.5 h-2.5 ${isReplyLiked ? 'fill-blue-600' : ''}"></i>
+                                        <span>${(r.likes || []).length > 0 ? (r.likes || []).length + ' লাইক' : 'লাইক'}</span>
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            `;
-                          }).join('')}
+                              `;
+                            }).join('')}
+                          </div>
+                        ` : ''}
+
+                        <!-- Reply Input Box (Toggled) -->
+                        <div id="reply-box-${c.id}" class="hidden mt-2.5 pt-2 border-t border-[#EAEAE0]">
+                          <form onsubmit="handleAddReply(event, '${post.id}', '${c.id}')" class="flex items-center gap-1.5">
+                            <input id="reply-input-${c.id}" required placeholder="${c.authorName}-কে রিপ্লাই দিন..." class="flex-1 px-2.5 py-1.5 rounded-lg bg-white border border-[#E2E2D5] text-xs text-[#42422F] focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                            <button type="submit" class="px-3 py-1.5 rounded-lg bg-[#5A5A40] text-white text-xs font-semibold hover:bg-[#4A4A33] transition-colors shrink-0">রিপ্লাই</button>
+                            <button type="button" onclick="toggleReplyInput('${c.id}')" class="px-2 py-1.5 rounded-lg bg-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-300 transition-colors shrink-0">✕</button>
+                          </form>
                         </div>
-                      ` : ''}
 
-                      <!-- রিপ্লাই লেখার ফর্ম (টগলযোগ্য) -->
-                      <div id="reply-box-${c.id}" class="hidden mt-2.5 pt-2 border-t border-[#EAEAE0]">
-                        <form onsubmit="handleAddReply(event, '${post.id}', '${c.id}')" class="flex items-center gap-1.5">
-                          <input id="reply-input-${c.id}" required placeholder="${c.authorName}-কে রিপ্লাই দিন..." class="flex-1 px-2.5 py-1.5 rounded-lg bg-white border border-[#E2E2D5] text-xs text-[#42422F] focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-                          <button type="submit" class="px-3 py-1.5 rounded-lg bg-[#5A5A40] text-white text-xs font-semibold hover:bg-[#4A4A33] transition-colors shrink-0">রিপ্লাই</button>
-                          <button type="button" onclick="toggleReplyInput('${c.id}')" class="px-2 py-1.5 rounded-lg bg-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-300 transition-colors shrink-0">✕</button>
-                        </form>
                       </div>
-
                     </div>
                   </div>
-                </div>
-              `;}).join('')}
+                  `;
+                }).join('');
 
-              <!-- মূল কমেন্ট ইনপুট বক্স -->
+                let toggleButtonHTML = '';
+                if (!isExpanded && hiddenCount > 0) {
+                  toggleButtonHTML = `
+                  `;
+                } else if (isExpanded && allComments.length > 1) {
+                  toggleButtonHTML = `
+                  `;
+                }
+
+                return commentsHTML + toggleButtonHTML;
+              })()}
+
+              <!-- Add Comment Input Form -->
               <form onsubmit="handleAddComment(event, '${post.id}')" class="flex items-center gap-2 mt-2">
                 <input id="comment-input-${post.id}" required placeholder="একটি মন্তব্য লিখুন..." class="flex-1 px-3 py-2 rounded-xl bg-[#F5F5F0] border border-[#E2E2D5] text-xs text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
                 <button type="submit" class="px-4 py-2 rounded-xl bg-[#5A5A40] text-white text-xs font-semibold hover:bg-[#4A4A33] transition-colors shrink-0 flex items-center gap-1">
@@ -1023,9 +1323,7 @@
       `;
     }
 
-    // ==========================================
-    // ৬. অ্যাডমিন ভিউ ও প্রোফাইল মোডাল
-    // ==========================================
+    // --- ADMIN VIEW ---
     function renderAdminView() {
       const students = state.users.filter(u => u.role !== 'admin');
       const filtered = students.filter(s => {
@@ -1043,6 +1341,8 @@
 
       return `
         <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full space-y-6">
+          
+          <!-- Top Stats -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <div class="bg-white p-4 rounded-2xl border border-[#E2E2D5] shadow-xs">
               <span class="text-xs text-[#8A8A6A] font-semibold block">মোট শিক্ষার্থী</span>
@@ -1053,7 +1353,7 @@
               <span class="text-2xl font-bold text-blue-700">${verifiedCount} জন</span>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-[#E2E2D5] shadow-xs">
-              <span class="text-xs text-amber-600 font-semibold block">অপেক্ষমাণ শিক্ষার্থী</span>
+              <span class="text-xs text-amber-600 font-semibold block">অপেক্ষমাণ আবেদন</span>
               <span class="text-2xl font-bold text-amber-600">${pendingCount} জন</span>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-[#E2E2D5] shadow-xs">
@@ -1062,19 +1362,22 @@
             </div>
           </div>
 
+          <!-- Student Management Table -->
           <div class="bg-white rounded-2xl border border-[#E2E2D5] shadow-xs overflow-hidden">
             <div class="p-4 sm:p-5 border-b border-[#F0F0E0] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h3 class="font-bold text-base text-[#42422F]">শিক্ষার্থী তালিকা ও ভেরিফিকেশন নিয়ন্ত্রণ</h3>
-                <p class="text-xs text-[#8A8A6A]">শুধুমাত্র আপনার অনুমোদনে যেকোনো শিক্ষার্থীকে ব্লু ভেরিফাইড টিক প্রদান বা বাতিল করুন</p>
+                <p class="text-xs text-[#8A8A6A]">যেকোনো শিক্ষার্থীর ব্লু ভেরিফাইড টিক চিহ্ন প্রদান বা বাতিল করুন</p>
               </div>
 
+              <!-- Search -->
               <div class="relative w-full sm:w-64">
                 <i data-lucide="search" class="w-4 h-4 text-[#8A8A6A] absolute left-3 top-1/2 -translate-y-1/2"></i>
                 <input id="admin-search" oninput="handleAdminSearch(this.value)" value="${state.searchQuery}" placeholder="নাম বা আইডি দিয়ে খুঁজুন..." class="w-full pl-9 pr-3 py-1.5 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
               </div>
             </div>
 
+            <!-- Table -->
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs text-[#42422F]">
                 <thead class="bg-[#F9F9F4] text-[#8A8A6A] uppercase font-bold text-[11px] border-b border-[#F0F0E0]">
@@ -1089,14 +1392,16 @@
                 </thead>
                 <tbody class="divide-y divide-[#F0F0E0]">
                   ${filtered.length === 0 ? `
-                    <tr><td colspan="6" class="p-8 text-center text-[#8A8A6A]">কোনো শিক্ষার্থী পাওয়া যায়নি</td></tr>
+                    <tr>
+                      <td colspan="6" class="p-8 text-center text-[#8A8A6A]">কোনো শিক্ষার্থী পাওয়া যায়নি</td>
+                    </tr>
                   ` : filtered.map(s => `
                     <tr class="hover:bg-[#F9F9F4] transition-colors">
                       <td class="p-3.5">
-                        <div class="flex items-center gap-2.5 cursor-pointer group" onclick="openProfileModal('${s.id}')">
-                          <img src="${s.profilePicture}" class="w-8 h-8 rounded-full object-cover border border-[#E2E2D5] group-hover:ring-2 group-hover:ring-[#5A5A40] transition-all" />
+                        <div class="flex items-center gap-2.5">
+                          <img src="${s.profilePicture}" class="w-8 h-8 rounded-full object-cover border border-[#E2E2D5]" />
                           <div>
-                            <div class="font-bold flex items-center gap-1 group-hover:underline group-hover:text-[#5A5A40]">
+                            <div class="font-bold flex items-center gap-1">
                               <span>${s.fullName}</span>
                               ${s.isVerified ? getVerifiedBadgeHTML('sm') : ''}
                             </div>
@@ -1125,7 +1430,7 @@
                         <button onclick="openProfileModal('${s.id}')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#F5F5F0] hover:bg-[#E2E2D5] text-[#5A5A40] transition-colors">
                           প্রোফাইল
                         </button>
-                        <button onclick="openEditProfileModal('${s.id}')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#5A5A40] hover:bg-[#4A4A33] text-white transition-colors">
+                        <button onclick="openEditProfileModal('${s.id}')" title="তথ্য এডিট করুন" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#5A5A40] hover:bg-[#4A4A33] text-white transition-colors">
                           এডিট
                         </button>
                         <button onclick="handleDeleteStudent('${s.id}')" class="px-2 py-1 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 transition-colors">
@@ -1137,12 +1442,14 @@
                 </tbody>
               </table>
             </div>
+
           </div>
+
         </main>
       `;
     }
 
-    // প্রোফাইল দেখার মোডাল
+    // --- STUDENT PROFILE MODAL ---
     function openProfileModal(identifier) {
       if (!identifier) return;
       const cleanId = String(identifier).trim().toLowerCase();
@@ -1155,13 +1462,36 @@
         return;
       }
 
+      const isViewerAuthorized = state.currentUser && (
+        state.currentUser.role === 'admin' ||
+        state.currentUser.id === user.id ||
+        state.currentUser.studentId === user.studentId
+      );
+
+      const maskPhone = (phone) => {
+        if (!phone) return 'দেওয়া হয়নি';
+        if (isViewerAuthorized) return phone;
+        if (phone.length <= 5) return '••••••';
+        return phone.slice(0, 3) + '••••••' + phone.slice(-2);
+      };
+
+      const maskEmail = (email) => {
+        if (!email) return 'দেওয়া হয়নি';
+        if (isViewerAuthorized) return email;
+        const parts = email.split('@');
+        if (parts.length < 2) return '••••••';
+        return parts[0].slice(0, 2) + '••••@' + parts[1];
+      };
+
       const modalContainer = document.getElementById('modal-container');
+
       modalContainer.innerHTML = `
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
           <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl border border-[#E2E2D5] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <!-- Modal Header -->
             <div class="bg-[#5A5A40] text-white p-5 flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <img src="${user.profilePicture}" class="w-12 h-12 rounded-full object-cover border-2 border-white/40 shadow-xs" />
+                <img src="${user.profilePicture}" class="w-12 h-12 rounded-full object-cover border-2 border-white/40" />
                 <div>
                   <h3 class="font-bold text-base flex items-center gap-1.5">
                     <span>${user.fullName}</span>
@@ -1175,7 +1505,18 @@
               </button>
             </div>
 
+            <!-- Modal Content -->
             <div class="p-5 max-h-[75vh] overflow-y-auto space-y-4 text-xs text-[#42422F]">
+              
+              <!-- Privacy Note Banner if unauthorized viewer -->
+              ${!isViewerAuthorized ? `
+                <div class="p-3 bg-amber-50 border border-amber-200 text-amber-900 text-xs rounded-xl flex items-center gap-2">
+                  <i data-lucide="shield-check" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                  <span>ব্যক্তিগত গোপনীয়তার স্বার্থে মোবাইল নম্বর, জন্ম নিবন্ধন ও ঠিকানার বিবরণ আড়াল করে রাখা হয়েছে।</span>
+                </div>
+              ` : ''}
+
+              <!-- Academic Info -->
               <div class="bg-[#F9F9F4] p-3.5 rounded-xl border border-[#F0F0E0]">
                 <h4 class="font-bold text-[#5A5A40] mb-2 uppercase text-[11px] tracking-wider">শিক্ষা সংক্রান্ত তথ্য</h4>
                 <div class="grid grid-cols-2 gap-2">
@@ -1186,43 +1527,56 @@
                 </div>
               </div>
 
+              <!-- Personal Info -->
               <div class="bg-[#F9F9F4] p-3.5 rounded-xl border border-[#F0F0E0]">
                 <h4 class="font-bold text-[#5A5A40] mb-2 uppercase text-[11px] tracking-wider">ব্যক্তিগত ও পারিবারিক তথ্য</h4>
                 <div class="grid grid-cols-2 gap-2">
-                  <div><span class="text-[#8A8A6A]">পিতার নাম:</span> <strong>${user.fatherName}</strong></div>
-                  <div><span class="text-[#8A8A6A]">মাতার নাম:</span> <strong>${user.motherName}</strong></div>
-                  <div><span class="text-[#8A8A6A]">জন্ম তারিখ:</span> <strong>${user.dateOfBirth}</strong></div>
-                  <div><span class="text-[#8A8A6A]">রক্তের গ্রুপ:</span> <strong class="text-rose-600">${user.bloodGroup}</strong></div>
-                  <div><span class="text-[#8A8A6A]">ধর্ম:</span> <strong>${user.religion}</strong></div>
-                  <div><span class="text-[#8A8A6A]">জন্ম নিবন্ধন:</span> <strong class="font-mono">${user.birthRegistrationNumber}</strong></div>
+                  <div><span class="text-[#8A8A6A]">পিতার নাম:</span> <strong>${isViewerAuthorized ? (user.fatherName || 'প্রযোজ্য নয়') : 'সুরক্ষিত / আড়ালকৃত'}</strong></div>
+                  <div><span class="text-[#8A8A6A]">মাতার নাম:</span> <strong>${isViewerAuthorized ? (user.motherName || 'প্রযোজ্য নয়') : 'সুরক্ষিত / আড়ালকৃত'}</strong></div>
+                  <div><span class="text-[#8A8A6A]">জন্ম তারিখ:</span> <strong>${isViewerAuthorized ? (user.dateOfBirth || 'দেওয়া হয়নি') : 'সুরক্ষিত / আড়ালকৃত'}</strong></div>
+                  <div><span class="text-[#8A8A6A]">রক্তের গ্রুপ:</span> <strong class="text-rose-600">${user.bloodGroup || 'অজানা'}</strong></div>
+                  <div><span class="text-[#8A8A6A]">ধর্ম:</span> <strong>${user.religion || 'উল্লেখ করা হয়নি'}</strong></div>
+                  <div><span class="text-[#8A8A6A]">জন্ম নিবন্ধন:</span> <strong class="font-mono">${isViewerAuthorized ? (user.birthRegistrationNumber || 'দেওয়া হয়নি') : '••••••••••••••••• (আড়ালকৃত)'}</strong></div>
                 </div>
                 <div class="mt-2 pt-2 border-t border-[#E2E2D5] space-y-1">
-                  <div><span class="text-[#8A8A6A]">বর্তমান ঠিকানা:</span> ${user.presentAddress}</div>
-                  <div><span class="text-[#8A8A6A]">স্থায়ী ঠিকানা:</span> ${user.permanentAddress}</div>
+                  <div><span class="text-[#8A8A6A]">বর্তমান ঠিকানা:</span> ${isViewerAuthorized ? (user.presentAddress || 'দেওয়া হয়নি') : 'নিরাপত্তার স্বার্থে আড়ালকৃত'}</div>
+                  <div><span class="text-[#8A8A6A]">স্থায়ী ঠিকানা:</span> ${isViewerAuthorized ? (user.permanentAddress || 'দেওয়া হয়নি') : 'নিরাপত্তার স্বার্থে আড়ালকৃত'}</div>
                 </div>
               </div>
 
+              <!-- Contact Info -->
               <div class="bg-[#F9F9F4] p-3.5 rounded-xl border border-[#F0F0E0]">
                 <h4 class="font-bold text-[#5A5A40] mb-2 uppercase text-[11px] tracking-wider">যোগাযোগ ও সোশ্যাল মিডিয়া</h4>
                 <div class="space-y-1.5">
                   <div class="flex items-center gap-2">
                     <i data-lucide="phone" class="w-3.5 h-3.5 text-[#8A8A6A]"></i>
-                    <span class="font-mono">${user.mobileNumber}</span>
+                    ${isViewerAuthorized ? `
+                      <a href="tel:${user.mobileNumber}" class="font-mono text-[#5A5A40] hover:underline font-semibold">${user.mobileNumber}</a>
+                    ` : `
+                      <span class="font-mono text-[#8A8A6A] font-semibold">${maskPhone(user.mobileNumber)}</span>
+                    `}
                   </div>
                   <div class="flex items-center gap-2">
                     <i data-lucide="mail" class="w-3.5 h-3.5 text-[#8A8A6A]"></i>
-                    <span>${user.email}</span>
+                    ${isViewerAuthorized ? `
+                      <a href="mailto:${user.email}" class="text-[#5A5A40] hover:underline font-semibold">${user.email || 'দেওয়া হয়নি'}</a>
+                    ` : `
+                      <span class="text-[#8A8A6A] font-semibold">${maskEmail(user.email)}</span>
+                    `}
                   </div>
-                  <div class="flex items-center gap-2">
-                    <i data-lucide="link" class="w-3.5 h-3.5 text-[#8A8A6A]"></i>
-                    <a href="${user.facebookLink}" target="_blank" class="text-blue-600 hover:underline break-all">${user.facebookLink}</a>
-                  </div>
+                  ${user.facebookLink ? `
+                    <div class="flex items-center gap-2">
+                      <i data-lucide="link" class="w-3.5 h-3.5 text-[#8A8A6A]"></i>
+                      <a href="${user.facebookLink.startsWith('http') ? user.facebookLink : 'https://' + user.facebookLink}" target="_blank" class="text-blue-600 hover:underline break-all">${user.facebookLink}</a>
+                    </div>
+                  ` : ''}
                 </div>
               </div>
+
             </div>
 
             <div class="p-4 bg-[#F5F5F0] border-t border-[#E2E2D5] flex items-center justify-between">
-              ${(user.id === state.currentUser.id || user.studentId === state.currentUser.studentId || state.currentUser.role === 'admin') ? `
+              ${isViewerAuthorized ? `
                 <button onclick="closeProfileModal(); openEditProfileModal('${user.id}')" class="px-4 py-2 rounded-xl bg-[#5A5A40] hover:bg-[#4A4A33] text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
                   <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                   <span>তথ্য পরিবর্তন করুন</span>
@@ -1242,7 +1596,7 @@
       document.getElementById('modal-container').innerHTML = '';
     }
 
-    // তথ্য পরিবর্তন মোডাল (ডিভাইস থেকে ছবি আপলোড সহ)
+    // --- EDIT PROFILE MODAL ---
     function openEditProfileModal(targetId) {
       const userToEdit = targetId ? state.users.find(u => u.id === targetId || u.studentId === targetId) : state.currentUser;
       if (!userToEdit) return;
@@ -1251,6 +1605,7 @@
       modalContainer.innerHTML = `
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
           <div class="bg-white w-full max-w-xl rounded-2xl shadow-xl border border-[#E2E2D5] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <!-- Header -->
             <div class="bg-[#5A5A40] text-white p-4 sm:p-5 flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div class="p-2 bg-white/15 rounded-xl">
@@ -1266,24 +1621,28 @@
               </button>
             </div>
 
+            <!-- Form Body -->
             <form onsubmit="handleUpdateProfile(event, '${userToEdit.id}')" class="p-5 max-h-[75vh] overflow-y-auto space-y-4 text-xs text-[#42422F]">
               
-              <!-- প্রোফাইল ছবি (ডিভাইস থেকে বা লিংক) -->
+              <!-- Avatar with Device Upload or URL -->
               <div>
                 <label class="block font-bold text-[#42422F] mb-1">প্রোফাইল ছবি (ডিভাইস থেকে বা লিংক)</label>
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-[#F9F9F4] p-3 rounded-xl border border-[#E2E2D5]">
                   <img id="edit-avatar-preview" src="${userToEdit.profilePicture}" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'" class="w-12 h-12 rounded-full object-cover border-2 border-[#E2E2D5] shrink-0 shadow-xs" />
                   <div class="flex-1 space-y-1.5 w-full">
                     <input type="file" id="edit-avatar-file" accept="image/*" onchange="handleProfileAvatarFileSelect(event, 'edit')" class="hidden" />
-                    <button type="button" onclick="document.getElementById('edit-avatar-file').click()" class="px-3 py-1.5 bg-[#5A5A40] hover:bg-[#4A4A33] text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5">
-                      <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                      <span>ডিভাইস থেকে ছবি আপলোড</span>
-                    </button>
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <button type="button" onclick="document.getElementById('edit-avatar-file').click()" class="px-3 py-1.5 bg-[#5A5A40] hover:bg-[#4A4A33] text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5">
+                        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                        <span>ডিভাইস থেকে ছবি আপলোড</span>
+                      </button>
+                    </div>
                     <input id="edit-profile-picture" type="text" value="${userToEdit.profilePicture || ''}" oninput="updateEditAvatarPreview(this.value)" placeholder="অথবা ছবির URL দিন" class="w-full px-3 py-1.5 bg-white border border-[#E2E2D5] rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
                   </div>
                 </div>
               </div>
 
+              <!-- Basic Info -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="block font-bold text-[#42422F] mb-1">সম্পূর্ণ নাম *</label>
@@ -1295,6 +1654,7 @@
                 </div>
               </div>
 
+              <!-- Parents Info -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="block font-bold text-[#42422F] mb-1">পিতার নাম *</label>
@@ -1306,6 +1666,7 @@
                 </div>
               </div>
 
+              <!-- Academic Info -->
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div>
                   <label class="block font-bold text-[#42422F] mb-1">শ্রেণি *</label>
@@ -1320,7 +1681,7 @@
                   <input id="edit-roll" required value="${userToEdit.roll || ''}" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1"> শাখা *</label>
+                  <label class="block font-bold text-[#42422F] mb-1">শাখা *</label>
                   <input id="edit-section" required value="${userToEdit.section || ''}" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
                 </div>
                 <div>
@@ -1333,6 +1694,7 @@
                 </div>
               </div>
 
+              <!-- Personal Info -->
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <div>
                   <label class="block font-bold text-[#42422F] mb-1">জন্ম তারিখ *</label>
@@ -1361,6 +1723,7 @@
                 <input id="edit-birth-reg" required value="${userToEdit.birthRegistrationNumber || ''}" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs font-mono focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
               </div>
 
+              <!-- Addresses -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="block font-bold text-[#42422F] mb-1">বর্তমান ঠিকানা *</label>
@@ -1372,6 +1735,7 @@
                 </div>
               </div>
 
+              <!-- Contact & Social -->
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <div>
                   <label class="block font-bold text-[#42422F] mb-1">মোবাইল নম্বর *</label>
@@ -1387,11 +1751,13 @@
                 </div>
               </div>
 
+              <!-- Password (Optional) -->
               <div class="pt-2 border-t border-[#E2E2D5]">
                 <label class="block font-bold text-[#42422F] mb-1">নতুন পাসওয়ার্ড (পরিবর্তন করতে চাইলে লিখুন)</label>
                 <input id="edit-password" type="password" placeholder="পরিবর্তন না করতে চাইলে ফাঁকা রাখুন" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
               </div>
 
+              <!-- Footer Buttons -->
               <div class="pt-3 border-t border-[#E2E2D5] flex items-center justify-end gap-2">
                 <button type="button" onclick="closeProfileModal()" class="px-4 py-2 rounded-xl bg-white hover:bg-[#E2E2D5] text-[#5A5A40] border border-[#E2E2D5] text-xs font-bold transition-colors">
                   বাতিল
@@ -1456,8 +1822,11 @@
       user.mobileNumber = newMobile;
       user.email = newEmail;
       user.facebookLink = newFb;
-      if (newPass) user.password = newPass;
+      if (newPass) {
+        user.password = newPass;
+      }
 
+      // Update author details on all existing posts & comments by this user
       state.posts.forEach(p => {
         if (p.authorId === user.id || p.authorStudentId === user.studentId) {
           p.authorName = user.fullName;
@@ -1473,6 +1842,7 @@
         }
       });
 
+      // Update current session user if editing own profile
       if (state.currentUser.id === user.id) {
         state.currentUser = { ...user };
         saveCurrentUser(state.currentUser);
@@ -1482,43 +1852,50 @@
       savePosts(state.posts);
 
       closeProfileModal();
-      showToast('তথ্য সফলভাবে সংরক্ষিত হয়েছে!', 'success');
+      showToast('আপনার তথ্য সফলভাবে পরিবর্তন ও সংরক্ষণ করা হয়েছে!', 'success');
       renderApp();
 
+      // Sync updated user to Cloud Firestore
       if (window.firebaseDb && window.fb) {
         window.fb.setDoc(window.fb.doc(window.firebaseDb, 'users', user.id), user, { merge: true }).catch(console.warn);
       }
     }
 
-    // ==========================================
-    // ৭. ইভেন্ট লিসেনার ও ডিভাইস মিডিয়া আপলোড
-    // ==========================================
+    // --- 7. Event Handlers ---
+
     function setAuthTab(tab) {
       state.authMode = tab;
       state.authError = '';
       renderApp();
     }
 
-    function handleLoginSubmit(e, isAdmin) {
-      e.preventDefault();
-      const id = document.getElementById('login-id').value.trim().toUpperCase();
-      const mobile = document.getElementById('login-mobile').value.trim();
-      const pass = document.getElementById('login-password').value.trim();
+    function handleUserLoginSubmit(e) {
+      if (e) e.preventDefault();
+      const idInput = document.getElementById('login-user-id');
+      const mobileInput = document.getElementById('login-user-mobile');
+      const passInput = document.getElementById('login-user-password');
 
-      const user = state.users.find(u => 
-        u.studentId.toUpperCase() === id &&
-        u.mobileNumber === mobile &&
-        u.password === pass
-      );
+      const id = idInput ? idInput.value.trim() : '';
+      const mobile = mobileInput ? mobileInput.value.trim() : '';
+      const pass = passInput ? passInput.value.trim() : '';
 
-      if (!user) {
-        state.authError = 'আইডি, মোবাইল নম্বর অথবা পাসওয়ার্ড সঠিক নয়!';
+      if (!id || !pass) {
+        state.authError = 'স্টুডেন্ট আইডি ও পাসওয়ার্ড পূরণ করুন!';
         renderApp();
         return;
       }
 
-      if (isAdmin && user.role !== 'admin') {
-        state.authError = 'এই আইডি অ্যাডমিন সুবিধাপ্রাপ্ত নয়!';
+      const cleanId = id.toUpperCase();
+
+      const user = state.users.find(u => {
+        const idMatches = u.studentId.toUpperCase() === cleanId || u.mobileNumber === id;
+        const mobileMatches = !mobile || u.mobileNumber === mobile;
+        const passMatches = u.password === pass;
+        return idMatches && mobileMatches && passMatches;
+      });
+
+      if (!user) {
+        state.authError = 'স্টুডেন্ট আইডি, মোবাইল অথবা পাসওয়ার্ড সঠিক নয়!';
         renderApp();
         return;
       }
@@ -1526,11 +1903,138 @@
       state.currentUser = user;
       saveCurrentUser(user);
       state.activeView = user.role === 'admin' ? 'admin' : 'feed';
-      showToast(`${user.fullName}, আপনাকে স্বাগতম!`, 'success');
+      showToast(user.role === 'admin' ? 'এডমিন হিসেবে স্বাগতম!' : `${user.fullName}, শিক্ষার্থী পোর্টালে স্বাগতম!`, 'success');
       renderApp();
+      requestNotificationPermission();
     }
 
-    // প্রোফাইল ছবির জন্য ডিভাইস হ্যান্ডলার
+    function handleAdminLoginSubmit(e) {
+      if (e) e.preventDefault();
+      const idInput = document.getElementById('login-admin-id');
+      const passInput = document.getElementById('login-admin-password');
+
+      const idOrEmail = idInput ? idInput.value.trim() : '';
+      const pass = passInput ? passInput.value.trim() : '';
+
+      if (!idOrEmail || !pass) {
+        state.authError = 'এডমিন আইডি/ইমেইল ও পাসওয়ার্ড প্রদান করুন!';
+        renderApp();
+        return;
+      }
+
+      const cleanInput = idOrEmail.toLowerCase();
+      const cleanId = idOrEmail.toUpperCase();
+
+      const admin = state.users.find(u => {
+        const isAdmin = u.role === 'admin' || u.studentId === 'ADMIN001' || u.email === 'kmi96724@gmail.com';
+        const identifierMatches = (
+          u.studentId.toUpperCase() === cleanId ||
+          (u.email && u.email.toLowerCase() === cleanInput) ||
+          u.mobileNumber === idOrEmail
+        );
+        const passMatches = u.password === pass;
+        return isAdmin && identifierMatches && passMatches;
+      });
+
+      if (!admin) {
+        state.authError = 'এডমিন আইডি/ইমেইল অথবা পাসওয়ার্ড সঠিক নয়!';
+        renderApp();
+        return;
+      }
+
+      state.currentUser = admin;
+      saveCurrentUser(admin);
+      state.activeView = 'admin';
+      showToast('প্রধান এডমিন হিসেবে স্বাগতম!', 'success');
+      renderApp();
+      requestNotificationPermission();
+    }
+
+    // Fallback legacy handler
+    function handleLoginSubmit(e) {
+      if (state.authMode === 'admin_login') {
+        handleAdminLoginSubmit(e);
+      } else {
+        handleUserLoginSubmit(e);
+      }
+    }
+
+    function updateAvatarPreview(url) {
+      const preview = document.getElementById('reg-avatar-preview');
+      if (preview) {
+        preview.src = url.trim() || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80';
+      }
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const password = document.getElementById('reg-pass').value;
+      const confirmPassword = document.getElementById('reg-confirm-pass').value;
+
+      if (password !== confirmPassword) {
+        state.authError = 'দুইটি পাসওয়ার্ড মিলছে না!';
+        renderApp();
+        return;
+      }
+
+      const newId = document.getElementById('reg-student-id').value.trim().toUpperCase();
+      if (state.users.some(u => u.studentId.toUpperCase() === newId)) {
+        state.authError = 'এই স্টুডেন্ট আইডি দিয়ে ইতিমধ্যে অ্যাকাউন্ট তৈরি করা আছে!';
+        renderApp();
+        return;
+      }
+
+      const picInput = document.getElementById('reg-profile-picture');
+      const profilePicUrl = (picInput && picInput.value.trim()) 
+        ? picInput.value.trim() 
+        : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80';
+
+      const newUser = {
+        id: 'user_' + Date.now(),
+        studentId: newId,
+        fullName: document.getElementById('reg-name').value.trim(),
+        fatherName: document.getElementById('reg-father').value.trim(),
+        motherName: document.getElementById('reg-mother').value.trim(),
+        studentClass: document.getElementById('reg-class').value,
+        roll: document.getElementById('reg-roll').value.trim(),
+        section: document.getElementById('reg-section').value.trim(),
+        shift: document.getElementById('reg-shift').value,
+        birthRegistrationNumber: document.getElementById('reg-birth-reg').value.trim(),
+        dateOfBirth: document.getElementById('reg-dob').value,
+        bloodGroup: document.getElementById('reg-blood').value,
+        religion: document.getElementById('reg-religion').value,
+        presentAddress: document.getElementById('reg-present').value.trim(),
+        permanentAddress: document.getElementById('reg-permanent').value.trim(),
+        mobileNumber: document.getElementById('reg-mobile').value.trim(),
+        email: document.getElementById('reg-email').value.trim(),
+        facebookLink: document.getElementById('reg-fb').value.trim(),
+        password: password,
+        profilePicture: profilePicUrl,
+        isVerified: false,
+        role: 'student',
+        createdAt: new Date().toISOString()
+      };
+
+      state.users.push(newUser);
+      saveUsers(state.users);
+      state.currentUser = newUser;
+      saveCurrentUser(newUser);
+      state.activeView = 'feed';
+      showToast('রেজিস্ট্রেশন সফল হয়েছে!', 'success');
+      renderApp();
+
+      // Save user to Cloud Firestore in Realtime
+      if (window.firebaseDb && window.fb) {
+        try {
+          await window.fb.setDoc(window.fb.doc(window.firebaseDb, 'users', newUser.id), newUser);
+          showToast('একাউন্ট ক্লাউডে সফলভাবে যুক্ত হয়েছে!', 'success');
+        } catch (err) {
+          console.warn('Firebase registration sync note:', err);
+        }
+      }
+    }
+
+    // --- Profile Avatar Device Upload Handler ---
     async function handleProfileAvatarFileSelect(e, mode) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
@@ -1540,7 +2044,7 @@
         return;
       }
 
-      showToast('ছবি প্রসেস করা হচ্ছে...', 'info');
+      showToast('প্রোফাইল ছবি প্রসেস করা হচ্ছে...', 'info');
       try {
         const compressedDataUrl = await compressImage(file, 400, 400, 0.85);
         if (mode === 'reg') {
@@ -1556,11 +2060,12 @@
         }
         showToast('ডিভাইস থেকে প্রোফাইল ছবি যুক্ত হয়েছে!', 'success');
       } catch (err) {
+        console.error('Avatar error:', err);
         showToast('ছবি লোড করা যায়নি', 'error');
       }
     }
 
-    // পোস্টের জন্য ডিভাইস ছবি ও ভিডিও হ্যান্ডলার
+    // --- Post Media Upload from Device (Image & Video) ---
     async function handleMediaFileSelect(e) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
@@ -1578,19 +2083,29 @@
       try {
         if (isImage) {
           const dataUrl = await compressImage(file, 1200, 1200, 0.82);
-          state.selectedMedia = { type: 'image', url: dataUrl, name: file.name };
+          state.selectedMedia = {
+            type: 'image',
+            url: dataUrl,
+            name: file.name
+          };
         } else {
+          // ভিডিও সাইজ চেক (২০MB লিমিট)
           if (file.size > 20 * 1024 * 1024) {
             showToast('ভিডিও ফাইলের সাইজ ২০MB এর চেয়ে কম হতে হবে!', 'error');
             return;
           }
           const dataUrl = await readFileAsDataURL(file);
-          state.selectedMedia = { type: 'video', url: dataUrl, name: file.name };
+          state.selectedMedia = {
+            type: 'video',
+            url: dataUrl,
+            name: file.name
+          };
         }
 
         showToast(`${isImage ? 'ছবি' : 'ভিডিও'} সফলভাবে নির্বাচন করা হয়েছে!`, 'success');
         updateMediaPreviewUI();
       } catch (err) {
+        console.error('File load error:', err);
         showToast('ফাইল লোড করতে সমস্যা হয়েছে', 'error');
       }
     }
@@ -1660,73 +2175,6 @@
       }
     }
 
-    async function handleRegisterSubmit(e) {
-      e.preventDefault();
-      const password = document.getElementById('reg-pass').value;
-      const confirmPassword = document.getElementById('reg-confirm-pass').value;
-
-      if (password !== confirmPassword) {
-        state.authError = 'দুইটি পাসওয়ার্ড মিলছে না!';
-        renderApp();
-        return;
-      }
-
-      const newId = document.getElementById('reg-student-id').value.trim().toUpperCase();
-      if (state.users.some(u => u.studentId.toUpperCase() === newId)) {
-        state.authError = 'এই স্টুডেন্ট আইডি দিয়ে ইতিমধ্যে অ্যাকাউন্ট তৈরি করা আছে!';
-        renderApp();
-        return;
-      }
-
-      const picInput = document.getElementById('reg-profile-picture');
-      const profilePicUrl = (picInput && picInput.value.trim()) 
-        ? picInput.value.trim() 
-        : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400';
-
-      const newUser = {
-        id: 'user_' + Date.now(),
-        studentId: newId,
-        fullName: document.getElementById('reg-name').value.trim(),
-        fatherName: document.getElementById('reg-father').value.trim(),
-        motherName: document.getElementById('reg-mother').value.trim(),
-        studentClass: document.getElementById('reg-class').value,
-        roll: document.getElementById('reg-roll').value.trim(),
-        section: document.getElementById('reg-section').value.trim(),
-        shift: document.getElementById('reg-shift').value,
-        birthRegistrationNumber: document.getElementById('reg-birth-reg').value.trim(),
-        dateOfBirth: document.getElementById('reg-dob').value,
-        bloodGroup: document.getElementById('reg-blood').value,
-        religion: document.getElementById('reg-religion').value,
-        presentAddress: document.getElementById('reg-present').value.trim(),
-        permanentAddress: document.getElementById('reg-permanent').value.trim(),
-        mobileNumber: document.getElementById('reg-mobile').value.trim(),
-        email: document.getElementById('reg-email').value.trim(),
-        facebookLink: document.getElementById('reg-fb').value.trim(),
-        password: password,
-        profilePicture: profilePicUrl,
-        isVerified: false,
-        role: 'student',
-        createdAt: new Date().toISOString()
-      };
-
-      state.users.push(newUser);
-      saveUsers(state.users);
-      state.currentUser = newUser;
-      saveCurrentUser(newUser);
-      state.activeView = 'feed';
-      showToast('রেজিস্ট্রেশন সফল হয়েছে!', 'success');
-      renderApp();
-
-      if (window.firebaseDb && window.fb) {
-        try {
-          await window.fb.setDoc(window.fb.doc(window.firebaseDb, 'users', newUser.id), newUser);
-          showToast('একাউন্ট ক্লাউডে সফলভাবে যুক্ত হয়েছে!', 'success');
-        } catch (err) {
-          console.warn('Firebase registration sync note:', err);
-        }
-      }
-    }
-
     function handleLogout() {
       state.currentUser = null;
       saveCurrentUser(null);
@@ -1740,7 +2188,6 @@
       renderApp();
     }
 
-    // পোস্ট তৈরি (ডিভাইস ছবি/ভিডিও সহ)
     async function handleCreatePost(e) {
       e.preventDefault();
       const content = document.getElementById('new-post-content').value.trim();
@@ -1772,14 +2219,16 @@
       const fileInput = document.getElementById('post-media-file');
       if (fileInput) fileInput.value = '';
 
+      // Save directly to Firebase Firestore for all mobiles & devices
       if (window.firebaseDb && window.fb) {
         try {
           await window.fb.addDoc(window.fb.collection(window.firebaseDb, 'posts'), newPost);
           showToast('নতুন পোস্ট রিয়েল-টাইমে ক্লাউডে শেয়ার হয়েছে!', 'success');
         } catch (err) {
+          console.error('Firestore addDoc error:', err);
           state.posts.unshift({ id: 'post_' + Date.now(), ...newPost });
           savePosts(state.posts);
-          showToast('পোস্ট হয়েছে (লোকাল মেমোরি)।', 'info');
+          showToast('পোস্ট হয়েছে (লোকাল মেমোরি)। ফায়ারবেস রুলস চেক করুন!', 'error');
           renderApp();
         }
       } else {
@@ -1800,6 +2249,7 @@
           await window.fb.deleteDoc(window.fb.doc(window.firebaseDb, 'posts', postId));
           showToast('পোস্ট ক্লাউড থেকে মুছে ফেলা হয়েছে', 'info');
         } catch (err) {
+          console.warn('Delete post error:', err);
           savePosts(state.posts);
         }
       } else {
@@ -1823,8 +2273,11 @@
 
       if (window.firebaseDb && window.fb && postId) {
         try {
-          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'posts', postId), { likes: updatedLikes });
+          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'posts', postId), {
+            likes: updatedLikes
+          });
         } catch (err) {
+          console.warn('Like sync error:', err);
           savePosts(state.posts);
         }
       } else {
@@ -1832,7 +2285,7 @@
       }
     }
 
-    // কমেন্ট লাইক সিস্টেম
+    // --- কমেন্ট লাইক সিস্টেম ---
     async function handleToggleCommentLike(postId, commentId) {
       const u = state.currentUser;
       const post = state.posts.find(p => p.id === postId);
@@ -1854,14 +2307,16 @@
 
       if (window.firebaseDb && window.fb && postId) {
         try {
-          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'posts', postId), { comments: post.comments });
+          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'posts', postId), {
+            comments: post.comments
+          });
         } catch (err) {
           console.warn('Comment like sync error:', err);
         }
       }
     }
 
-    // কমেন্ট রিপ্লাই বক্স টগল
+    // --- কমেন্ট রিপ্লাই বক্স টগল ---
     function toggleReplyInput(commentId) {
       const box = document.getElementById('reply-box-' + commentId);
       if (!box) return;
@@ -1873,7 +2328,7 @@
       }
     }
 
-    // কমেন্টে রিপ্লাই যোগ করা
+    // --- কমেন্ট এ রিপ্লাই যোগ করা ---
     async function handleAddReply(e, postId, commentId) {
       e.preventDefault();
       const input = document.getElementById('reply-input-' + commentId);
@@ -1900,13 +2355,22 @@
       };
 
       comment.replies.push(newReply);
+      state.expandedComments[postId] = true; // রিপ্লাই দিলে পুরো কমেন্ট থ্রেড দৃশ্যমান থাকা
       if (input) input.value = '';
       savePosts(state.posts);
       renderApp();
 
+      // ডিভাইসে তাৎক্ষণিক নোটিফিকেশন অ্যালার্ট
+      sendDeviceNotification('মন্তব্যে রিপ্লাই যোগ হয়েছে!', {
+        body: `${state.currentUser.fullName}: "${text.length > 50 ? text.substring(0, 50) + '...' : text}"`,
+        icon: state.currentUser.profilePicture
+      });
+
       if (window.firebaseDb && window.fb && postId) {
         try {
-          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'posts', postId), { comments: post.comments });
+          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'posts', postId), {
+            comments: post.comments
+          });
           showToast('রিপ্লাই সফলভাবে যুক্ত হয়েছে', 'success');
         } catch (err) {
           console.warn('Reply sync error:', err);
@@ -1916,7 +2380,7 @@
       }
     }
 
-    // রিপ্লাইতে লাইক দেওয়া
+    // --- রিপ্লাইতে লাইক দেওয়া ---
     async function handleToggleReplyLike(postId, commentId, replyId) {
       const u = state.currentUser;
       const post = state.posts.find(p => p.id === postId);
@@ -1941,14 +2405,16 @@
 
       if (window.firebaseDb && window.fb && postId) {
         try {
-          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'posts', postId), { comments: post.comments });
+          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'posts', postId), {
+            comments: post.comments
+          });
         } catch (err) {
           console.warn('Reply like sync error:', err);
         }
       }
     }
 
-    // মূল কমেন্ট যোগ করা
+    // --- মূল কমেন্ট যোগ করা ---
     async function handleAddComment(e, postId) {
       e.preventDefault();
       const input = document.getElementById('comment-input-' + postId);
@@ -1972,13 +2438,22 @@
 
       const updatedComments = [...(post.comments || []), newComment];
       post.comments = updatedComments;
+      state.expandedComments[postId] = true; // নতুন কমেন্ট করার পর সব কমেন্ট খুলে দেওয়া যাতে ইউজার দেখতে পান
       if (input) input.value = '';
       savePosts(state.posts);
       renderApp();
 
+      // ডিভাইসে তাৎক্ষণিক নোটিফিকেশন ভাইব্রেশন, সাউন্ড ও ব্যানার পাঠানো
+      sendDeviceNotification('নতুন মন্তব্য সফলভাবে যোগ হয়েছে!', {
+        body: `${state.currentUser.fullName}: "${text.length > 50 ? text.substring(0, 50) + '...' : text}"`,
+        icon: state.currentUser.profilePicture
+      });
+
       if (window.firebaseDb && window.fb && postId) {
         try {
-          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'posts', postId), { comments: updatedComments });
+          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'posts', postId), {
+            comments: updatedComments
+          });
           showToast('মন্তব্য রিয়েল-টাইমে যোগ হয়েছে', 'success');
         } catch (err) {
           console.warn('Comment sync error:', err);
@@ -1993,7 +2468,6 @@
       renderApp();
     }
 
-    // এডমিন ভেরিফিকেশন পরিবর্তন
     async function handleToggleVerify(userId) {
       if (!state.currentUser || state.currentUser.role !== 'admin') {
         showToast('অনুমতি নেই! শুধুমাত্র এডমিন কোনো শিক্ষার্থীকে ভেরিফাই করতে পারেন।', 'error');
@@ -2008,7 +2482,9 @@
 
       if (window.firebaseDb && window.fb) {
         try {
-          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'users', user.id), { isVerified: user.isVerified });
+          await window.fb.updateDoc(window.fb.doc(window.firebaseDb, 'users', user.id), {
+            isVerified: user.isVerified
+          });
         } catch (err) {
           console.warn('Verify sync error:', err);
         }
@@ -2033,9 +2509,7 @@
       }
     }
 
-    // ==========================================
-    // ৮. অ্যাপ্লিকেশন চালু
-    // ==========================================
+    // --- 8. Initialize App ---
     renderApp();
     if (window.firebaseDb) {
       initFirebaseSync();
