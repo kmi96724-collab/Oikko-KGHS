@@ -1743,7 +1743,7 @@
               <!-- Realtime Cloud Status Indicator -->
               <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/20 text-[11px] font-medium border border-white/10" title="ফায়ারবেস ক্লাউড স্ট্যাটাস">
                 <span class="w-2 h-2 rounded-full ${state.cloudStatus === 'connected' ? 'bg-emerald-400 animate-pulse' : state.cloudStatus === 'connecting' ? 'bg-amber-400' : 'bg-rose-400'}"></span>
-                <span class="hidden sm:inline">${state.cloudStatus === 'connected' ? 'ক্লাউড অনলাইন' : state.cloudStatus === 'connecting' ? 'সংযুক্ত হচ্ছে...' : 'অফলাইন'}</span>
+                <span class="hidden sm:inline">${state.cloudStatus === 'connected' ? 'অনলাইন' : state.cloudStatus === 'connecting' ? 'সংযুক্ত হচ্ছে...' : 'অফলাইন'}</span>
               </div>
 
               <!-- Dark Mode Toggle Button -->
