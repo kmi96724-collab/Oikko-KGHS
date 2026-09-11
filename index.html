@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oikko KGHS - ক্যাম্পাস সোশ্যাল নেটওয়ার্ক</title>
+  <title>Oikko - ক্যাম্পাস সোশ্যাল নেটওয়ার্ক</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
@@ -1495,7 +1495,7 @@
         <form onsubmit="handleUserLoginSubmit(event)" class="space-y-4">
           <div class="text-center mb-4">
             <h2 class="text-lg font-bold text-[#42422F]">
-              শিক্ষার্থী ইউজার লগইন
+              ইউজার লগইন
             </h2>
             <p class="text-xs text-[#8A8A6A] mt-0.5">
               প্রবেশ করতে আপনার স্টুডেন্ট আইডি ও পাসওয়ার্ড লিখুন
@@ -1539,15 +1539,8 @@
               <span>এডমিন লগইন</span>
             </button>
             <button type="button" onclick="setAuthTab('register')" class="hover:text-[#5A5A40] font-bold">
-              নতুন শিক্ষার্থী রেজিস্ট্রেশন
+              নতুন ইউজার রেজিস্ট্রেশন
             </button>
-          </div>
-
-          <div class="pt-2 border-t border-[#F0F0E0] text-center">
-            <a href="/index_standalone.html" download="index.html" onclick="downloadSourceCode(); return false;" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F5F5F0] hover:bg-[#EAEAE0] text-[#5A5A40] text-[11px] font-semibold border border-[#E2E2D5] transition-colors" title="সম্পূর্ণ কোড ফাইল ডাউনলোড করুন (index.html)">
-              <i data-lucide="download" class="w-3.5 h-3.5 text-[#5A5A40]"></i>
-              <span>সম্পূর্ণ কোড ডাউনলোড করুন (index.html)</span>
-            </a>
           </div>
         </form>
       `;
@@ -1561,7 +1554,7 @@
               <i data-lucide="shield-check" class="w-6 h-6 text-red-600"></i>
             </div>
             <h2 class="text-lg font-bold text-red-800">
-              এডমিন লগইন পোর্টাল
+              এডমিন লগইন
             </h2>
             <p class="text-xs text-[#8A8A6A] mt-0.5">
               শুধুমাত্র অনুমোদিত প্রধান এডমিনের জন্য সংরক্ষিত
@@ -1579,6 +1572,14 @@
           </div>
 
           <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">এডমিন মোবাইল</label>
+            <div class="relative">
+              <i data-lucide="lock" class="w-4 h-4 text-red-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input id="login-admin-mobile" type="number" required placeholder="01XXXXXXXXX" value="" class="w-full pl-10 pr-3 py-2.5 bg-[#F5F5F0] border border-red-200 rounded-xl text-xs sm:text-sm text-[#42422F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" />
+            </div>
+          </div>
+          
+          <div>
             <label class="block text-xs font-bold text-[#42422F] mb-1">এডমিন পাসওয়ার্ড</label>
             <div class="relative">
               <i data-lucide="lock" class="w-4 h-4 text-red-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
@@ -1594,10 +1595,10 @@
           <div class="pt-2 flex items-center justify-between text-xs text-[#8A8A6A]">
             <button type="button" onclick="setAuthTab('user_login')" class="hover:text-[#5A5A40] font-semibold flex items-center gap-1">
               <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-              <span>শিক্ষার্থী ইউজার লগইন</span>
+              <span>ইউজার লগইন</span>
             </button>
             <button type="button" onclick="setAuthTab('register')" class="hover:text-[#5A5A40] font-bold">
-              নতুন শিক্ষার্থী একাউন্ট
+              নতুন ইউজার একাউন্ট
             </button>
           </div>
         </form>
@@ -1608,7 +1609,7 @@
       return `
         <form onsubmit="handleRegisterSubmit(event)" class="space-y-4">
           <div class="text-center mb-2">
-            <h2 class="text-lg font-bold text-[#42422F]">নতুন শিক্ষার্থী রেজিস্ট্রেশন ফরম</h2>
+            <h2 class="text-lg font-bold text-[#42422F]">রেজিস্ট্রেশন ফরম</h2>
             <p class="text-xs text-[#8A8A6A]">নিচের সকল তথ্য সঠিকভাবে পূরণ করুন</p>
           </div>
 
@@ -1796,22 +1797,16 @@
 
             <!-- Top Right Utility Controls -->
             <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+              <!-- Realtime Cloud Status Indicator -->
+              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/20 text-[11px] font-medium border border-white/10" title="ফায়ারবেস ক্লাউড স্ট্যাটাস">
+                <span class="w-2 h-2 rounded-full ${state.cloudStatus === 'connected' ? 'bg-emerald-400 animate-pulse' : state.cloudStatus === 'connecting' ? 'bg-amber-400' : 'bg-rose-400'}"></span>
+                <span class="hidden sm:inline">${state.cloudStatus === 'connected' ? 'অনলাইন' : state.cloudStatus === 'connecting' ? 'সংযুক্ত হচ্ছে...' : 'অফলাইন'}</span>
+              </div>
+              
               <!-- Dark Mode Toggle Button -->
               <button onclick="toggleDarkMode()" class="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-colors cursor-pointer" title="${state.isDarkMode ? 'লাইট মোডে পরিবর্তন করুন' : 'ডার্ক মোড সক্রিয় করুন'}">
                 <i data-lucide="${state.isDarkMode ? 'sun' : 'moon'}" class="w-4 h-4"></i>
               </button>
-
-              <!-- Realtime Cloud Status Indicator -->
-              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/20 text-[11px] font-medium border border-white/10" title="ফায়ারবেস ক্লাউড স্ট্যাটাস">
-                <span class="w-2 h-2 rounded-full ${state.cloudStatus === 'connected' ? 'bg-emerald-400 animate-pulse' : state.cloudStatus === 'connecting' ? 'bg-amber-400' : 'bg-rose-400'}"></span>
-                <span class="hidden sm:inline">${state.cloudStatus === 'connected' ? 'ক্লাউড অনলাইন' : state.cloudStatus === 'connecting' ? 'সংযুক্ত হচ্ছে...' : 'অফলাইন'}</span>
-              </div>
-
-              <!-- Download Source Code Button -->
-              <a href="/index_standalone.html" download="index.html" onclick="downloadSourceCode(); return false;" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors flex items-center gap-1.5 text-xs font-semibold cursor-pointer" title="সম্পূর্ণ কোড ফাইল ডাউনলোড করুন (index.html)">
-                <i data-lucide="download" class="w-4 h-4"></i>
-                <span class="hidden md:inline">ডাউনলোড (index.html)</span>
-              </a>
 
               <!-- Notification Bell Button -->
               <button onclick="requestNotificationPermission()" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer" title="ডিভাইস নোটিফিকেশন সক্রিয় করুন">
