@@ -2124,22 +2124,16 @@
 
             <!-- Top Right Utility Controls -->
             <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+              <!-- Realtime Cloud Status Indicator -->
+              <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/10 text-[11px] font-medium border border-white/10" title="ফায়ারবেস ক্লাউড স্ট্যাটাস">
+                <span class="w-2 h-2 rounded-full ${state.cloudStatus === 'connected' ? 'bg-emerald-400 animate-pulse' : state.cloudStatus === 'connecting' ? 'bg-amber-400' : 'bg-rose-400'}"></span>
+                <span class="hidden sm:inline">${state.cloudStatus === 'connected' ? 'অনলাইন' : state.cloudStatus === 'connecting' ? 'সংযুক্ত হচ্ছে...' : 'অফলাইন'}</span>
+              </div>
+              
               <!-- Dark Mode Toggle Button -->
               <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer" title="${state.isDarkMode ? 'লাইট মোডে পরিবর্তন করুন' : 'ডার্ক মোড সক্রিয় করুন'}">
                 <i data-lucide="${state.isDarkMode ? 'sun' : 'moon'}" class="w-4 h-4"></i>
               </button>
-
-              <!-- Realtime Cloud Status Indicator -->
-              <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/10 text-[11px] font-medium border border-white/10" title="ফায়ারবেস ক্লাউড স্ট্যাটাস">
-                <span class="w-2 h-2 rounded-full ${state.cloudStatus === 'connected' ? 'bg-emerald-400 animate-pulse' : state.cloudStatus === 'connecting' ? 'bg-amber-400' : 'bg-rose-400'}"></span>
-                <span class="hidden sm:inline">${state.cloudStatus === 'connected' ? 'ক্লাউড অনলাইন' : state.cloudStatus === 'connecting' ? 'সংযুক্ত হচ্ছে...' : 'অফলাইন'}</span>
-              </div>
-
-              <!-- Download Source Code Button -->
-              <a href="/index_standalone.html" download="index.html" onclick="downloadSourceCode(); return false;" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors flex items-center gap-1.5 text-xs font-semibold cursor-pointer" title="সম্পূর্ণ কোড ফাইল ডাউনলোড করুন (index.html)">
-                <i data-lucide="download" class="w-4 h-4"></i>
-                <span class="hidden md:inline">ডাউনলোড (index.html)</span>
-              </a>
 
               <!-- Notification Bell Button -->
               <button onclick="requestNotificationPermission()" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer" title="ডিভাইস নোটিফিকেশন সক্রিয় করুন">
@@ -2528,7 +2522,7 @@
                   <div class="flex gap-3">
                     <img src="${u.profilePicture}" class="w-10 h-10 rounded-full object-cover border border-[#E2E2D5] shrink-0" />
                     <div class="flex-1">
-                      <textarea id="new-post-content" rows="3" oninput="handleMentionInputEvent(this)" onkeydown="handleMentionKeyDown(event, this)" placeholder="ক্যাম্পাসের স্মৃতি, পড়াশোনার প্রশ্ন বা যেকোনো তথ্য লিখুন... (@everyone বা @ দিয়ে কাউকে মেনশন করতে পারেন)" class="w-full p-3 rounded-xl bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] placeholder-[#8A8A6A] text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-[#5A5A40] focus:bg-white resize-none"></textarea>
+                      <textarea id="new-post-content" rows="3" oninput="handleMentionInputEvent(this)" onkeydown="handleMentionKeyDown(event, this)" placeholder="আপনার মনে কি চলছে তা শেয়ার করুন........." class="w-full p-3 rounded-xl bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] placeholder-[#8A8A6A] text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-[#5A5A40] focus:bg-white resize-none"></textarea>
                     </div>
                   </div>
 
@@ -2544,7 +2538,7 @@
                     <div class="flex items-center gap-2">
                       <button type="button" onclick="document.getElementById('post-media-file').click()" class="flex items-center gap-1.5 text-xs text-[#5A5A40] hover:text-[#42422F] font-bold px-3 py-1.5 rounded-xl bg-[#F5F5F0] hover:bg-[#EAEAE0] transition-colors border border-[#E2E2D5] cursor-pointer">
                         <i data-lucide="paperclip" class="w-4 h-4 text-[#5A5A40]"></i>
-                        <span>ছবি বা ভিডিও আপলোড (ডিভাইস)</span>
+                        <span>ছবি বা ভিডিও আপলোড</span>
                       </button>
                       <button type="button" onclick="triggerMentionPopup('new-post-content')" class="flex items-center gap-1.5 text-xs text-[#5A5A40] hover:text-[#42422F] font-bold px-3 py-1.5 rounded-xl bg-[#F5F5F0] hover:bg-[#EAEAE0] transition-colors border border-[#E2E2D5] cursor-pointer" title="@everyone বা কাউকে মেনশন করুন">
                         <i data-lucide="at-sign" class="w-4 h-4 text-[#5A5A40]"></i>
@@ -2564,7 +2558,7 @@
               <div class="flex items-center justify-between px-1">
                 <h3 class="text-xs sm:text-sm font-bold text-[#42422F] flex items-center gap-2">
                   <i data-lucide="book-open" class="w-4 h-4 text-[#5A5A40]"></i>
-                  <span>সকল শিক্ষার্থীর শেয়ারকৃত পোস্ট (${state.posts.length})</span>
+                  <span>শেয়ারকৃত পোস্ট</span>
                 </h3>
                 <span class="text-[11px] text-[#8A8A6A]">সর্বশেষ পোস্ট আগে</span>
               </div>
@@ -3061,7 +3055,7 @@
                             type="button"
                             onclick="openEventParticipantsModal('${ev.id}')"
                             class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#5A5A40] hover:bg-[#4A4A33] text-white transition-colors shadow-2xs cursor-pointer inline-flex items-center gap-1.5"
-                            title="অংশগ্রহণকারী শিক্ষার্থীদের তালিকা ও সম্পূর্ণ প্রোফাইল দেখুন"
+                            title="অংশগ্রহণকারীদের তালিকা ও সম্পূর্ণ প্রোফাইল দেখুন"
                           >
                             <i data-lucide="users" class="w-3.5 h-3.5"></i>
                             <span>অংশগ্রহণকারীদের প্রোফাইল দেখুন</span>
@@ -3081,7 +3075,7 @@
               <div>
                 <h3 class="font-bold text-base text-[#42422F] flex items-center gap-2">
                   <i data-lucide="image" class="w-5 h-5 text-amber-700"></i>
-                  <span>পূর্ববর্তী ইভেন্টসমূহের স্মৃতির অ্যালবাম পরিচালনা (শুধুমাত্র এডমিন)</span>
+                  <span>পূর্ববর্তী ইভেন্টসমূহের অ্যালবাম পরিচালনা (শুধুমাত্র এডমিন)</span>
                 </h3>
                 <p class="text-xs text-[#8A8A6A]">আগের হয়ে যাওয়া ইভেন্টের ছবি যুক্ত বা মুছে ফেলুন, যা ইভেন্ট সেকশনে স্বয়ংক্রিয়ভাবে ডান থেকে বামে স্লাইড হবে</p>
               </div>
