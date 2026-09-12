@@ -5615,5 +5615,174 @@
       initFirebaseSync();
     }
   </script>
+
+  <!-- Oikko UI/UX Stability & Enhancement Patch -->
+  <style id="oikko-enhancement-patch">
+    :root{
+      --oikko-glow: rgba(47,111,87,.18);
+      --oikko-surface: rgba(255,255,255,.72);
+      --oikko-shadow: 0 18px 55px rgba(18,35,28,.10);
+    }
+    body{
+      min-height:100vh;
+      background-attachment:fixed;
+      background-image:
+        radial-gradient(circle at 0% 0%, rgba(216,243,228,.92), transparent 32rem),
+        radial-gradient(circle at 100% 8%, rgba(244,196,90,.18), transparent 30rem),
+        radial-gradient(circle at 85% 100%, rgba(239,115,88,.10), transparent 28rem),
+        linear-gradient(135deg, rgba(255,255,255,.35), rgba(255,255,255,0)),
+        var(--bg-canvas);
+    }
+    body:before,body:after{
+      content:"";position:fixed;pointer-events:none;z-index:-1;border-radius:999px;
+      filter:blur(55px);opacity:.32;animation:oikkoFloat 14s ease-in-out infinite;
+    }
+    body:before{width:22rem;height:22rem;left:-9rem;bottom:10%;background:#8ed9b0}
+    body:after{width:18rem;height:18rem;right:-7rem;top:35%;background:#f4c45a;animation-delay:-7s}
+    html.dark body:before{opacity:.12} html.dark body:after{opacity:.08}
+    @keyframes oikkoFloat{50%{transform:translate(35px,-28px) scale(1.08)}}
+    #app{position:relative;isolation:isolate}
+    .app-topbar,.app-nav{backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%)}
+    .app-card,.auth-panel,.search-results-panel{box-shadow:var(--oikko-shadow)}
+    .app-card{background:var(--oikko-surface);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+    .app-card:hover{transform:translateY(-3px)}
+    button{touch-action:manipulation}
+    img{max-width:100%;image-rendering:auto}
+    input,textarea,select{transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+    input:focus,textarea:focus,select:focus{box-shadow:0 0 0 4px var(--oikko-glow)!important}
+    .oikko-status-pill{
+      position:fixed;right:14px;bottom:82px;z-index:60;display:flex;align-items:center;gap:7px;
+      padding:7px 11px;border-radius:999px;font-size:11px;font-weight:700;
+      background:rgba(18,35,28,.88);color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.18);
+      backdrop-filter:blur(16px);transition:opacity .25s ease,transform .25s ease;
+    }
+    .oikko-status-dot{width:7px;height:7px;border-radius:50%;background:#67e8a4;box-shadow:0 0 0 4px rgba(103,232,164,.13)}
+    .oikko-status-pill.offline .oikko-status-dot{background:#f4c45a;box-shadow:0 0 0 4px rgba(244,196,90,.13)}
+    .oikko-backtop{
+      position:fixed;right:16px;bottom:132px;z-index:55;width:42px;height:42px;border:0;border-radius:14px;
+      display:grid;place-items:center;background:var(--primary-olive);color:white;
+      box-shadow:0 12px 30px rgba(47,111,87,.30);opacity:0;transform:translateY(12px);
+      pointer-events:none;transition:.22s ease;
+    }
+    .oikko-backtop.show{opacity:1;transform:none;pointer-events:auto}
+    .oikko-skeleton{background:linear-gradient(90deg,rgba(128,128,128,.08),rgba(255,255,255,.34),rgba(128,128,128,.08));background-size:200% 100%;animation:oikkoShimmer 1.5s infinite}
+    @keyframes oikkoShimmer{to{background-position:-200% 0}}
+    @media (max-width:640px){
+      body{background-attachment:scroll}
+      body:before{width:15rem;height:15rem}
+      body:after{width:12rem;height:12rem}
+      .app-card:hover{transform:none}
+      .oikko-status-pill{bottom:72px;right:10px}
+      .oikko-backtop{right:12px;bottom:120px}
+    }
+    @media (prefers-reduced-motion:reduce){
+      *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+    }
+  </style>
+  <script>
+  (() => {
+    'use strict';
+
+    // Preserve scroll position across the app's full re-render cycles.
+    const originalRender = window.renderApp;
+    if (typeof originalRender === 'function' && !window.__oikkoRenderPatched) {
+      window.__oikkoRenderPatched = true;
+      window.renderApp = function(...args) {
+        const y = window.scrollY || 0;
+        const result = originalRender.apply(this,args);
+        requestAnimationFrame(() => {
+          if (y > 0 && Math.abs((window.scrollY||0)-y) > 20) window.scrollTo({top:y,behavior:'instant'});
+          enhanceIconsAndImages();
+          updateConnectionUI();
+        });
+        return result;
+      };
+    }
+
+    function enhanceIconsAndImages(){
+      document.querySelectorAll('img').forEach(img => {
+        if (img.dataset.oikkoFallbackBound) return;
+        img.dataset.oikkoFallbackBound='1';
+        img.addEventListener('error', () => {
+          img.onerror=null;
+          img.src='https://ui-avatars.com/api/?background=2f6f57&color=ffffff&name=Oikko&bold=true';
+        });
+      });
+      try{ if(window.lucide) window.lucide.createIcons(); }catch(e){}
+    }
+
+    function ensureUtilityUI(){
+      if(!document.getElementById('oikko-status-pill')){
+        const pill=document.createElement('div');
+        pill.id='oikko-status-pill'; pill.className='oikko-status-pill';
+        pill.innerHTML='<span class="oikko-status-dot"></span><span class="oikko-status-text">অনলাইন</span>';
+        document.body.appendChild(pill);
+      }
+      if(!document.getElementById('oikko-backtop')){
+        const btn=document.createElement('button');
+        btn.id='oikko-backtop'; btn.className='oikko-backtop'; btn.type='button';
+        btn.setAttribute('aria-label','উপরে যান');
+        btn.innerHTML='<i data-lucide="arrow-up" class="w-5 h-5"></i>';
+        btn.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+        document.body.appendChild(btn);
+      }
+      try{if(window.lucide) window.lucide.createIcons();}catch(e){}
+    }
+
+    function updateConnectionUI(){
+      ensureUtilityUI();
+      const online=navigator.onLine;
+      const pill=document.getElementById('oikko-status-pill');
+      if(!pill)return;
+      pill.classList.toggle('offline',!online);
+      const text=pill.querySelector('.oikko-status-text');
+      if(text) text.textContent=online?'অনলাইন':'অফলাইন মোড';
+    }
+
+    window.addEventListener('online',()=>{updateConnectionUI(); if(window.showToast)window.showToast('ইন্টারনেট সংযোগ ফিরে এসেছে','success');});
+    window.addEventListener('offline',()=>{updateConnectionUI(); if(window.showToast)window.showToast('আপনি অফলাইন মোডে আছেন','info');});
+    window.addEventListener('scroll',()=>{
+      const btn=document.getElementById('oikko-backtop');
+      if(btn) btn.classList.toggle('show',(window.scrollY||0)>500);
+    },{passive:true});
+
+    // Prevent accidental duplicate submit/clicks while asynchronous Firebase calls are in flight.
+    document.addEventListener('click', e => {
+      const btn=e.target.closest('button');
+      if(!btn || btn.dataset.oikkoBusy || btn.disabled) return;
+      const label=(btn.textContent||'').trim();
+      if(/লগইন|রেজিস্ট্রেশন|পোস্ট করুন|সংরক্ষণ|আপডেট/.test(label)){
+        btn.dataset.oikkoBusy='1';
+        setTimeout(()=>delete btn.dataset.oikkoBusy,700);
+      }
+    },true);
+
+    // Escape closes open modals/lightboxes when possible without disturbing normal forms.
+    document.addEventListener('keydown', e => {
+      if(e.key==='Escape'){
+        const lightbox=document.getElementById('lightbox-container');
+        const modal=document.getElementById('modal-container');
+        if(lightbox && lightbox.innerHTML.trim()){lightbox.innerHTML=''; if(window.state)window.state.selectedMedia=null;}
+        else if(modal && modal.innerHTML.trim()) modal.innerHTML='';
+      }
+      if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){
+        e.preventDefault();
+        const search=document.querySelector('.app-search input, input[placeholder*="খুঁজ"], input[type="search"]');
+        if(search){search.focus();search.select();}
+      }
+    });
+
+    window.addEventListener('error', ev => {
+      console.warn('Oikko UI recovery:',ev.message);
+      updateConnectionUI();
+    });
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      ensureUtilityUI(); updateConnectionUI(); enhanceIconsAndImages();
+      setTimeout(enhanceIconsAndImages,500);
+    });
+  })();
+  </script>
+
 </body>
 </html>
