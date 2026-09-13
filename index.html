@@ -375,8 +375,9 @@
   <!-- Firebase Initialization with Cloud Firestore -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-    import { getDatabase } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
+    import { getDatabase, ref, push, set, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+    import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-storage.js";
     import { 
       getFirestore, initializeFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, getDoc 
     } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
@@ -428,6 +429,17 @@
         console.warn("Realtime Database initialization failed:", rtdbErr);
       }
       window.firebaseRealtimeDb = realtimeDb;
+
+      // Firebase Storage for Messenger media uploads (resumable, up to 5 GB per file).
+      let storage = null;
+      try {
+        storage = getStorage(app);
+      } catch (storageErr) {
+        console.warn("Firebase Storage initialization failed:", storageErr);
+      }
+      window.firebaseStorage = storage;
+      window.firebaseStorageApi = { storageRef, uploadBytesResumable, getDownloadURL };
+      window.rtdb = { ref, push, set, onChildAdded, serverTimestamp };
       window.fb = {
         collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, getDoc
       };
@@ -936,6 +948,7 @@
       messages: loadMessages(),
       messengerSearch: '',
       messengerMobileChat: false,
+      messengerUnreadCounts: {},
       searchQuery: '',
       globalSearchQuery: '',
       selectedMedia: null,    // { type: 'image' | 'video', url: string, name: string }
@@ -1047,6 +1060,87 @@
       showToast(`🔔 ${title}: ${options.body || ''}`, 'info');
     }
     window.sendDeviceNotification = sendDeviceNotification;
+
+    // --- Oikko Messenger: Realtime Database notification sync ---
+    let messengerNotificationUnsubscribe = null;
+    let messengerNotificationUserId = '';
+    const handledMessengerNotificationIds = new Set();
+
+    function stopMessengerNotificationListener() {
+      if (typeof messengerNotificationUnsubscribe === 'function') {
+        try { messengerNotificationUnsubscribe(); } catch (e) {}
+      }
+      messengerNotificationUnsubscribe = null;
+      messengerNotificationUserId = '';
+    }
+
+    function startMessengerNotificationListener() {
+      const rtdb = window.firebaseRealtimeDb;
+      const r = window.rtdb;
+      const me = state.currentUser;
+      if (!rtdb || !r || !me?.id) return;
+      if (messengerNotificationUserId === me.id && messengerNotificationUnsubscribe) return;
+      stopMessengerNotificationListener();
+      messengerNotificationUserId = me.id;
+      try {
+        const notificationsRef = r.ref(rtdb, `oikko_notifications/${me.id}`);
+        messengerNotificationUnsubscribe = r.onChildAdded(notificationsRef, snap => {
+          const data = snap.val() || {};
+          const notificationId = snap.key;
+          if (!notificationId || handledMessengerNotificationIds.has(notificationId)) return;
+          handledMessengerNotificationIds.add(notificationId);
+          const createdAt = Number(data.createdAt || 0);
+          // Ignore old notifications when the listener first connects.
+          if (!createdAt || (Date.now() - createdAt) > 30000) return;
+          if (data.senderId === me.id) return;
+          const senderId = data.senderId || '';
+          state.messengerUnreadCounts[senderId] = (state.messengerUnreadCounts[senderId] || 0) + 1;
+          const isCurrentChat = state.activeView === 'messenger' && state.activeChatUserId === senderId;
+          if (!isCurrentChat) {
+            sendDeviceNotification(`💬 ${data.senderName || 'নতুন মেসেজ'}`, {
+              body: data.text || (data.imageUrl ? '📷 একটি ছবি পাঠিয়েছেন' : 'আপনাকে একটি নতুন মেসেজ পাঠিয়েছেন'),
+              icon: data.senderAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200',
+              tag: `oikko-chat-${senderId}`
+            });
+          }
+          if (state.activeView === 'messenger') renderMessengerOnly();
+        });
+      } catch (err) {
+        console.warn('Messenger RTDB notification listener error:', err);
+      }
+    }
+    window.startMessengerNotificationListener = startMessengerNotificationListener;
+    window.stopMessengerNotificationListener = stopMessengerNotificationListener;
+
+    async function createMessengerNotification(targetUserId, payload) {
+      const rtdb = window.firebaseRealtimeDb;
+      const r = window.rtdb;
+      const me = state.currentUser;
+      if (!rtdb || !r || !me || !targetUserId) return false;
+      try {
+        const notificationRef = r.push(r.ref(rtdb, `oikko_notifications/${targetUserId}`));
+        await r.set(notificationRef, {
+          type: 'message',
+          senderId: me.id,
+          senderName: me.fullName || 'Oikko user',
+          senderAvatar: me.profilePicture || '',
+          receiverId: targetUserId,
+          text: payload.text || '',
+          imageUrl: payload.imageUrl || '',
+          videoUrl: payload.videoUrl || '',
+          mediaType: payload.mediaType || '',
+          fileName: payload.fileName || '',
+          fileSize: Number(payload.fileSize || 0),
+          createdAt: Date.now(),
+          serverCreatedAt: r.serverTimestamp()
+        });
+        return true;
+      } catch (err) {
+        console.warn('Messenger RTDB notification write failed:', err);
+        return false;
+      }
+    }
+    window.createMessengerNotification = createMessengerNotification;
 
     // --- 3.1 Firebase Firestore Realtime Synchronizer ---
     let isFirebaseSyncInitialized = false;
@@ -1273,6 +1367,9 @@
     function startFirebaseSyncIfReady() {
       if (window.firebaseDb && window.fb && typeof window.initFirebaseSync === 'function') {
         window.initFirebaseSync();
+      }
+      if (window.firebaseRealtimeDb && window.rtdb && typeof window.startMessengerNotificationListener === 'function') {
+        window.startMessengerNotificationListener();
       }
     }
     window.addEventListener('firebaseReady', startFirebaseSyncIfReady);
@@ -1772,16 +1869,50 @@
     let messengerUnsubscribe = null;
     let messengerListenerChatId = '';
 
+    function renderMessengerPeerList(peers, targetId, searchValue) {
+      const search = String(searchValue || '').trim().toLowerCase();
+      const visiblePeers = peers.filter(u => {
+        if (!search) return true;
+        return [u.fullName, u.studentId, u.mobileNumber, u.studentClass, u.roll]
+          .filter(Boolean).some(v => String(v).toLowerCase().includes(search));
+      });
+
+      const avatar = (u, size='w-10 h-10') =>
+        `<img src="${escapeHtml(u.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100')}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="${size} rounded-full object-cover shrink-0" />`;
+
+      if (!visiblePeers.length) return `<div class="px-5 py-12 text-center messenger-secondary-text"><div class="w-12 h-12 mx-auto rounded-2xl messenger-empty-icon flex items-center justify-center mb-3"><i data-lucide="search-x" class="w-5 h-5"></i></div><p class="text-sm font-bold">কোনো user পাওয়া যায়নি</p><p class="text-xs mt-1">অন্য নাম বা Student ID দিয়ে চেষ্টা করুন।</p></div>`;
+
+      return visiblePeers.map(user => {
+        const last = getMessengerLastMessage(user.id);
+        const active = user.id === targetId;
+        const preview = last ? (last.imageUrl ? '📷 ছবি' : (last.text || 'মেসেজ')) : 'নতুন কথোপকথন শুরু করুন';
+        return `<button type="button" onclick="selectChatUser('${user.id}')" class="messenger-touch messenger-chat-item w-full text-left rounded-2xl px-2.5 py-2.5 flex items-center gap-3 transition-all ${active ? 'messenger-active' : ''}"><div class="relative shrink-0">${avatar(user,'messenger-list-avatar w-14 h-14')}<span class="absolute right-0 bottom-0 w-3.5 h-3.5 rounded-full bg-[#2F6F57] border-2 border-white dark:border-[#12231C]"></span></div><div class="min-w-0 flex-1 py-0.5"><div class="flex items-center gap-1"><span class="messenger-name font-bold text-[15px] truncate">${escapeHtml(user.fullName)}</span>${user.isVerified ? '<span class="text-[10px] text-[#2F6F57] shrink-0">●</span>' : ''}</div><div class="flex items-center gap-2"><p class="text-[12px] messenger-secondary-text truncate mt-0.5 flex-1">${escapeHtml(preview)}</p>${(state.messengerUnreadCounts[user.id] || 0) > 0 ? `<span class="messenger-unread-badge min-w-5 h-5 px-1.5 rounded-full bg-[#F27D61] text-white text-[10px] font-extrabold flex items-center justify-center shadow-sm">${Math.min(state.messengerUnreadCounts[user.id],99)}</span>` : ''}</div></div></button>`;
+      }).join('');
+    }
+    window.renderMessengerPeerList = renderMessengerPeerList;
+
     function handleMessengerSearch(value) {
-      state.messengerSearch = value || '';
-      renderMessengerOnly();
-      const active = document.activeElement;
-      if (active && active.id === 'messenger-search') {
-        const next = document.getElementById('messenger-search');
-        if (next) { next.focus(); next.setSelectionRange(next.value.length, next.value.length); }
+      // Do not replace the search input while typing; this preserves focus and caret.
+      state.messengerSearch = String(value ?? '');
+      const list = document.getElementById('messenger-peer-list');
+      if (list && state.currentUser) {
+        list.innerHTML = renderMessengerPeerList(getMessengerPeers(), state.activeChatUserId, state.messengerSearch);
+        if (window.lucide) lucide.createIcons();
       }
     }
     window.handleMessengerSearch = handleMessengerSearch;
+
+    function clearMessengerSearch() {
+      state.messengerSearch = '';
+      const input = document.getElementById('messenger-search');
+      if (input) { input.value = ''; input.focus(); }
+      const list = document.getElementById('messenger-peer-list');
+      if (list && state.currentUser) {
+        list.innerHTML = renderMessengerPeerList(getMessengerPeers(), state.activeChatUserId, '');
+        if (window.lucide) lucide.createIcons();
+      }
+    }
+    window.clearMessengerSearch = clearMessengerSearch;
 
     function getMessengerPeers() {
       const me = state.currentUser;
@@ -1876,8 +2007,21 @@
     function renderMessengerOnly() {
       const app = document.getElementById('app');
       if (!app || !state.currentUser || state.activeView !== 'messenger') return;
+      const active = document.activeElement;
+      const activeId = active && active.id ? active.id : '';
+      const selectionStart = active && typeof active.selectionStart === 'number' ? active.selectionStart : null;
+      const selectionEnd = active && typeof active.selectionEnd === 'number' ? active.selectionEnd : null;
       app.innerHTML = renderMessengerScreen();
       if (window.lucide) lucide.createIcons();
+      if (activeId) requestAnimationFrame(() => {
+        const restored = document.getElementById(activeId);
+        if (!restored) return;
+        restored.focus({preventScroll:true});
+        if (selectionStart !== null && typeof restored.setSelectionRange === 'function') {
+          const len = restored.value.length;
+          restored.setSelectionRange(Math.min(selectionStart,len), Math.min(selectionEnd ?? selectionStart,len));
+        }
+      });
     }
 
     function openMessenger() {
@@ -1926,6 +2070,7 @@
         return;
       }
       state.activeChatUserId = userId;
+      state.messengerUnreadCounts[userId] = 0;
       state.messengerMobileChat = true;
       subscribeToMessengerChat(userId);
       renderApp();
@@ -1976,10 +2121,15 @@
               senderName: state.currentUser.fullName || '',
               text: payload.text || '',
               imageUrl: payload.imageUrl || '',
+              videoUrl: payload.videoUrl || '',
+              mediaType: payload.mediaType || (payload.videoUrl ? 'video' : (payload.imageUrl ? 'image' : 'text')),
+              fileName: payload.fileName || '',
+              fileSize: Number(payload.fileSize || 0),
               time: timeStr,
               createdAt: now
             }
           );
+          await createMessengerNotification(targetUserId, payload);
           return true;
         } catch (err) {
           console.error('Firestore message send failed:', err);
@@ -1994,6 +2144,10 @@
         id: 'local_' + now,
         text: payload.text || '',
         imageUrl: payload.imageUrl || '',
+        videoUrl: payload.videoUrl || '',
+        mediaType: payload.mediaType || (payload.videoUrl ? 'video' : (payload.imageUrl ? 'image' : 'text')),
+        fileName: payload.fileName || '',
+        fileSize: Number(payload.fileSize || 0),
         sender: 'me',
         senderId: state.currentUser.id,
         receiverId: targetUserId,
@@ -2035,24 +2189,96 @@
     }
     window.insertEmoji = insertEmoji;
 
-    async function promptPhotoSend(targetUserId) {
+    function toggleMessengerEmojiPicker() {
+      const picker = document.getElementById('messenger-emoji-picker');
+      if (picker) picker.classList.toggle('hidden');
+    }
+    window.toggleMessengerEmojiPicker = toggleMessengerEmojiPicker;
+
+    const MAX_MESSENGER_MEDIA_BYTES = 5 * 1024 * 1024 * 1024;
+
+    function openMessengerMediaPicker(targetUserId) {
       if (!canMessageUser(targetUserId)) {
         showToast('শুধু Oikko Campus-এর users-কে মেসেজ করা যাবে', 'error');
         return;
       }
+      const picker = document.getElementById('messenger-media-picker');
+      if (picker) {
+        picker.value = '';
+        picker.click();
+      }
+    }
+    window.openMessengerMediaPicker = openMessengerMediaPicker;
 
-      const photoUrl = prompt('ছবির লিংক (URL) দিন:');
-      if (!photoUrl || !photoUrl.trim()) return;
+    async function handleMessengerMediaSelected(event, targetUserId) {
+      const file = event?.target?.files?.[0];
+      if (!file || !canMessageUser(targetUserId)) return;
+      if (!/^image\/(.+)|^video\/(.+)$/.test(file.type)) {
+        showToast('শুধু ছবি বা ভিডিও পাঠানো যাবে', 'error');
+        return;
+      }
+      if (file.size > MAX_MESSENGER_MEDIA_BYTES) {
+        showToast('একটি ছবি/ভিডিও সর্বোচ্চ ৫ GB হতে পারবে', 'error');
+        return;
+      }
 
-      const sent = await persistMessengerMessage(targetUserId, {
-        text: 'ছবি সংযুক্ত করা হয়েছে',
-        imageUrl: photoUrl.trim()
+      const storage = window.firebaseStorage;
+      const api = window.firebaseStorageApi;
+      if (!storage || !api) {
+        showToast('Media upload চালু নেই। Firebase Storage সেটআপ করুন।', 'error');
+        return;
+      }
+
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `oikko_messenger_media/${state.currentUser.id}/${targetUserId}/${Date.now()}_${safeName}`;
+      const storageReference = api.storageRef(storage, path);
+      const uploadTask = api.uploadBytesResumable(storageReference, file, {
+        contentType: file.type,
+        customMetadata: {
+          senderId: String(state.currentUser.id),
+          receiverId: String(targetUserId),
+          originalName: file.name
+        }
       });
 
-      if (sent) {
-        renderApp();
-        scrollChatToBottom();
+      showToast(`আপলোড শুরু হয়েছে: 0%`, 'info');
+      await new Promise((resolve, reject) => {
+        uploadTask.on('state_changed', snapshot => {
+          const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          if (pct === 100 || pct % 10 === 0) showToast(`মিডিয়া আপলোড: ${pct}%`, 'info');
+        }, reject, resolve);
+      }).catch(err => {
+        console.error('Messenger media upload failed:', err);
+        showToast('ছবি/ভিডিও আপলোড করা যায়নি। আবার চেষ্টা করুন।', 'error');
+        throw err;
+      });
+
+      try {
+        const downloadUrl = await api.getDownloadURL(storageReference);
+        const isVideo = file.type.startsWith('video/');
+        const sent = await persistMessengerMessage(targetUserId, {
+          text: isVideo ? 'ভিডিও পাঠিয়েছেন' : 'ছবি পাঠিয়েছেন',
+          imageUrl: isVideo ? '' : downloadUrl,
+          videoUrl: isVideo ? downloadUrl : '',
+          mediaType: isVideo ? 'video' : 'image',
+          fileName: file.name,
+          fileSize: file.size
+        });
+        if (sent) {
+          showToast(isVideo ? 'ভিডিও পাঠানো হয়েছে' : 'ছবি পাঠানো হয়েছে', 'success');
+          renderApp();
+          scrollChatToBottom();
+        }
+      } catch (err) {
+        console.error('Messenger media message save failed:', err);
+        showToast('মিডিয়া পাঠানো যায়নি। আবার চেষ্টা করুন।', 'error');
       }
+    }
+    window.handleMessengerMediaSelected = handleMessengerMediaSelected;
+
+    // Backward-compatible helper for older calls.
+    async function promptPhotoSend(targetUserId) {
+      openMessengerMediaPicker(targetUserId);
     }
     window.promptPhotoSend = promptPhotoSend;
 
@@ -2133,6 +2359,75 @@
         <div class="messenger-shell min-h-screen flex flex-col bg-[#F5F5F0] dark:bg-[#12231C] text-[#42422F] dark:text-[#E2E2D5] ${state.isDarkMode ? 'messenger-theme-dark' : 'messenger-theme-light'} ${state.messengerMobileChat ? 'messenger-mobile-chat' : ''}">
           <style>
             .messenger-shell{font-family:Outfit,'Hind Siliguri',sans-serif}
+            .messenger-shell *{scrollbar-width:thin}
+            .messenger-frame{isolation:isolate}
+            .messenger-list-head{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(250,252,249,.94));border-bottom:1px solid rgba(47,111,87,.07)}
+            .messenger-theme-dark .messenger-list-head{background:linear-gradient(180deg,#17251E,#142019);border-bottom-color:#2A2A20}
+            .messenger-chat-item{border:1px solid transparent}
+            .messenger-chat-item .messenger-list-avatar{box-shadow:0 2px 10px rgba(18,35,28,.10)}
+            .messenger-theme-dark .messenger-chat-item .messenger-list-avatar{box-shadow:0 2px 10px rgba(0,0,0,.24)}
+            .messenger-chat-header{background:rgba(255,255,255,.94)!important;backdrop-filter:blur(14px)}
+            .messenger-theme-dark .messenger-chat-header{background:rgba(18,35,28,.94)!important}
+            .messenger-input{transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}
+            /* Messenger inputs must stay clean and transparent inside their own containers.
+               This overrides the Campus-wide dark-mode input background rules. */
+            .messenger-shell input[type="text"],
+            .messenger-shell #messenger-search,
+            .messenger-shell #chat-input-field{
+              background:transparent!important;
+              border:0!important;
+              outline:none!important;
+              box-shadow:none!important;
+              -webkit-appearance:none!important;
+              appearance:none!important;
+              background-image:none!important;
+            }
+            .messenger-shell input[type="text"]:focus,
+            .messenger-shell #messenger-search:focus,
+            .messenger-shell #chat-input-field:focus{
+              background:transparent!important;
+              border:0!important;
+              outline:none!important;
+              box-shadow:none!important;
+            }
+            .messenger-shell input[type="text"]::selection{
+              background:rgba(242,125,97,.28);
+            }
+            .messenger-input:focus-within{border-color:#2F6F57!important;box-shadow:0 0 0 4px rgba(47,111,87,.10)}
+            .messenger-theme-dark .messenger-input:focus-within{border-color:#6DBA97!important;box-shadow:0 0 0 4px rgba(109,186,151,.12)}
+            .messenger-message-bubble{letter-spacing:.005em}
+            .messenger-shell .send-btn{box-shadow:0 7px 18px rgba(47,111,87,.22);transition:transform .15s ease,box-shadow .15s ease}
+            .messenger-shell .send-btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(47,111,87,.28)}
+            .messenger-shell .send-btn:active{transform:scale(.94)}
+            .messenger-shell .composer-extra{transition:background .15s ease,transform .15s ease}
+            .messenger-emoji-picker{overscroll-behavior:contain}
+            .messenger-media-limit{font-size:9px;color:#68766D}
+            .messenger-theme-dark .messenger-media-limit{color:#AEBDB4}
+            .messenger-shell .composer-extra:hover{transform:translateY(-1px)}
+            .messenger-main{background:radial-gradient(circle at 12% 0%,rgba(216,243,228,.45),transparent 28rem),radial-gradient(circle at 100% 100%,rgba(242,125,97,.07),transparent 24rem)}
+            .messenger-frame{box-shadow:0 18px 55px rgba(18,35,28,.10)!important;border-color:rgba(47,111,87,.18)!important}
+            .messenger-chat-item{position:relative}
+            .messenger-chat-item:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(18,35,28,.06)}
+            .messenger-chat-item:active{transform:scale(.99)}
+            .messenger-search{border:1px solid transparent;transition:box-shadow .18s ease,border-color .18s ease,background .18s ease}
+            .messenger-search:focus-within{border-color:rgba(47,111,87,.38);box-shadow:0 0 0 4px rgba(47,111,87,.10)}
+            .messenger-empty-icon{background:#E7F3EC;color:#2F6F57}
+            .messenger-theme-light .messenger-chat-item:not(.messenger-active):hover{background:#F4F8F5!important}
+            .messenger-theme-light .messenger-active{box-shadow:inset 3px 0 0 #F27D61,0 5px 18px rgba(47,111,87,.07)!important}
+            .messenger-theme-light .messenger-chat{background:linear-gradient(180deg,#FFFFFF 0%,#FBFCF9 100%)!important}
+            .messenger-theme-light .messenger-composer{background:rgba(255,255,255,.96)!important;backdrop-filter:blur(14px)}
+            .messenger-theme-dark .messenger-main{background:radial-gradient(circle at 20% 0%,rgba(47,111,87,.16),transparent 28rem),#0F1712}
+            .messenger-theme-dark .messenger-frame{box-shadow:0 20px 60px rgba(0,0,0,.28)!important;border-color:#304239!important}
+            .messenger-theme-dark .messenger-chat-item:not(.messenger-active):hover{background:#20332A!important}
+            .messenger-theme-dark .messenger-active{box-shadow:inset 3px 0 0 #F27D61,0 5px 18px rgba(0,0,0,.18)!important}
+            .messenger-theme-dark .messenger-chat{background:linear-gradient(180deg,#12231C 0%,#101A15 100%)!important}
+            .messenger-theme-dark .messenger-composer{background:rgba(23,37,30,.96)!important;backdrop-filter:blur(14px)}
+            .messenger-theme-dark .messenger-empty-icon{background:#244535;color:#9ED0B5}
+            .messenger-theme-dark .messenger-search{border-color:#3A4A41!important}
+            .messenger-theme-dark .messenger-search:focus-within{border-color:#6DBA97;box-shadow:0 0 0 4px rgba(109,186,151,.12)}
+            .messenger-theme-dark .messenger-incoming{box-shadow:0 4px 14px rgba(0,0,0,.10)}
+            .messenger-outgoing{box-shadow:0 5px 16px rgba(47,111,87,.20)!important}
+            .messenger-topbar{backdrop-filter:blur(16px);background:transparent!important}
             /* Force clear, high-contrast text in each Messenger theme. */
             .messenger-theme-light{color:#1F2A24!important}
             .messenger-theme-light .messenger-list-title,
@@ -2147,7 +2442,7 @@
             .messenger-theme-light .messenger-secondary-text{color:#5F6E65!important}
             .messenger-theme-light .messenger-incoming{color:#1F2A24!important}
             .messenger-theme-dark{color:#EDF3EE!important}
-            .messenger-theme-dark .messenger-topbar{background:#12231C!important;color:#EDF3EE!important;border-color:#2A2A20!important}
+            .messenger-theme-dark .messenger-topbar{background:transparent!important;color:#EDF3EE!important;border-color:#2A2A20!important}
             .messenger-theme-dark .messenger-list{background:#17251E!important;color:#EDF3EE!important;border-color:#2A2A20!important}
             .messenger-theme-dark .messenger-chat{background:#12231C!important;color:#EDF3EE!important}
             .messenger-theme-dark .messenger-composer{background:#17251E!important;color:#EDF3EE!important;border-color:#2A2A20!important}
@@ -2169,7 +2464,24 @@
             .messenger-shell .messenger-accent{color:#F27D61}
             .messenger-shell .messenger-brand{background:linear-gradient(135deg,#E7FBEF,#8ED9B0);color:#12231C}
             .messenger-shell .messenger-coral{background:#F27D61;color:#fff}
-            .messenger-topbar{box-shadow:0 1px 2px rgba(0,0,0,.08)}
+            .messenger-topbar{box-shadow:none!important}
+            /* Theme is controlled by Messenger's own theme class, so Light Mode never inherits the Campus dark selector. */
+            .messenger-theme-light{background:#F5F5F0!important;color:#1F2A24!important}
+            .messenger-theme-light .messenger-topbar{background:transparent!important;color:#1F2A24!important;border-color:#E2E2D5!important}
+            .messenger-theme-light .messenger-list{background:#FFFFFF!important;color:#1F2A24!important;border-color:#E2E2D5!important}
+            .messenger-theme-light .messenger-chat{background:#FFFFFF!important;color:#1F2A24!important}
+            .messenger-theme-light .messenger-composer{background:#FFFFFF!important;color:#1F2A24!important;border-color:#E2E2D5!important}
+            .messenger-theme-light .messenger-search{background:#F5F5F0!important;color:#1F2A24!important;border-color:#D9E6DD!important}
+            .messenger-theme-light .messenger-active{background:#E7F3EC!important;color:#1F2A24!important}
+            .messenger-theme-light .messenger-incoming{background:#E2E2D5!important;color:#1F2A24!important}
+            .messenger-theme-light .messenger-hover:hover{background:#F5F5F0!important}
+            .messenger-theme-light .messenger-search input,
+            .messenger-theme-light #chat-input-field{background:transparent!important;color:#1F2A24!important}
+            .messenger-theme-light .messenger-search input::placeholder,
+            .messenger-theme-light #chat-input-field::placeholder{color:#68766D!important;opacity:1!important}
+            .messenger-theme-light .messenger-chat-header{background:rgba(255,255,255,.96)!important;color:#1F2A24!important;border-color:#E2E2D5!important}
+            .messenger-theme-light .messenger-chat h3,
+            .messenger-theme-light .messenger-chat-header h2{color:#1F2A24!important}
             .messenger-blue{background:#2F6F57}
             .messenger-search{background:#F5F5F0;color:#42422F}
             .dark .messenger-search{background:#2A2A20;color:#E2E2D5}
@@ -2213,8 +2525,9 @@
               .messenger-message-bubble{max-width:84%!important;font-size:15px!important;line-height:1.4!important}
               .messenger-composer{padding:7px 8px calc(8px + env(safe-area-inset-bottom))!important}
               .messenger-composer-inner{gap:4px!important}
-              .messenger-composer .composer-extra{display:none}
+              .messenger-composer .composer-extra{display:flex!important}
               .messenger-composer .messenger-input{min-height:42px!important}
+              .messenger-composer .messenger-emoji-picker{width:min(290px,calc(100vw - 24px));left:0;bottom:46px}
               #chat-input-field{font-size:16px!important}
               .messenger-composer .send-btn{width:42px!important;height:42px!important}
               .messenger-mobile-note{display:none}
@@ -2235,8 +2548,8 @@
           </style>
 
           <!-- Messenger-style header -->
-          <header class="messenger-topbar h-16 shrink-0 bg-white dark:bg-[#FFFFFF] border-b border-[#E2E2D5] dark:border-[#2A2A20] flex items-center px-3 sm:px-5 gap-3 z-20">
-            <button onclick="backToCampus()" class="w-10 h-10 rounded-full bg-[#E2E2D5] dark:bg-[#2A2A20] flex items-center justify-center hover:bg-[#D9E6DD] dark:hover:bg-[#4b4c4f] transition" title="Oikko Campus-এ ফিরুন">
+          <header class="messenger-topbar h-16 shrink-0 border-b border-[#E2E2D5] dark:border-[#2A2A20] flex items-center px-3 sm:px-5 gap-3 z-20">
+            <button onclick="backToCampus()" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 transition" title="Oikko Campus-এ ফিরুন">
               <i data-lucide="arrow-left" class="w-5 h-5"></i>
             </button>
             <div class="w-10 h-10 rounded-full messenger-blue text-white flex items-center justify-center shadow-sm">
@@ -2247,6 +2560,9 @@
               <p class="text-[11px] text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text messenger-subtitle">Oikko Campus-এর বন্ধুদের সাথে চ্যাট</p>
             </div>
             <div class="ml-auto flex items-center gap-1">
+              <button onclick="requestNotificationPermission()" class="w-10 h-10 rounded-full hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] flex items-center justify-center transition" title="মেসেজ নোটিফিকেশন চালু করুন">
+                <i data-lucide="bell" class="w-5 h-5"></i>
+              </button>
               <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] flex items-center justify-center transition" title="থিম পরিবর্তন">
                 <i data-lucide="${state.isDarkMode ? 'sun' : 'moon'}" class="w-5 h-5"></i>
               </button>
@@ -2269,33 +2585,12 @@
                   </div>
                   <div class="messenger-search rounded-full h-10 px-3 flex items-center gap-2">
                     <i data-lucide="search" class="w-4 h-4 text-[#8A8A6A] dark:text-[#B9D7C3] shrink-0"></i>
-                    <input id="messenger-search" type="text" value="${escapeHtml(state.messengerSearch || '')}" oninput="handleMessengerSearch(this.value)" class="min-w-0 flex-1 bg-transparent border-0 outline-none text-sm" placeholder="Messenger-এ খুঁজুন" />
+                    <input id="messenger-search" type="text" value="${escapeHtml(state.messengerSearch || '')}" oninput="handleMessengerSearch(this.value)" class="min-w-0 flex-1 bg-transparent border-0 outline-none text-sm" placeholder="Messenger-এ খুঁজুন" autocomplete="off" autocapitalize="off" spellcheck="false" />
                   </div>
                 </div>
 
-                <div class="messenger-scroll flex-1 overflow-y-auto px-2 pb-3">
-                  ${visiblePeers.length ? visiblePeers.map(user => {
-                    const last = getMessengerLastMessage(user.id);
-                    const active = user.id === target.id;
-                    const preview = last ? (last.imageUrl ? '📷 ছবি' : (last.text || 'মেসেজ')) : 'নতুন কথোপকথন শুরু করুন';
-                    return `
-                      <button type="button" onclick="selectChatUser('${user.id}')" class="messenger-touch w-full text-left rounded-xl px-2.5 py-2 flex items-center gap-3 transition messenger-hover ${active ? 'messenger-active' : ''}">
-                        <div class="relative shrink-0">
-                          ${avatar(user,'messenger-list-avatar w-14 h-14')}
-                          <span class="absolute right-0 bottom-0 w-3.5 h-3.5 rounded-full bg-[#2F6F57] border-2 border-white dark:border-[#FFFFFF]"></span>
-                        </div>
-                        <div class="min-w-0 flex-1 py-0.5">
-                          <div class="flex items-center gap-1">
-                            <span class="font-bold text-[15px] truncate">${escapeHtml(user.fullName)}</span>
-                            ${user.isVerified ? '<span class="text-[11px] text-[#2F6F57]">●</span>' : ''}
-                          </div>
-                          <p class="text-[12px] text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text truncate mt-0.5">${escapeHtml(preview)}</p>
-                        </div>
-                      </button>
-                    `;
-                  }).join('') : `
-                    <div class="px-5 py-10 text-center text-sm text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text">কোনো Campus user পাওয়া যায়নি।</div>
-                  `}
+                <div id="messenger-peer-list" class="messenger-scroll flex-1 overflow-y-auto px-2 pb-3">
+                  ${renderMessengerPeerList(peers, target.id, state.messengerSearch)}
                 </div>
               </aside>
 
@@ -2325,8 +2620,9 @@
                     ${messages.length ? messages.map(msg => `
                       <div class="flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}">
                         <div class="messenger-message-bubble max-w-[78%] sm:max-w-[65%] ${msg.sender === 'me' ? 'messenger-outgoing rounded-[20px] rounded-br-[6px]' : 'messenger-incoming rounded-[20px] rounded-bl-[6px]'} px-3.5 py-2 text-[14px] leading-5">
-                          ${msg.imageUrl ? `<img src="${escapeHtml(msg.imageUrl)}" class="rounded-xl max-h-80 max-w-full object-cover mb-1.5" />` : ''}
-                          ${msg.text ? `<p class="break-words whitespace-pre-wrap">${escapeHtml(msg.text)}</p>` : ''}
+                          ${msg.mediaType === 'video' && msg.videoUrl ? `<video src="${escapeHtml(msg.videoUrl)}" controls playsinline preload="metadata" class="rounded-xl max-h-80 max-w-full object-contain bg-black/10 mb-1.5"></video>` : ''}
+                          ${msg.mediaType !== 'video' && msg.imageUrl ? `<img src="${escapeHtml(msg.imageUrl)}" alt="ছবি" loading="lazy" class="rounded-xl max-h-80 max-w-full object-cover mb-1.5" />` : ''}
+                          ${msg.text && !(msg.mediaType === 'video' && msg.text === 'ভিডিও পাঠিয়েছেন') && !(msg.mediaType === 'image' && msg.text === 'ছবি পাঠিয়েছেন') ? `<p class="break-words whitespace-pre-wrap">${escapeHtml(msg.text)}</p>` : ''}
                           <div class="text-[9px] mt-0.5 opacity-60 ${msg.sender === 'me' ? 'text-right' : 'text-left'}">${escapeHtml(msg.time || '')}</div>
                         </div>
                       </div>
@@ -2343,12 +2639,18 @@
 
                 <form onsubmit="handleSendMessengerMessage(event, '${target.id}')" class="messenger-composer shrink-0 px-3 sm:px-5 pt-2 pb-3 border-t border-[#E2E2D5] dark:border-[#2A2A20]">
                   <div class="messenger-composer-inner max-w-3xl mx-auto flex items-end gap-1.5">
-                    <button type="button" onclick="promptPhotoSend('${target.id}')" class="composer-extra w-9 h-9 rounded-full flex items-center justify-center hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] text-[#2F6F57] shrink-0 messenger-touch" title="ছবি পাঠান">
-                      <i data-lucide="image" class="w-5 h-5"></i>
+                    <input id="messenger-media-picker" type="file" accept="image/*,video/*" class="hidden" onchange="handleMessengerMediaSelected(event, '${target.id}')" />
+                    <button type="button" onclick="openMessengerMediaPicker('${target.id}')" class="composer-extra w-9 h-9 rounded-full flex items-center justify-center hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] text-[#2F6F57] shrink-0 messenger-touch" title="ছবি বা ভিডিও পাঠান (সর্বোচ্চ ৫ GB)">
+                      <i data-lucide="image-plus" class="w-5 h-5"></i>
                     </button>
-                    <button type="button" onclick="insertEmoji('😊')" class="composer-extra w-9 h-9 rounded-full flex items-center justify-center hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] text-[#2F6F57] shrink-0 messenger-touch" title="ইমোজি">
-                      <span class="text-xl leading-none">😊</span>
-                    </button>
+                    <div class="relative shrink-0">
+                      <button type="button" onclick="toggleMessengerEmojiPicker()" class="composer-extra w-9 h-9 rounded-full flex items-center justify-center hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] text-[#2F6F57] shrink-0 messenger-touch" title="ইমোজি">
+                        <span class="text-xl leading-none">😊</span>
+                      </button>
+                      <div id="messenger-emoji-picker" class="hidden absolute bottom-11 left-0 z-50 w-72 sm:w-80 max-h-64 overflow-y-auto rounded-2xl border border-[#E2E2D5] dark:border-[#3A4A41] bg-white dark:bg-[#17251E] p-3 shadow-2xl">
+                        <div class="grid grid-cols-8 gap-1 text-xl">${['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🥳','🤩','😏','😢','😭','😤','😡','🤬','🤯','😱','😴','🤗','🤔','🫡','🤭','🫢','🫣','🤫','🫠','🙄','😬','😮','😲','🥹','😳','🤍','❤️','🧡','💛','💚','💙','💜','🖤','🤎','💖','💗','💓','💯','🔥','✨','⭐','🎉','🎊','👍','👎','👏','🙌','🙏','💪','🤝','👋','👌','✌️','🤞','🫶','💐','🌸','🌹','🍀','🌈','☀️','🌙','⚡','🎓','📚','💡','🚀','🏆','🎵'].map(e => `<button type="button" onclick="insertEmoji('${e}')" class="h-8 rounded-lg hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20]">${e}</button>`).join('')}</div>
+                      </div>
+                    </div>
                     <div class="messenger-input flex-1 min-w-0 min-h-10 rounded-[20px] px-4 flex items-center">
                       <input id="chat-input-field" type="text" autocomplete="off" class="w-full bg-transparent border-0 outline-none text-[14px]" placeholder="${escapeHtml(target.fullName)}-কে মেসেজ লিখুন..." />
                     </div>
@@ -2356,7 +2658,7 @@
                       <i data-lucide="send" class="w-4 h-4"></i>
                     </button>
                   </div>
-                  <p class="text-[9px] text-[#8a8d91] text-center mt-1.5">শুধুমাত্র Oikko Campus-এর ব্যবহারকারীদের সাথে চ্যাট করা যাবে</p>
+                  <p class="text-[9px] text-[#8a8d91] text-center mt-1.5">ছবি/ভিডিও সর্বোচ্চ ৫ GB • শুধুমাত্র Oikko Campus-এর ব্যবহারকারীদের সাথে চ্যাট করা যাবে</p>
                 </form>
               </section>
             </div>
@@ -4761,6 +5063,7 @@
 
     function handleLogout() {
       if (typeof stopMessengerListener === 'function') stopMessengerListener();
+      if (typeof stopMessengerNotificationListener === 'function') stopMessengerNotificationListener();
       state.currentUser = null;
       state.activeView = 'feed';
       state.activeChatUserId = '';
