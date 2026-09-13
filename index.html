@@ -375,6 +375,7 @@
   <!-- Firebase Initialization with Cloud Firestore -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+    import { getDatabase } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
     import { 
       getFirestore, initializeFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, getDoc 
@@ -388,6 +389,7 @@
       storageBucket: "oikko-kghs.firebasestorage.app",
       messagingSenderId: "81956177087",
       appId: "1:81956177087:web:c0a1ed6affec20dc08720a",
+      databaseURL: "https://oikko-kghs-default-rtdb.asia-southeast1.firebasedatabase.app",
       measurementId: "G-CBL3544S4S"
     };
 
@@ -417,6 +419,15 @@
       window.firebaseApp = app;
       window.firebaseAnalytics = analytics;
       window.firebaseDb = db;
+
+      // Firebase Realtime Database
+      let realtimeDb = null;
+      try {
+        realtimeDb = getDatabase(app);
+      } catch (rtdbErr) {
+        console.warn("Realtime Database initialization failed:", rtdbErr);
+      }
+      window.firebaseRealtimeDb = realtimeDb;
       window.fb = {
         collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, getDoc
       };
@@ -2119,9 +2130,42 @@
         `<img src="${escapeHtml(u.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100')}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="${size} rounded-full object-cover shrink-0" />`;
 
       return `
-        <div class="messenger-shell min-h-screen flex flex-col bg-[#F5F5F0] dark:bg-[#12231C] text-[#42422F] dark:text-[#E2E2D5] ${state.messengerMobileChat ? 'messenger-mobile-chat' : ''}">
+        <div class="messenger-shell min-h-screen flex flex-col bg-[#F5F5F0] dark:bg-[#12231C] text-[#42422F] dark:text-[#E2E2D5] ${state.isDarkMode ? 'messenger-theme-dark' : 'messenger-theme-light'} ${state.messengerMobileChat ? 'messenger-mobile-chat' : ''}">
           <style>
             .messenger-shell{font-family:Outfit,'Hind Siliguri',sans-serif}
+            /* Force clear, high-contrast text in each Messenger theme. */
+            .messenger-theme-light{color:#1F2A24!important}
+            .messenger-theme-light .messenger-list-title,
+            .messenger-theme-light .messenger-top-title,
+            .messenger-theme-light .messenger-list .font-bold,
+            .messenger-theme-light .messenger-chat-header h2,
+            .messenger-theme-light .messenger-chat h3,
+            .messenger-theme-light .messenger-search input,
+            .messenger-theme-light #chat-input-field{color:#1F2A24!important}
+            .messenger-theme-light .messenger-search input::placeholder,
+            .messenger-theme-light #chat-input-field::placeholder{color:#68766D!important;opacity:1!important}
+            .messenger-theme-light .messenger-secondary-text{color:#5F6E65!important}
+            .messenger-theme-light .messenger-incoming{color:#1F2A24!important}
+            .messenger-theme-dark{color:#EDF3EE!important}
+            .messenger-theme-dark .messenger-topbar{background:#12231C!important;color:#EDF3EE!important;border-color:#2A2A20!important}
+            .messenger-theme-dark .messenger-list{background:#17251E!important;color:#EDF3EE!important;border-color:#2A2A20!important}
+            .messenger-theme-dark .messenger-chat{background:#12231C!important;color:#EDF3EE!important}
+            .messenger-theme-dark .messenger-composer{background:#17251E!important;color:#EDF3EE!important;border-color:#2A2A20!important}
+            .messenger-theme-dark .messenger-list-title,
+            .messenger-theme-dark .messenger-top-title,
+            .messenger-theme-dark .messenger-list .font-bold,
+            .messenger-theme-dark .messenger-chat-header h2,
+            .messenger-theme-dark .messenger-chat h3,
+            .messenger-theme-dark .messenger-search input,
+            .messenger-theme-dark #chat-input-field{color:#EDF3EE!important}
+            .messenger-theme-dark .messenger-search{background:#26352C!important;color:#EDF3EE!important}
+            .messenger-theme-dark .messenger-search input::placeholder,
+            .messenger-theme-dark #chat-input-field::placeholder{color:#AEBDB4!important;opacity:1!important}
+            .messenger-theme-dark .messenger-secondary-text{color:#B9D7C3!important}
+            .messenger-theme-dark .messenger-incoming{background:#2A2A20!important;color:#EDF3EE!important}
+            .messenger-theme-dark .messenger-active{background:#244535!important}
+            .messenger-theme-dark .messenger-input{background:#26352C!important;border-color:#3A4A41!important;color:#EDF3EE!important}
+            .messenger-theme-dark .messenger-hover:hover{background:#26352C!important}
             .messenger-shell .messenger-accent{color:#F27D61}
             .messenger-shell .messenger-brand{background:linear-gradient(135deg,#E7FBEF,#8ED9B0);color:#12231C}
             .messenger-shell .messenger-coral{background:#F27D61;color:#fff}
@@ -2164,9 +2208,6 @@
               .messenger-search{height:44px!important;font-size:16px!important}
               #messenger-search{font-size:16px!important}
               .messenger-chat-header{height:60px!important;padding:0 8px!important}
-              .messenger-chat-header .chat-actions button{width:38px!important;height:38px!important}
-              .messenger-chat-header .chat-actions button:nth-child(2),
-              .messenger-chat-header .chat-actions button:nth-child(3){display:none}
               #messages-scroll-container{padding:12px 10px 10px!important;overscroll-behavior:contain}
               #messages-scroll-container .max-w-3xl{width:100%;max-width:100%}
               .messenger-message-bubble{max-width:84%!important;font-size:15px!important;line-height:1.4!important}
@@ -2203,7 +2244,7 @@
             </div>
             <div class="min-w-0">
               <h1 class="font-extrabold text-base leading-tight">Messenger</h1>
-              <p class="text-[11px] text-[#8A8A6A] dark:text-[#B9D7C3] messenger-subtitle">Oikko Campus-এর বন্ধুদের সাথে চ্যাট</p>
+              <p class="text-[11px] text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text messenger-subtitle">Oikko Campus-এর বন্ধুদের সাথে চ্যাট</p>
             </div>
             <div class="ml-auto flex items-center gap-1">
               <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] flex items-center justify-center transition" title="থিম পরিবর্তন">
@@ -2248,12 +2289,12 @@
                             <span class="font-bold text-[15px] truncate">${escapeHtml(user.fullName)}</span>
                             ${user.isVerified ? '<span class="text-[11px] text-[#2F6F57]">●</span>' : ''}
                           </div>
-                          <p class="text-[12px] text-[#8A8A6A] dark:text-[#B9D7C3] truncate mt-0.5">${escapeHtml(preview)}</p>
+                          <p class="text-[12px] text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text truncate mt-0.5">${escapeHtml(preview)}</p>
                         </div>
                       </button>
                     `;
                   }).join('') : `
-                    <div class="px-5 py-10 text-center text-sm text-[#8A8A6A] dark:text-[#B9D7C3]">কোনো Campus user পাওয়া যায়নি।</div>
+                    <div class="px-5 py-10 text-center text-sm text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text">কোনো Campus user পাওয়া যায়নি।</div>
                   `}
                 </div>
               </aside>
@@ -2272,11 +2313,6 @@
                     <h2 class="font-bold text-[15px] truncate">${escapeHtml(target.fullName)}</h2>
                     <p class="text-[11px] text-[#8A8A6A] dark:text-[#B9D7C3] truncate">Oikko Campus • ${escapeHtml(target.studentId || 'Campus user')}</p>
                   </div>
-                  <div class="chat-actions flex items-center gap-0.5">
-                    <button class="w-10 h-10 rounded-full messenger-hover flex items-center justify-center" title="অডিও কল"><i data-lucide="phone" class="w-5 h-5 text-[#2F6F57]"></i></button>
-                    <button class="w-10 h-10 rounded-full messenger-hover flex items-center justify-center" title="ভিডিও কল"><i data-lucide="video" class="w-5 h-5 text-[#2F6F57]"></i></button>
-                    <button class="w-10 h-10 rounded-full messenger-hover flex items-center justify-center" title="চ্যাট তথ্য"><i data-lucide="info" class="w-5 h-5 text-[#2F6F57]"></i></button>
-                  </div>
                 </div>
 
                 <div id="messages-scroll-container" class="messenger-scroll flex-1 overflow-y-auto px-3 sm:px-6 py-5 bg-white dark:bg-[#12231C]">
@@ -2284,7 +2320,7 @@
                     <div class="text-center pb-5">
                       ${avatar(target,'w-20 h-20 mx-auto')}
                       <h3 class="font-bold text-base mt-2">${escapeHtml(target.fullName)}</h3>
-                      <p class="text-xs text-[#8A8A6A] dark:text-[#B9D7C3] mt-1">Oikko Campus user</p>
+                      <p class="text-xs text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text mt-1">Oikko Campus user</p>
                     </div>
                     ${messages.length ? messages.map(msg => `
                       <div class="flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}">
@@ -2299,7 +2335,7 @@
                         <div class="w-12 h-12 mx-auto rounded-full messenger-blue text-white flex items-center justify-center">
                           <i data-lucide="message-circle" class="w-6 h-6"></i>
                         </div>
-                        <p class="text-xs text-[#8A8A6A] dark:text-[#B9D7C3] mt-2">আপনাদের কথোপকথন এখান থেকেই শুরু হবে</p>
+                        <p class="text-xs text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text mt-2">আপনাদের কথোপকথন এখান থেকেই শুরু হবে</p>
                       </div>
                     `}
                   </div>
