@@ -2150,13 +2150,16 @@
 
           const localMessages = Array.isArray(state.messages[targetUserId]) ? state.messages[targetUserId] : [];
           const cloudIds = new Set(cloudMessages.map(m => m.id));
+          const cloudClientIds = new Set(cloudMessages.map(m => m.clientMessageId).filter(Boolean));
           const pendingLocal = localMessages.filter(m => {
             if (!m) return false;
-            if (m.firebaseId && cloudIds.has(m.firebaseId)) return false;
             if (m.id && cloudIds.has(m.id)) return false;
+            if (m.firebaseId && cloudIds.has(m.firebaseId)) return false;
+            if (m.clientMessageId && cloudClientIds.has(m.clientMessageId)) return false;
             return true;
           });
-          state.messages[targetUserId] = [...cloudMessages, ...pendingLocal].sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
+          state.messages[targetUserId] = [...cloudMessages, ...pendingLocal]
+            .sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
           saveMessages(state.messages);
           window.firestoreStatus = 'connected';
           if (state.activeView === 'messenger' && state.activeChatUserId === targetUserId) {
@@ -2289,8 +2292,12 @@
 
       const now = Date.now();
       const timeStr = new Date(now).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-      const localId = 'local_' + now + '_' + Math.random().toString(36).slice(2,8);
+      // Use one stable client id for optimistic UI + Firestore document.
+      // This prevents the same message from appearing twice when onSnapshot
+      // returns while the send request is still being completed.
+      const localId = 'msg_' + now + '_' + Math.random().toString(36).slice(2,10);
       const messageData = {
+        clientMessageId: localId,
         senderId: String(state.currentUser.id),
         receiverId: String(targetUserId),
         senderName: String(state.currentUser.fullName || ''),
@@ -2304,11 +2311,14 @@
         createdAt: now
       };
 
-      // Show the message immediately in the UI.
+      // Show the message immediately in the UI. The same id is also used
+      // as the Firestore document id, so the realtime listener can reconcile
+      // it instead of adding a second copy.
       const localMessage = {
         id: localId,
         ...messageData,
-        sender: 'me'
+        sender: 'me',
+        pending: true
       };
       if (!state.messages[targetUserId]) state.messages[targetUserId] = [];
       state.messages[targetUserId].push(localMessage);
@@ -2325,10 +2335,21 @@
       try {
         const chatId = makeChatId(state.currentUser.id, targetUserId);
         const messagesCollection = fb.collection(db, 'oikko_chats', chatId, 'messages');
-        const cloudRef = await fb.addDoc(messagesCollection, messageData);
+        const messageRef = fb.doc(messagesCollection, localId);
+        await fb.setDoc(messageRef, messageData);
 
-        localMessage.firebaseId = cloudRef.id;
-        localMessage.id = cloudRef.id;
+        // The Firestore id is exactly the optimistic id. If a realtime
+        // snapshot already replaced state.messages, reconcile that copy too.
+        const currentList = Array.isArray(state.messages[targetUserId]) ? state.messages[targetUserId] : [];
+        const existing = currentList.find(m => m.id === localId || m.firebaseId === localId);
+        if (existing) {
+          existing.firebaseId = localId;
+          existing.id = localId;
+          existing.pending = false;
+        } else {
+          currentList.push({ id: localId, firebaseId: localId, ...messageData, sender: 'me', pending: false });
+          state.messages[targetUserId] = currentList;
+        }
         window.firestoreStatus = 'connected';
         saveMessages(state.messages);
 
@@ -2369,7 +2390,9 @@
 
       const sent = await persistMessengerMessage(targetUserId, {text});
       if (sent) {
-        renderApp();
+        // Do not rebuild the whole Messenger after sending. The realtime
+        // listener reconciles the optimistic message without duplicating it.
+        if (!messengerUnsubscribe) renderMessengerOnly();
         scrollChatToBottom();
       }
     }
