@@ -1989,6 +1989,41 @@
       return audience === '18plus' ? '১৮+' : '১৮ বছরের নিচে';
     }
 
+    // Oikko-এর নিজস্ব CAPTCHA; এটি BDRIS/API নয়।
+    let oikkoAgeCaptchaAnswer = '';
+    function refreshOikkoAgeCaptcha() {
+      const canvas = document.getElementById('oikko-age-captcha-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const a = Math.floor(Math.random() * 8) + 2;
+      const b = Math.floor(Math.random() * 8) + 1;
+      oikkoAgeCaptchaAnswer = String(a + b);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#f7fbff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < 70; i++) {
+        ctx.fillStyle = `rgba(47,111,87,${(Math.random() * .45 + .15).toFixed(2)})`;
+        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1.5, 1.5);
+      }
+      for (let i = 0; i < 5; i++) {
+        ctx.strokeStyle = `rgba(47,111,87,${(Math.random() * .25 + .15).toFixed(2)})`;
+        ctx.beginPath();
+        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.stroke();
+      }
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2 + 11);
+      ctx.rotate((Math.random() - .5) * .08);
+      ctx.font = '700 30px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#173d2f';
+      ctx.fillText(`${a} + ${b} = ?`, 0, 0);
+      ctx.restore();
+    }
+    window.refreshOikkoAgeCaptcha = refreshOikkoAgeCaptcha;
+
     function openOikkoTubeAgeGate() {
       if (!state.currentUser || state.oikkoTubeAgeVerified || state.oikkoTubeAgeGateBusy) return;
       const modal = document.getElementById('modal-container');
@@ -2011,7 +2046,7 @@
                   <div class="rounded-sm border border-[#b9d2e6] bg-[#f7fbff] px-4 py-3 mb-5">
                     <div class="text-[13px] text-[#174a72] leading-6">
                       <strong>Oikko Internal Verification</strong><br>
-                      আপনার অ্যাকাউন্টের Birth Registration Number ও Date of Birth-এর সঙ্গে দেওয়া তথ্য মিললে যাচাই সম্পন্ন হবে।
+                      আপনার Oikko Campus অ্যাকাউন্টে সংরক্ষিত Birth Registration Number ও Date of Birth-এর সঙ্গে তথ্য মিললে এবং CAPTCHA সঠিক হলে যাচাই সম্পন্ন হবে।
                     </div>
                   </div>
 
@@ -2026,13 +2061,24 @@
                       <input id="oikko-dob" type="date" class="w-full h-10 border border-[#bfc7ce] rounded-sm bg-white px-3 text-[14px] outline-none focus:border-[#2f6f57] focus:ring-1 focus:ring-[#2f6f57]">
                     </div>
 
+                    <div>
+                      <label class="block text-[13px] font-semibold text-[#202124] mb-1.5">নিরাপত্তা যাচাই (CAPTCHA):</label>
+                      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                        <div class="border border-[#bfc7ce] bg-white rounded-sm p-1 w-fit">
+                          <canvas id="oikko-age-captcha-canvas" width="220" height="64" class="block w-[220px] h-[64px]" aria-label="CAPTCHA"></canvas>
+                        </div>
+                        <button type="button" onclick="refreshOikkoAgeCaptcha()" class="h-10 px-3 rounded-sm bg-[#f1f3f4] border border-[#d5d9dd] text-[#3c4043] text-[12px] font-semibold">↻ নতুন কোড</button>
+                      </div>
+                      <input id="oikko-age-captcha" inputmode="numeric" autocomplete="off" maxlength="2" class="mt-2 w-full h-10 border border-[#bfc7ce] rounded-sm bg-white px-3 text-[14px] outline-none focus:border-[#2f6f57] focus:ring-1 focus:ring-[#2f6f57]" placeholder="ছবির উত্তর লিখুন">
+                    </div>
+
                     <div class="rounded-sm border border-[#e5e7eb] bg-white p-3">
                       <div class="text-[12px] font-semibold text-[#4b5563] mb-2">স্বয়ংক্রিয় যাচাই</div>
                       <p class="text-[12px] leading-5 text-[#6b7280]">Oikko আপনার লগইন করা অ্যাকাউন্টের তথ্যের সঙ্গে মিলিয়ে ফলাফল দেখাবে। এটি সরকারি BDRIS যাচাই নয়।</p>
                     </div>
 
                     <div class="rounded-sm border border-[#f0dca8] bg-[#fff9e8] px-3 py-2.5 text-[11px] leading-5 text-[#775b16]">
-                      নিরাপত্তার জন্য এই ফিচার কোনো BDRIS/CAPTCHA API ব্যবহার করে না। আপনার সরকারি রেকর্ডের সত্যতা যাচাই করতে হলে আলাদা সরকারি সেবা প্রয়োজন।
+                      এই CAPTCHA ও বয়স যাচাই Oikko-এর নিজস্ব internal system। এটি BDRIS-এর সরকারি API নয় এবং সরকারি Birth Record-এর সত্যতা নিশ্চিত করে না।
                     </div>
 
                     <div id="oikko-tube-age-status" class="min-h-[20px] text-[12px] text-[#68756D]"></div>
@@ -2064,6 +2110,9 @@
         </div>`;
 
       if (window.lucide) lucide.createIcons();
+      refreshOikkoAgeCaptcha();
+      const captchaInput = document.getElementById('oikko-age-captcha');
+      if (captchaInput) captchaInput.addEventListener('input', () => { captchaInput.value = captchaInput.value.replace(/\D/g, '').slice(0, 2); });
       const reg = document.getElementById('oikko-birth-reg');
       if (reg) reg.addEventListener('input', () => { reg.value = reg.value.replace(/\D/g, '').slice(0, 17); });
       setTimeout(() => { state.oikkoTubeAgeGateBusy = false; }, 50);
@@ -2078,6 +2127,7 @@
       const profile = getCurrentUserVerificationRecord();
       const selectedGroup = state.pendingOikkoTubeAgeGroup;
       const actualAge = calculateAgeFromDob(profile?.dateOfBirth);
+      const captcha = String(document.getElementById('oikko-age-captcha')?.value || '').trim();
 
       if (!/^\d{17}$/.test(reg)) {
         if (status) { status.textContent = 'Birth Registration Number অবশ্যই ১৭ সংখ্যার হতে হবে।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
@@ -2085,6 +2135,10 @@
       }
       if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
         if (status) { status.textContent = 'সঠিক Date of Birth দিন।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
+        return false;
+      }
+      if (captcha !== oikkoAgeCaptchaAnswer) {
+        if (status) { status.textContent = 'CAPTCHA-এর উত্তর সঠিক নয়। নতুন কোড নিয়ে আবার চেষ্টা করুন।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
         return false;
       }
       if (!profile?.birthRegistrationNumber || profile.birthRegistrationNumber === '***********' ||
@@ -7501,6 +7555,10 @@
     input,textarea,select{
       border-radius:14px;
     }
+
+    /* Fixed Messenger message input */
+    .messenger-input{height:40px!important;min-height:40px!important;max-height:40px!important;overflow:hidden!important;flex:1 1 auto;}
+    #chat-input-field{height:40px!important;min-height:40px!important;max-height:40px!important;line-height:40px!important;resize:none!important;overflow:hidden!important;}
     input:not([type="file"]):hover,textarea:hover,select:hover{border-color:rgba(47,111,87,.25)}
     input:not([type="file"]):focus,textarea:focus,select:focus{transform:none}
 
