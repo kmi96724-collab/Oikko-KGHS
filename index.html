@@ -2102,6 +2102,7 @@
 
       return {
         id: data.id || ('cloud_' + createdAt + '_' + Math.random().toString(36).slice(2)),
+        clientMessageId: data.clientMessageId || '',
         text: typeof data.text === 'string' ? data.text : '',
         imageUrl: typeof data.imageUrl === 'string' ? data.imageUrl : '',
         videoUrl: typeof data.videoUrl === 'string' ? data.videoUrl : '',
@@ -2151,8 +2152,13 @@
           const localMessages = Array.isArray(state.messages[targetUserId]) ? state.messages[targetUserId] : [];
           const cloudIds = new Set(cloudMessages.map(m => m.id));
           const cloudClientIds = new Set(cloudMessages.map(m => m.clientMessageId).filter(Boolean));
+          // Only keep messages that are still genuinely pending locally.
+          // A message that has already been saved to Firestore must NOT be
+          // kept when its Firestore document is deleted (for example from
+          // Firebase Console). This is what makes Firebase deletions appear
+          // in the app immediately through onSnapshot.
           const pendingLocal = localMessages.filter(m => {
-            if (!m) return false;
+            if (!m || m.pending !== true) return false;
             if (m.id && cloudIds.has(m.id)) return false;
             if (m.firebaseId && cloudIds.has(m.firebaseId)) return false;
             if (m.clientMessageId && cloudClientIds.has(m.clientMessageId)) return false;
@@ -2373,6 +2379,58 @@
         return true;
       }
     }
+
+    function toggleMessengerDelete(bubble) {
+      if (!bubble) return;
+      const all = document.querySelectorAll('.messenger-own-bubble.messenger-delete-visible');
+      all.forEach(el => { if (el !== bubble) el.classList.remove('messenger-delete-visible'); });
+      bubble.classList.toggle('messenger-delete-visible');
+    }
+    window.toggleMessengerDelete = toggleMessengerDelete;
+
+    async function handleDeleteMessengerMessage(messageId, targetUserId) {
+      if (!state.currentUser || !canMessageUser(targetUserId)) {
+        showToast('এই মেসেজটি ডিলিট করার অনুমতি নেই', 'error');
+        return;
+      }
+
+      const list = Array.isArray(state.messages[targetUserId]) ? state.messages[targetUserId] : [];
+      const message = list.find(m => String(m.id) === String(messageId) || String(m.firebaseId || '') === String(messageId));
+
+      // Only the sender can delete their own message.
+      if (!message || String(message.senderId || '') !== String(state.currentUser.id)) {
+        showToast('শুধু নিজের পাঠানো মেসেজ ডিলিট করা যাবে', 'error');
+        return;
+      }
+
+      if (!confirm('এই মেসেজটি ডিলিট করবেন?')) return;
+
+      const firebaseMessageId = String(message.firebaseId || message.id || '');
+      const db = window.firebaseDb;
+      const fb = window.fb;
+
+      try {
+        // Delete the Firestore document first. The realtime listener will then
+        // remove it from every open client automatically.
+        if (db && fb && firebaseMessageId && !firebaseMessageId.startsWith('local_')) {
+          const chatId = makeChatId(state.currentUser.id, targetUserId);
+          const messagesCollection = fb.collection(db, 'oikko_chats', chatId, 'messages');
+          await fb.deleteDoc(fb.doc(messagesCollection, firebaseMessageId));
+        }
+
+        state.messages[targetUserId] = list.filter(m =>
+          String(m.id) !== String(messageId) && String(m.firebaseId || '') !== String(messageId)
+        );
+        saveMessages(state.messages);
+        renderMessengerOnly();
+        scrollChatToBottom();
+        showToast('মেসেজ ডিলিট হয়েছে', 'success');
+      } catch (err) {
+        console.error('Messenger message delete failed:', err);
+        showToast(`মেসেজ ডিলিট করা যায়নি: ${err?.code || 'unknown'}`, 'error');
+      }
+    }
+    window.handleDeleteMessengerMessage = handleDeleteMessengerMessage;
 
     async function handleSendMessengerMessage(e, targetUserId) {
       e.preventDefault();
@@ -2616,6 +2674,20 @@
             .messenger-input:focus-within{border-color:#2F6F57!important;box-shadow:0 0 0 4px rgba(47,111,87,.10)}
             .messenger-theme-dark .messenger-input:focus-within{border-color:#6DBA97!important;box-shadow:0 0 0 4px rgba(109,186,151,.12)}
             .messenger-message-bubble{letter-spacing:.005em}
+            /* Own-message delete action: hidden until the user clicks the message bubble. */
+            .messenger-own-bubble{cursor:pointer}
+            .messenger-delete-action{
+              opacity:0!important;
+              pointer-events:none!important;
+              transform:scale(.82) translateX(-3px);
+              transition:opacity .16s ease,transform .16s ease,background .16s ease;
+            }
+            .messenger-own-bubble.messenger-delete-visible .messenger-delete-action{
+              opacity:1!important;
+              pointer-events:auto!important;
+              transform:scale(1) translateX(0);
+            }
+            .messenger-own-bubble.messenger-delete-visible{z-index:20}
             .messenger-shell .send-btn{box-shadow:0 7px 18px rgba(47,111,87,.22);transition:transform .15s ease,box-shadow .15s ease}
             .messenger-shell .send-btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(47,111,87,.28)}
             .messenger-shell .send-btn:active{transform:scale(.94)}
@@ -2839,7 +2911,10 @@
                     </div>
                     ${messages.length ? messages.map(msg => `
                       <div class="flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}">
-                        <div class="messenger-message-bubble max-w-[78%] sm:max-w-[65%] ${msg.sender === 'me' ? 'messenger-outgoing rounded-[20px] rounded-br-[6px]' : 'messenger-incoming rounded-[20px] rounded-bl-[6px]'} px-3.5 py-2 text-[14px] leading-5">
+                        <div onclick="${msg.sender === 'me' ? 'toggleMessengerDelete(this)' : ''}" class="messenger-message-bubble ${msg.sender === 'me' ? 'messenger-own-bubble' : ''} relative max-w-[78%] sm:max-w-[65%] ${msg.sender === 'me' ? 'messenger-outgoing rounded-[20px] rounded-br-[6px]' : 'messenger-incoming rounded-[20px] rounded-bl-[6px]'} px-3.5 py-2 text-[14px] leading-5">
+                          ${msg.sender === 'me' ? `<button type="button" onclick="event.stopPropagation(); handleDeleteMessengerMessage('${String(msg.id).replace(/'/g, "\\'")}', '${String(target.id).replace(/'/g, "\\'")}')" class="messenger-delete-action absolute -top-2 -left-2 w-7 h-7 rounded-full bg-white dark:bg-[#24352D] text-[#7A5A5A] shadow-md border border-[#E2E2D5] dark:border-[#3A4A41] flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-950/40 transition z-10" title="মেসেজ ডিলিট করুন" aria-label="মেসেজ ডিলিট করুন">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                          </button>` : ''}
                           ${msg.mediaType === 'video' && msg.videoUrl ? `<video src="${escapeHtml(msg.videoUrl)}" controls playsinline preload="metadata" class="rounded-xl max-h-80 max-w-full object-contain bg-black/10 mb-1.5"></video>` : ''}
                           ${msg.mediaType !== 'video' && msg.imageUrl ? `<img src="${escapeHtml(msg.imageUrl)}" alt="ছবি" loading="lazy" class="rounded-xl max-h-80 max-w-full object-cover mb-1.5" />` : ''}
                           ${msg.text && !(msg.mediaType === 'video' && msg.text === 'ভিডিও পাঠিয়েছেন') && !(msg.mediaType === 'image' && msg.text === 'ছবি পাঠিয়েছেন') ? `<p class="break-words whitespace-pre-wrap">${escapeHtml(msg.text)}</p>` : ''}
