@@ -353,6 +353,170 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+
+    /* ===== Amar Album — Oikko UI-native gallery ===== */
+    .oikko-album-shell{max-width:72rem;margin:0 auto;padding:1rem .75rem 7rem}
+    .oikko-album-hero{position:relative;overflow:hidden;border-radius:1.6rem;padding:1.5rem;background:
+      linear-gradient(120deg,rgba(18,35,28,.98),rgba(47,111,87,.96)),
+      radial-gradient(circle at 100% 0%,rgba(239,115,88,.42),transparent 22rem);
+      box-shadow:0 20px 45px rgba(18,35,28,.16);color:#fff}
+    .oikko-album-hero:after{content:"";position:absolute;width:15rem;height:15rem;border-radius:50%;right:-5rem;top:-8rem;border:1px solid rgba(255,255,255,.16);box-shadow:0 0 0 1.8rem rgba(255,255,255,.035),0 0 0 3.6rem rgba(255,255,255,.02)}
+    .oikko-album-hero>*{position:relative;z-index:1}
+    .oikko-album-eyebrow{font-size:.68rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#c9e8d4}
+    .oikko-album-hero h1{margin:.45rem 0 .35rem;font-family:Outfit,'Hind Siliguri',sans-serif;font-size:clamp(1.8rem,4vw,3rem);line-height:1.08;letter-spacing:-.035em}
+    .oikko-album-hero p{margin:0;color:rgba(255,255,255,.72);font-size:.82rem;line-height:1.75;max-width:42rem}
+    .oikko-album-stats{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+    .oikko-album-stat{padding:.55rem .8rem;border-radius:.85rem;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);font-size:.68rem}
+    .oikko-album-stat b{font-size:1rem;margin-right:.2rem}
+    .oikko-album-toolbar{display:flex;gap:.6rem;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:1rem 0}
+    .oikko-album-tabs{display:flex;gap:.25rem;padding:.25rem;border-radius:.9rem;background:var(--brand-mint)}
+    .oikko-album-tab{border:0;background:transparent;color:var(--brand-ink);padding:.55rem .75rem;border-radius:.7rem;font-size:.72rem;font-weight:800}
+    .oikko-album-tab.active{background:#fff;box-shadow:0 5px 15px rgba(0,0,0,.08)}
+    html.dark .oikko-album-tab.active{background:#21211a;color:#edf3ee}
+    .oikko-album-tools{display:flex;gap:.45rem;align-items:center;flex:1;justify-content:flex-end}
+    .oikko-album-search{height:2.55rem;min-width:12rem;max-width:20rem;flex:1;border:1px solid var(--border-color);background:var(--surface,#fff);color:var(--text-primary);border-radius:.85rem;padding:0 .8rem 0 2.25rem;outline:0;font-size:.75rem}
+    .oikko-album-search:focus{border-color:var(--primary-olive);box-shadow:0 0 0 3px rgba(47,111,87,.12)}
+    .oikko-album-search-wrap{position:relative;display:flex;align-items:center;max-width:20rem;flex:1}
+    .oikko-album-search-wrap i{position:absolute;left:.75rem;width:1rem;color:var(--text-muted)}
+    .oikko-album-viewbtn{height:2.55rem;width:2.55rem;border:1px solid var(--border-color);background:var(--surface,#fff);color:var(--text-primary);border-radius:.8rem;display:grid;place-items:center}
+    .oikko-album-viewbtn.active{background:var(--primary-olive);color:#fff;border-color:var(--primary-olive)}
+    .oikko-album-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.9rem}
+    .oikko-album-card{background:var(--surface,#fff);border:1px solid var(--border-color);border-radius:1.2rem;overflow:hidden;box-shadow:0 9px 25px rgba(66,66,47,.055);transition:.22s ease;cursor:pointer}
+    .oikko-album-card:hover{transform:translateY(-4px);box-shadow:0 17px 32px rgba(66,66,47,.11);border-color:rgba(90,90,64,.3)}
+    .oikko-album-media{position:relative;aspect-ratio:4/3;background:#dfe8e2;overflow:hidden}
+    .oikko-album-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+    .oikko-album-card:hover .oikko-album-media img{transform:scale(1.045)}
+    .oikko-album-heart{position:absolute;right:.6rem;top:.6rem;width:2.2rem;height:2.2rem;border:1px solid rgba(255,255,255,.72);background:rgba(255,255,255,.92);border-radius:50%;display:grid;place-items:center;color:#354039;z-index:2;box-shadow:0 6px 16px rgba(0,0,0,.16)}
+    .oikko-album-heart.active{color:#e55362}.oikko-album-heart svg{width:1rem;height:1rem}
+    .oikko-album-badge{position:absolute;left:.6rem;bottom:.6rem;padding:.3rem .5rem;border-radius:.55rem;background:rgba(18,35,28,.66);backdrop-filter:blur(7px);color:#fff;font-size:.58rem;font-weight:800}
+    .oikko-album-body{padding:.75rem .8rem .8rem}
+    .oikko-album-title{
+      font-size:.82rem;
+      font-weight:900;
+      line-height:1.35;
+      color:#26382f !important;
+      opacity:1 !important;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      text-shadow:none;
+    }
+    .oikko-album-meta{
+      display:flex;
+      justify-content:space-between;
+      gap:.5rem;
+      margin-top:.35rem;
+      font-size:.66rem;
+      font-weight:650;
+      color:#68776f !important;
+      opacity:1 !important;
+    }
+    .oikko-album-meta span{
+      color:#68776f !important;
+      opacity:1 !important;
+    }
+    /* Dark mode readability fix */
+    html.dark .oikko-album-card{
+      background:#18221d !important;
+      border-color:#2d3b34 !important;
+      box-shadow:0 10px 28px rgba(0,0,0,.28);
+    }
+    html.dark .oikko-album-body{
+      background:#18221d !important;
+    }
+    html.dark .oikko-album-card .oikko-album-title,
+    body.dark .oikko-album-card .oikko-album-title{
+      color:#ffffff !important;
+      opacity:1 !important;
+      text-shadow:none !important;
+    }
+    html.dark .oikko-album-card .oikko-album-meta,
+    html.dark .oikko-album-card .oikko-album-meta span,
+    body.dark .oikko-album-card .oikko-album-meta,
+    body.dark .oikko-album-card .oikko-album-meta span{
+      color:#c6d2cb !important;
+      opacity:1 !important;
+    }
+    html.dark .oikko-album-badge{
+      background:rgba(10,18,14,.82);
+      color:#ffffff !important;
+    }
+    .oikko-album-list{display:grid;grid-template-columns:1fr;gap:.65rem}
+    .oikko-album-list .oikko-album-card{display:grid;grid-template-columns:9rem 1fr}
+    .oikko-album-list .oikko-album-media{aspect-ratio:16/10}
+    .oikko-album-empty{padding:3.5rem 1rem;text-align:center;border:1px dashed var(--border-color);border-radius:1.2rem;color:var(--text-muted);grid-column:1/-1;background:var(--surface,#fff)}
+    .oikko-album-empty-icon{width:3.6rem;height:3.6rem;margin:0 auto .7rem;border-radius:1.1rem;background:var(--surface2,#eef4f0);display:grid;place-items:center}
+    .oikko-album-lightbox{position:fixed;inset:0;z-index:100;background:rgba(2,7,4,.94);display:none;align-items:center;justify-content:center;padding:1rem}
+    .oikko-album-lightbox.show{display:flex}
+    .oikko-album-viewer{width:min(70rem,100%);height:min(90vh,50rem);display:flex;flex-direction:column;gap:.6rem}
+    .oikko-album-viewer-top,.oikko-album-viewer-bottom{display:flex;align-items:center;justify-content:space-between;gap:.7rem;color:#fff}
+    .oikko-album-viewer-top strong{font-size:.8rem}.oikko-album-viewer-top span,.oikko-album-viewer-bottom{font-size:.65rem;color:#b9c5be}
+    .oikko-album-viewer-image{position:relative;flex:1;min-height:0;display:grid;place-items:center}
+    .oikko-album-viewer-image img{max-width:100%;max-height:100%;object-fit:contain;border-radius:.8rem;box-shadow:0 24px 75px rgba(0,0,0,.45)}
+    .oikko-album-nav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+    .oikko-album-nav button,.oikko-album-close{pointer-events:auto;width:2.7rem;height:2.7rem;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);color:#fff;border-radius:50%;display:grid;place-items:center;backdrop-filter:blur(9px)}
+    .oikko-album-close{position:static}
+    .oikko-album-actions{display:flex;gap:.4rem}.oikko-album-action{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#fff;border-radius:.65rem;padding:.45rem .6rem;font-size:.65rem}
+    @media(max-width:1050px){.oikko-album-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:800px){.oikko-album-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:560px){
+      .oikko-album-shell{padding-left:.65rem;padding-right:.65rem}
+      .oikko-album-grid{grid-template-columns:1fr}
+      .oikko-album-toolbar{align-items:stretch}
+      .oikko-album-tools{width:100%;justify-content:stretch}
+      .oikko-album-search-wrap{max-width:none}
+      .oikko-album-list .oikko-album-card{grid-template-columns:7.5rem 1fr}
+      .oikko-album-hero{padding:1.25rem}
+      .oikko-album-viewer-bottom{align-items:flex-start;flex-direction:column}
+    }
+
+  
+/* ===== Oikko Tube ===== */
+.oikko-tube-shell{min-height:calc(100vh - 130px);padding:1rem .75rem 7rem;background:var(--bg,#f6f8f5)}
+.oikko-tube-wrap{max-width:1180px;margin:0 auto}
+.oikko-tube-head{position:sticky;top:0;z-index:20;padding:.65rem 0 .8rem;background:linear-gradient(var(--bg,#f6f8f5) 78%,transparent)}
+.oikko-tube-search{display:flex;align-items:center;gap:.6rem;background:var(--surface,#fff);border:1px solid var(--border-color,#e4e9e5);border-radius:999px;padding:.65rem .7rem .65rem 1rem;box-shadow:0 8px 24px rgba(34,61,47,.07)}
+.oikko-tube-search input{min-width:0;flex:1;background:transparent;outline:none;border:0;color:var(--text,#18251e);font-size:.9rem}
+.oikko-tube-search input::placeholder{color:#8b9891}
+.oikko-tube-add{width:2.55rem;height:2.55rem;border-radius:50%;display:grid;place-items:center;background:#2f6f57;color:#fff;box-shadow:0 8px 20px rgba(47,111,87,.28);transition:.2s;flex:0 0 auto}
+.oikko-tube-add:hover{transform:translateY(-1px);background:#255b48}
+.oikko-tube-brand{display:flex;align-items:center;gap:.65rem;margin:.7rem 0 .15rem}
+.oikko-tube-brand-icon{width:2.25rem;height:2.25rem;border-radius:.75rem;background:#2f6f57;color:#fff;display:grid;place-items:center}
+.oikko-tube-brand h1{font-size:1.15rem;font-weight:900;color:var(--text,#18251e)}
+.oikko-tube-brand p{font-size:.72rem;color:var(--text-muted,#718078);margin-top:.08rem}
+.oikko-tube-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.2rem}
+.oikko-tube-card{background:var(--surface,#fff);border:1px solid var(--border-color,#e4e9e5);border-radius:1rem;overflow:hidden;box-shadow:0 8px 25px rgba(26,52,39,.06);transition:.2s}
+.oikko-tube-card:hover{transform:translateY(-2px);box-shadow:0 14px 35px rgba(26,52,39,.1)}
+.oikko-tube-video{display:block;width:100%;aspect-ratio:16/9;background:#08100c;object-fit:cover}
+.oikko-tube-body{padding:.75rem .8rem .85rem}
+.oikko-tube-title{font-size:.94rem;font-weight:850;line-height:1.35;color:var(--text,#18251e);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.oikko-tube-desc{font-size:.76rem;color:var(--text-muted,#6f7d75);margin-top:.35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.oikko-tube-user{display:flex;align-items:center;gap:.5rem;margin-top:.65rem}
+.oikko-tube-user img{width:2rem;height:2rem;border-radius:50%;object-fit:cover;border:1px solid var(--border-color,#dce5df)}
+.oikko-tube-user strong{font-size:.72rem;color:var(--text,#26342d)}
+.oikko-tube-user span{font-size:.65rem;color:var(--text-muted,#7a8780);display:block;margin-top:.05rem}
+.oikko-tube-empty{padding:4rem 1rem;text-align:center;color:var(--text-muted,#748078);background:var(--surface,#fff);border:1px dashed var(--border-color,#dce5df);border-radius:1rem}
+.oikko-tube-modal{position:fixed;inset:0;z-index:100;background:rgba(4,10,7,.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:1rem}
+.oikko-tube-modal.show{display:flex}
+.oikko-tube-dialog{width:min(560px,100%);max-height:92vh;overflow:auto;background:var(--surface,#fff);border:1px solid var(--border-color,#dce5df);border-radius:1.25rem;padding:1rem;box-shadow:0 25px 80px rgba(0,0,0,.25)}
+.oikko-tube-field{width:100%;border:1px solid var(--border-color,#dce5df);background:var(--surface2,#f5f8f6);color:var(--text,#18251e);border-radius:.8rem;padding:.72rem .8rem;outline:none;font-size:.84rem}
+.oikko-tube-field:focus{border-color:#2f6f57;box-shadow:0 0 0 3px rgba(47,111,87,.12)}
+.oikko-tube-primary{background:#2f6f57;color:#fff;border-radius:.75rem;padding:.7rem 1rem;font-weight:800}
+.oikko-tube-secondary{background:var(--surface2,#edf2ef);color:var(--text,#24332b);border-radius:.75rem;padding:.7rem 1rem;font-weight:800}
+html.dark .oikko-tube-shell,body.dark .oikko-tube-shell{background:#0d1712}
+html.dark .oikko-tube-head,body.dark .oikko-tube-head{background:linear-gradient(#0d1712 78%,transparent)}
+html.dark .oikko-tube-card,html.dark .oikko-tube-dialog,body.dark .oikko-tube-card,body.dark .oikko-tube-dialog{background:#16221b;border-color:#2a3a31}
+html.dark .oikko-tube-search,body.dark .oikko-tube-search{background:#16221b;border-color:#2a3a31}
+html.dark .oikko-tube-field,body.dark .oikko-tube-field{background:#0f1a14;border-color:#2a3a31;color:#fff}
+@media(max-width:900px){.oikko-tube-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.oikko-tube-toolbar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin:.65rem 0 .25rem;flex-wrap:wrap}
+.oikko-tube-count,.oikko-tube-limit{display:inline-flex;align-items:center;gap:.35rem;font-size:.68rem;font-weight:800;color:var(--text-muted,#718078)}
+.oikko-tube-limit{padding:.3rem .55rem;border-radius:999px;background:rgba(47,111,87,.09);color:#2f6f57}
+.oikko-tube-video-wrap{position:relative;background:#08100c;aspect-ratio:16/9}
+.oikko-tube-video-wrap .oikko-tube-video{height:100%;object-fit:contain}
+.oikko-tube-video-badge{position:absolute;left:.6rem;bottom:.55rem;pointer-events:none;display:inline-flex;align-items:center;gap:.28rem;padding:.28rem .48rem;border-radius:.5rem;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);color:#fff;font-size:.56rem;font-weight:900;letter-spacing:.06em}
+@media(max-width:600px){.oikko-tube-shell{padding:.55rem .55rem 6.5rem}.oikko-tube-grid{grid-template-columns:1fr;gap:.8rem}.oikko-tube-card{border-radius:.9rem}.oikko-tube-head{padding-top:.35rem}.oikko-tube-brand h1{font-size:1.05rem}.oikko-tube-search{padding:.55rem .55rem .55rem .85rem}.oikko-tube-add{width:2.35rem;height:2.35rem}}
+
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -377,7 +541,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
     import { getDatabase, ref, push, set, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
-    import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-storage.js";
+    import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-storage.js";
         import { 
       getFirestore, initializeFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, getDoc 
     } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
@@ -441,15 +605,15 @@
       }
       window.firebaseRealtimeDb = realtimeDb;
 
-      // Firebase Storage for Messenger media uploads (resumable, up to 5 GB per file).
+      // Firebase Storage for Messenger + Oikko Tube media uploads (resumable).
       let storage = null;
       try {
-        storage = getStorage(app, `gs://${firebaseConfig.storageBucket}`);
+        storage = getStorage(app);
       } catch (storageErr) {
         console.warn("Firebase Storage initialization failed:", storageErr);
       }
       window.firebaseStorage = storage;
-      window.firebaseStorageApi = { storageRef, uploadBytesResumable, getDownloadURL, deleteObject };
+      window.firebaseStorageApi = { storageRef, uploadBytesResumable, getDownloadURL };
       window.rtdb = { ref, push, set, onChildAdded, serverTimestamp };
       window.fb = {
         collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, getDoc
@@ -962,19 +1126,12 @@
       pastEventPhotos: loadPastEventPhotos(),
       currentUser: loadCurrentUser(),
       authMode: 'user_login', // 'user_login' | 'admin_login' | 'register'
-      activeView: 'feed',     // 'feed' | 'events' | 'admin_posts' | 'admin'
+      activeView: 'feed',     // 'feed' | 'events' | 'album' | 'youtube' | 'admin_posts' | 'admin'
       activeChatUserId: '',
       messages: loadMessages(),
       messengerSearch: '',
       messengerMobileChat: false,
       messengerUnreadCounts: {},
-      oikkoTubeVideos: [],
-      oikkoTubeSearch: '',
-      oikkoTubeUploadBusy: false,
-      oikkoTubeAgeGroup: null, // 'under18' | '18plus'
-      oikkoTubeAgeVerified: false,
-      oikkoTubeAgeGateBusy: false,
-      pendingOikkoTubeAgeGroup: null,
       searchQuery: '',
       globalSearchQuery: '',
       selectedMedia: null,    // { type: 'image' | 'video', url: string, name: string }
@@ -984,7 +1141,11 @@
       expandedComments: {},   // { [postId]: boolean }
       openReplyBoxes: {},     // { [commentId]: boolean }
       isDarkMode: initialIsDark,
-      eventFilterCategory: 'সকল'
+      eventFilterCategory: 'সকল',
+      tubeSearch: '',
+      tubeVideos: [],
+      tubeUnsubscribe: null,
+      tubeUploading: false
     };
 
     function toggleDarkMode() {
@@ -1373,13 +1534,23 @@
             cloudPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             state.pastEventPhotos = cloudPhotos;
             savePastEventPhotos(cloudPhotos);
+            try { localStorage.setItem('oikko_gallery_seeded', '1'); } catch(e) {}
             renderApp();
           } else {
-            INITIAL_PAST_EVENT_PHOTOS.forEach(photo => {
-              setDoc(doc(db, 'past_events_gallery', photo.id), { ...photo, timestamp: Date.now() }).catch(console.warn);
-            });
-            state.pastEventPhotos = INITIAL_PAST_EVENT_PHOTOS;
-            savePastEventPhotos(INITIAL_PAST_EVENT_PHOTOS);
+            let seeded = false;
+            try { seeded = localStorage.getItem('oikko_gallery_seeded') === '1'; } catch(e) {}
+            if (!seeded) {
+              const seedTime = Date.now();
+              INITIAL_PAST_EVENT_PHOTOS.forEach(photo => {
+                setDoc(doc(db, 'past_events_gallery', photo.id), { ...photo, timestamp: seedTime }, { merge: true }).catch(console.warn);
+              });
+              state.pastEventPhotos = [...INITIAL_PAST_EVENT_PHOTOS];
+              savePastEventPhotos(state.pastEventPhotos);
+              try { localStorage.setItem('oikko_gallery_seeded', '1'); } catch(e) {}
+            } else {
+              state.pastEventPhotos = [];
+              savePastEventPhotos([]);
+            }
             renderApp();
           }
         }, (error) => {
@@ -1855,626 +2026,215 @@
 
     // --- 6. Render Functions ---
 
-    // --- OIKKO TUBE: Firebase video-only feed ---
-    const OIKKO_TUBE_MAX_URL_LENGTH = 2000;
-    // Cloud Storage supports objects far larger than this; Oikko Tube intentionally caps
-    // browser video uploads at 100 GiB per file. Resumable upload keeps large uploads reliable.
-    let oikkoTubeUnsubscribe = null;
-    let oikkoTubeLoaded = false;
-    let oikkoTubeLastError = '';
+    // ===== Oikko Tube: video-only community feed =====
+    let tubeVideosUnsubscribe = null;
 
-    function formatTubeBytes(bytes) {
-      if (!Number.isFinite(bytes) || bytes < 0) return '0 B';
-      const units = ['B','KB','MB','GB','TB'];
-      let n = bytes, i = 0;
-      while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
-      return `${n >= 10 || i === 0 ? n.toFixed(0) : n.toFixed(1)} ${units[i]}`;
-    }
-
-    function getTubeErrorMessage(err) {
-      const code = String(err?.code || 'unknown');
-      const map = {
-        'permission-denied': 'Firestore Rules এই ভিডিও পোস্টের অনুমতি দিচ্ছে না।',
-        'unavailable': 'Firestore সাময়িকভাবে unavailable। Internet connection পরীক্ষা করে আবার চেষ্টা করুন।',
-        'failed-precondition': 'Firestore configuration/index-এর একটি সমস্যা হয়েছে।',
-        'network-request-failed': 'Network connection পাওয়া যাচ্ছে না।',
-        'invalid-argument': 'ভিডিও URL বা পোস্টের তথ্য সঠিক নয়.'
-      };
-      return `${map[code] || 'ভিডিও পোস্ট করা যায়নি।'} [${code}]${err?.message ? ` ${err.message}` : ''}`;
-    }
-
-    function setTubeUploadStatus(text, type='info') {
-      const el = document.getElementById('oikko-tube-upload-status');
-      if (!el) return;
-      el.textContent = text;
-      el.className = `mt-2 text-[11px] leading-relaxed ${type === 'error' ? 'text-red-600' : type === 'success' ? 'text-emerald-700' : 'text-[#687060]'}`;
-    }
-
-    function getOikkoTubeMediaHtml(videoUrl) {
-      const raw = String(videoUrl || '').trim();
-      if (!raw) return '';
-      let u;
-      try { u = new URL(raw); } catch (_) {
-        return `<div class="p-6 text-center text-white/80 bg-black">ভিডিও URL সঠিক নয়</div>`;
-      }
-      const host = u.hostname.replace(/^www\./, '').toLowerCase();
-      let youtubeId = '';
-      if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'youtu.be') {
-        if (host === 'youtu.be') youtubeId = u.pathname.slice(1).split('/')[0];
-        else if (u.pathname === '/watch') youtubeId = u.searchParams.get('v') || '';
-        else if (u.pathname.startsWith('/shorts/')) youtubeId = u.pathname.split('/')[2] || '';
-        else if (u.pathname.startsWith('/embed/')) youtubeId = u.pathname.split('/')[2] || '';
-      }
-      if (youtubeId && /^[A-Za-z0-9_-]{6,20}$/.test(youtubeId)) {
-        return `<div class="aspect-video bg-black"><iframe class="w-full h-full" src="https://www.youtube.com/embed/${encodeURIComponent(youtubeId)}" title="Oikko Tube video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
-      }
-      return `<div class="aspect-video bg-black relative"><video src="${escapeHtml(raw)}" controls playsinline preload="metadata" class="w-full h-full object-contain" crossorigin="anonymous" onerror="this.parentElement.querySelector('.tube-video-error')?.classList.remove('hidden')"></video><div class="tube-video-error hidden absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/85 text-white p-5 text-center"><div class="font-bold">ভিডিওটি browser থেকে চালানো যাচ্ছে না</div><div class="text-xs text-white/70">Direct .mp4/.webm URL ব্যবহার করুন, অথবা YouTube link দিন</div><a href="${escapeHtml(raw)}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-white text-black text-xs font-bold">ভিডিও URL খুলুন</a></div></div>`;
-    }
-    window.getOikkoTubeMediaHtml = getOikkoTubeMediaHtml;
-
-    // --- OIKKO TUBE: Internal age verification ---
-    // This verification checks the user's registered Oikko Campus profile data.
-    // It does NOT query or impersonate BDRIS/government records.
-    function getOikkoTubeAgeStorageKey() {
-      return `oikko_tube_age_gate_${String(state.currentUser?.id || state.currentUser?.studentId || 'user')}`;
-    }
-
-    function calculateAgeFromDob(dob) {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(dob || ''))) return null;
-      const birth = new Date(`${dob}T00:00:00`);
-      if (Number.isNaN(birth.getTime())) return null;
-      const today = new Date();
-      let age = today.getFullYear() - birth.getFullYear();
-      const month = today.getMonth() - birth.getMonth();
-      if (month < 0 || (month === 0 && today.getDate() < birth.getDate())) age--;
-      return age >= 0 && age <= 130 ? age : null;
-    }
-
-    function normalizeBirthReg(value) {
-      return String(value || '').replace(/\D/g, '').slice(0, 17);
-    }
-
-    function getCurrentUserVerificationRecord() {
-      const me = state.currentUser;
-      if (!me) return null;
-      return {
-        birthRegistrationNumber: normalizeBirthReg(me.birthRegistrationNumber),
-        dateOfBirth: String(me.dateOfBirth || '').trim()
-      };
-    }
-
-    function loadOikkoTubeAgeVerification() {
-      state.oikkoTubeAgeGroup = null;
-      state.oikkoTubeAgeVerified = false;
-      if (!state.currentUser) return false;
-      try {
-        const saved = JSON.parse(localStorage.getItem(getOikkoTubeAgeStorageKey()) || 'null');
-        if (saved && (saved.ageGroup === 'under18' || saved.ageGroup === '18plus')) {
-          const age = calculateAgeFromDob(state.currentUser.dateOfBirth);
-          if ((saved.ageGroup === '18plus' && age !== null && age >= 18) ||
-              (saved.ageGroup === 'under18' && age !== null && age < 18)) {
-            state.oikkoTubeAgeGroup = saved.ageGroup;
-            state.oikkoTubeAgeVerified = true;
-            return true;
-          }
-        }
-      } catch (_) {}
-      return false;
-    }
-
-    function saveOikkoTubeAgeVerification(ageGroup) {
-      if (ageGroup !== 'under18' && ageGroup !== '18plus') return false;
-      const age = calculateAgeFromDob(state.currentUser?.dateOfBirth);
-      if (age === null) return false;
-      if (ageGroup === '18plus' && age < 18) return false;
-      if (ageGroup === 'under18' && age >= 18) return false;
-
-      state.oikkoTubeAgeGroup = ageGroup;
-      state.oikkoTubeAgeVerified = true;
-      try {
-        localStorage.setItem(getOikkoTubeAgeStorageKey(), JSON.stringify({
-          ageGroup,
-          verifiedAt: Date.now()
-        }));
-      } catch (_) {}
-      return true;
-    }
-
-    function clearOikkoTubeAgeVerification() {
-      try { localStorage.removeItem(getOikkoTubeAgeStorageKey()); } catch (_) {}
-      state.oikkoTubeAgeGroup = null;
-      state.oikkoTubeAgeVerified = false;
-    }
-    window.clearOikkoTubeAgeVerification = clearOikkoTubeAgeVerification;
-
-    function getOikkoTubeAudienceLabel(audience) {
-      return audience === '18plus' ? '১৮+' : '১৮ বছরের নিচে';
-    }
-
-    // Oikko-এর নিজস্ব CAPTCHA; এটি BDRIS/API নয়।
-    let oikkoAgeCaptchaAnswer = '';
-    function refreshOikkoAgeCaptcha() {
-      const canvas = document.getElementById('oikko-age-captcha-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      const a = Math.floor(Math.random() * 8) + 2;
-      const b = Math.floor(Math.random() * 8) + 1;
-      oikkoAgeCaptchaAnswer = String(a + b);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#f7fbff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < 70; i++) {
-        ctx.fillStyle = `rgba(47,111,87,${(Math.random() * .45 + .15).toFixed(2)})`;
-        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1.5, 1.5);
-      }
-      for (let i = 0; i < 5; i++) {
-        ctx.strokeStyle = `rgba(47,111,87,${(Math.random() * .25 + .15).toFixed(2)})`;
-        ctx.beginPath();
-        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
-        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
-        ctx.stroke();
-      }
-      ctx.save();
-      ctx.translate(canvas.width / 2, canvas.height / 2 + 11);
-      ctx.rotate((Math.random() - .5) * .08);
-      ctx.font = '700 30px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#173d2f';
-      ctx.fillText(`${a} + ${b} = ?`, 0, 0);
-      ctx.restore();
-    }
-    window.refreshOikkoAgeCaptcha = refreshOikkoAgeCaptcha;
-
-    function openOikkoTubeAgeGate() {
-      if (!state.currentUser || state.oikkoTubeAgeVerified || state.oikkoTubeAgeGateBusy) return;
-      const modal = document.getElementById('modal-container');
-      if (!modal) return;
-      state.oikkoTubeAgeGateBusy = true;
-      const profile = getCurrentUserVerificationRecord();
-
-      modal.innerHTML = `
-        <div class="fixed inset-0 z-[120] bg-[#eef6fc] overflow-y-auto">
-          <div class="min-h-full flex items-start justify-center p-3 sm:p-6">
-            <div class="w-full max-w-[720px] mt-3 sm:mt-8 bg-[#eef6fc] text-[#202124]">
-              <div class="bg-white border border-[#d5e0e8] shadow-sm rounded-sm overflow-hidden">
-                <div class="px-5 sm:px-7 pt-5 pb-4 border-b border-[#dfe7ed] bg-white">
-                  <div class="text-[13px] text-[#2f6f57] font-medium mb-1">Oikko Tube</div>
-                  <h2 class="text-[21px] sm:text-[24px] font-semibold text-[#202124]">ইনস্ট্যান্ট বয়স যাচাই</h2>
-                  <p class="mt-2 text-[13px] leading-6 text-[#4f5b66]">আপনার Oikko Campus প্রোফাইলে সংরক্ষিত তথ্যের সঙ্গে মিলিয়ে বয়স যাচাই করা হবে। কোনো সরকারি ওয়েবসাইট খোলার প্রয়োজন নেই।</p>
-                </div>
-
-                <div class="px-5 sm:px-7 py-5 sm:py-6">
-                  <div class="rounded-sm border border-[#b9d2e6] bg-[#f7fbff] px-4 py-3 mb-5">
-                    <div class="text-[13px] text-[#174a72] leading-6">
-                      <strong>Oikko Internal Verification</strong><br>
-                      আপনার Oikko Campus অ্যাকাউন্টে সংরক্ষিত Birth Registration Number ও Date of Birth-এর সঙ্গে তথ্য মিললে এবং CAPTCHA সঠিক হলে যাচাই সম্পন্ন হবে।
-                    </div>
-                  </div>
-
-                  <form onsubmit="return submitOikkoTubeAgeVerification(event)" class="space-y-4">
-                    <div>
-                      <label for="oikko-birth-reg" class="block text-[13px] font-semibold text-[#202124] mb-1.5">Birth Registration Number:</label>
-                      <input id="oikko-birth-reg" inputmode="numeric" autocomplete="off" maxlength="17" pattern="[0-9]{17}" placeholder="আপনার ১৭ সংখ্যার নম্বর" class="w-full h-10 border border-[#bfc7ce] rounded-sm bg-white px-3 text-[14px] outline-none focus:border-[#2f6f57] focus:ring-1 focus:ring-[#2f6f57]">
-                    </div>
-
-                    <div>
-                      <label for="oikko-dob" class="block text-[13px] font-semibold text-[#202124] mb-1.5">Date of Birth:</label>
-                      <input id="oikko-dob" type="date" class="w-full h-10 border border-[#bfc7ce] rounded-sm bg-white px-3 text-[14px] outline-none focus:border-[#2f6f57] focus:ring-1 focus:ring-[#2f6f57]">
-                    </div>
-
-                    <div>
-                      <label class="block text-[13px] font-semibold text-[#202124] mb-1.5">নিরাপত্তা যাচাই (CAPTCHA):</label>
-                      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-                        <div class="border border-[#bfc7ce] bg-white rounded-sm p-1 w-fit">
-                          <canvas id="oikko-age-captcha-canvas" width="220" height="64" class="block w-[220px] h-[64px]" aria-label="CAPTCHA"></canvas>
-                        </div>
-                        <button type="button" onclick="refreshOikkoAgeCaptcha()" class="h-10 px-3 rounded-sm bg-[#f1f3f4] border border-[#d5d9dd] text-[#3c4043] text-[12px] font-semibold">↻ নতুন কোড</button>
-                      </div>
-                      <input id="oikko-age-captcha" inputmode="numeric" autocomplete="off" maxlength="2" class="mt-2 w-full h-10 border border-[#bfc7ce] rounded-sm bg-white px-3 text-[14px] outline-none focus:border-[#2f6f57] focus:ring-1 focus:ring-[#2f6f57]" placeholder="ছবির উত্তর লিখুন">
-                    </div>
-
-                    <div class="rounded-sm border border-[#e5e7eb] bg-white p-3">
-                      <div class="text-[12px] font-semibold text-[#4b5563] mb-2">স্বয়ংক্রিয় যাচাই</div>
-                      <p class="text-[12px] leading-5 text-[#6b7280]">Oikko আপনার লগইন করা অ্যাকাউন্টের তথ্যের সঙ্গে মিলিয়ে ফলাফল দেখাবে। এটি সরকারি BDRIS যাচাই নয়।</p>
-                    </div>
-
-                    <div class="rounded-sm border border-[#f0dca8] bg-[#fff9e8] px-3 py-2.5 text-[11px] leading-5 text-[#775b16]">
-                      এই CAPTCHA ও বয়স যাচাই Oikko-এর নিজস্ব internal system। এটি BDRIS-এর সরকারি API নয় এবং সরকারি Birth Record-এর সত্যতা নিশ্চিত করে না।
-                    </div>
-
-                    <div id="oikko-tube-age-status" class="min-h-[20px] text-[12px] text-[#68756D]"></div>
-
-                    <div class="border-t border-[#e5e7eb] pt-4 mt-5">
-                      <div class="text-[13px] font-semibold text-[#202124] mb-3">Content mode</div>
-                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <button type="button" onclick="selectOikkoTubeAgeGroup('under18')" id="oikko-age-under18" class="rounded-sm border border-[#bfc7ce] bg-white p-3 text-left hover:border-[#2f6f57] transition">
-                          <div class="text-[14px] font-bold text-[#2f6f57]">১৮ বছরের নিচে</div>
-                          <div class="text-[11px] text-[#6c786f] mt-1">শুধু Under-18 ভিডিও</div>
-                        </button>
-                        <button type="button" onclick="selectOikkoTubeAgeGroup('18plus')" id="oikko-age-18plus" class="rounded-sm border border-[#bfc7ce] bg-white p-3 text-left hover:border-[#b42318] transition">
-                          <div class="text-[14px] font-bold text-[#b42318]">১৮+</div>
-                          <div class="text-[11px] text-[#6c786f] mt-1">শুধু প্রাপ্তবয়স্কদের জন্য</div>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div class="flex items-center justify-end gap-2 pt-2">
-                      <button type="button" onclick="closeOikkoTubeAgeGate()" class="px-4 py-2 rounded-sm bg-[#f1f3f4] text-[#3c4043] font-semibold text-[13px]">বাতিল</button>
-                      <button id="oikko-age-continue" type="submit" disabled class="px-5 py-2 rounded-sm bg-[#2f6f57] text-white font-semibold text-[13px] opacity-50 cursor-not-allowed">যাচাই ও চালিয়ে যান</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              <div class="text-center text-[11px] text-[#6b7280] py-4">Oikko Tube • Internal Age Verification</div>
-            </div>
-          </div>
-        </div>`;
-
-      if (window.lucide) lucide.createIcons();
-      refreshOikkoAgeCaptcha();
-      const captchaInput = document.getElementById('oikko-age-captcha');
-      if (captchaInput) captchaInput.addEventListener('input', () => { captchaInput.value = captchaInput.value.replace(/\D/g, '').slice(0, 2); });
-      const reg = document.getElementById('oikko-birth-reg');
-      if (reg) reg.addEventListener('input', () => { reg.value = reg.value.replace(/\D/g, '').slice(0, 17); });
-      setTimeout(() => { state.oikkoTubeAgeGateBusy = false; }, 50);
-    }
-    window.openOikkoTubeAgeGate = openOikkoTubeAgeGate;
-
-    function submitOikkoTubeAgeVerification(event) {
-      if (event) event.preventDefault();
-      const reg = normalizeBirthReg(document.getElementById('oikko-birth-reg')?.value);
-      const dob = String(document.getElementById('oikko-dob')?.value || '').trim();
-      const status = document.getElementById('oikko-tube-age-status');
-      const profile = getCurrentUserVerificationRecord();
-      const selectedGroup = state.pendingOikkoTubeAgeGroup;
-      const actualAge = calculateAgeFromDob(profile?.dateOfBirth);
-      const captcha = String(document.getElementById('oikko-age-captcha')?.value || '').trim();
-
-      if (!/^\d{17}$/.test(reg)) {
-        if (status) { status.textContent = 'Birth Registration Number অবশ্যই ১৭ সংখ্যার হতে হবে।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
-        return false;
-      }
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
-        if (status) { status.textContent = 'সঠিক Date of Birth দিন।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
-        return false;
-      }
-      if (captcha !== oikkoAgeCaptchaAnswer) {
-        if (status) { status.textContent = 'CAPTCHA-এর উত্তর সঠিক নয়। নতুন কোড নিয়ে আবার চেষ্টা করুন।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
-        return false;
-      }
-      if (!profile?.birthRegistrationNumber || profile.birthRegistrationNumber === '***********' ||
-          reg !== profile.birthRegistrationNumber || dob !== profile.dateOfBirth) {
-        if (status) { status.textContent = 'তথ্য মেলেনি। আপনার Oikko Campus প্রোফাইলের তথ্য ঠিক আছে কি না দেখুন।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
-        return false;
-      }
-      if (actualAge === null) {
-        if (status) { status.textContent = 'আপনার প্রোফাইলে বৈধ Date of Birth পাওয়া যায়নি।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
-        return false;
-      }
-      if (!selectedGroup) {
-        if (status) { status.textContent = 'একটি Content mode নির্বাচন করুন।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
-        return false;
-      }
-      if (selectedGroup === '18plus' && actualAge < 18) {
-        if (status) { status.textContent = 'আপনার বয়স ১৮ বছরের কম হওয়ায় ১৮+ mode ব্যবহার করা যাবে না।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
-        return false;
-      }
-      if (selectedGroup === 'under18' && actualAge >= 18) {
-        if (status) { status.textContent = 'আপনার প্রোফাইল অনুযায়ী ১৮+ mode নির্বাচন করতে হবে।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
-        return false;
-      }
-
-      if (!saveOikkoTubeAgeVerification(selectedGroup)) {
-        if (status) { status.textContent = 'বয়স যাচাই সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।'; status.className = 'min-h-[20px] text-[12px] text-red-600 font-semibold'; }
-        return false;
-      }
-
-      state.pendingOikkoTubeAgeGroup = null;
-      state.oikkoTubeAgeGateBusy = false;
-      const modal = document.getElementById('modal-container');
-      if (modal) modal.innerHTML = '';
-      showToast(`বয়স যাচাই সফল হয়েছে — ${getOikkoTubeAudienceLabel(selectedGroup)} mode চালু`, 'success');
-      renderApp();
-      return false;
-    }
-    window.submitOikkoTubeAgeVerification = submitOikkoTubeAgeVerification;
-    window.openOikkoTubeAgeGate = openOikkoTubeAgeGate;
-
-    function selectOikkoTubeAgeGroup(ageGroup) {
-      if (ageGroup !== 'under18' && ageGroup !== '18plus') return;
-      state.pendingOikkoTubeAgeGroup = ageGroup;
-      const under = document.getElementById('oikko-age-under18');
-      const plus = document.getElementById('oikko-age-18plus');
-      const cont = document.getElementById('oikko-age-continue');
-      const status = document.getElementById('oikko-tube-age-status');
-      [under, plus].forEach(el => {
-        if (el) { el.classList.remove('border-[#2F6F57]', 'bg-[#EDF2EF]', 'border-red-500', 'bg-red-50'); }
-      });
-      const selected = ageGroup === '18plus' ? plus : under;
-      if (selected) selected.classList.add(ageGroup === '18plus' ? 'border-red-500' : 'border-[#2F6F57]', ageGroup === '18plus' ? 'bg-red-50' : 'bg-[#EDF2EF]');
-      if (cont) { cont.disabled = false; cont.classList.remove('opacity-50', 'cursor-not-allowed'); }
-      if (status) status.textContent = ageGroup === '18plus' ? '১৮+ ভিডিও মোড নির্বাচন করা হয়েছে।' : '১৮ বছরের নিচের ভিডিও মোড নির্বাচন করা হয়েছে।';
-    }
-    window.selectOikkoTubeAgeGroup = selectOikkoTubeAgeGroup;
-
-    function closeOikkoTubeAgeGate() {
-      state.pendingOikkoTubeAgeGroup = null;
-      state.oikkoTubeAgeGateBusy = false;
-      const modal = document.getElementById('modal-container');
-      if (modal) modal.innerHTML = '';
-      if (state.activeView === 'youtube' && !state.oikkoTubeAgeVerified) {
-        state.activeView = 'feed';
-        renderApp();
-      }
-    }
-    window.closeOikkoTubeAgeGate = closeOikkoTubeAgeGate;
-
-    function confirmOikkoTubeAgeGate() {
-      const ageGroup = state.pendingOikkoTubeAgeGroup;
-      const status = document.getElementById('oikko-tube-age-status');
-      if (ageGroup !== 'under18' && ageGroup !== '18plus') {
-        if (status) { status.textContent = 'প্রথমে একটি বয়সের শ্রেণি নির্বাচন করুন।'; status.className = 'text-xs mt-3 min-h-[18px] text-red-600 font-semibold'; }
-        return;
-      }
-      saveOikkoTubeAgeVerification(ageGroup);
-      state.pendingOikkoTubeAgeGroup = null;
-      const modal = document.getElementById('modal-container');
-      if (modal) modal.innerHTML = '';
-      if (window.showToast) showToast(ageGroup === '18plus' ? '১৮+ কনটেন্ট মোড চালু হয়েছে।' : '১৮ বছরের নিচের কনটেন্ট মোড চালু হয়েছে।', 'success');
-      if (state.activeView === 'youtube') renderApp();
-    }
-    window.confirmOikkoTubeAgeGate = confirmOikkoTubeAgeGate;
-
-    function ensureOikkoTubeAgeGate() {
-      if (!state.currentUser || state.activeView !== 'youtube') return;
-      if (!state.oikkoTubeAgeVerified) loadOikkoTubeAgeVerification();
-      if (!state.oikkoTubeAgeVerified) openOikkoTubeAgeGate();
+    function getTubeVideosFiltered() {
+      const q = String(state.tubeSearch || '').trim().toLowerCase();
+      const list = Array.isArray(state.tubeVideos) ? [...state.tubeVideos] : [];
+      return list.filter(v => !q || [v.title, v.description, v.authorName].some(x => String(x || '').toLowerCase().includes(q)))
+        .sort((a,b) => Number(b.timestamp || 0) - Number(a.timestamp || 0));
     }
 
     function renderOikkoTubeView() {
-      const q = String(state.oikkoTubeSearch || '').trim().toLowerCase();
-      const ageGroup = state.oikkoTubeAgeGroup;
-      const videos = (state.oikkoTubeVideos || []).filter(v => {
-        if (!ageGroup) return false;
-        const audience = v.audience === '18plus' ? '18plus' : (v.audience === 'under18' ? 'under18' : 'unclassified');
-        // নিরাপত্তার জন্য audience না থাকা পুরোনো ভিডিও under-18 ব্যবহারকারীদের দেখানো হবে না।
-        if (ageGroup === 'under18' && audience !== 'under18') return false;
-        if (ageGroup === '18plus' && audience !== '18plus') return false;
-        if (!q) return true;
-        return [v.title, v.description, v.authorName, v.authorStudentId].some(x => String(x || '').toLowerCase().includes(q));
-      });
+      const videos = getTubeVideosFiltered();
       return `
-        <main class="min-h-screen bg-[#F4F7F5] pb-24">
-          <section class="max-w-5xl mx-auto px-3 sm:px-5 pt-4">
-            <div class="rounded-3xl bg-white border border-[#DCE7E0] shadow-sm p-4 sm:p-5">
-              <div class="flex items-center justify-between gap-3 mb-4">
-                <div>
-                  <div class="flex items-center gap-2"><span class="w-9 h-9 rounded-xl bg-[#2F6F57] text-white flex items-center justify-center"><i data-lucide="play" class="w-4 h-4"></i></span><h1 class="text-xl sm:text-2xl font-black text-[#1F2A24]">Oikko Tube</h1></div>
-                  <p class="text-xs text-[#788278] mt-1">ভিডিও দেখুন ও শেয়ার করুন — আপনার বয়স অনুযায়ী উপযুক্ত ভিডিও দেখানো হবে।</p>
-                </div>
-                <button type="button" onclick="openOikkoTubeUploadModal()" class="shrink-0 rounded-2xl bg-[#2F6F57] hover:bg-[#245844] text-white px-4 py-2.5 text-xs sm:text-sm font-extrabold flex items-center gap-1.5 shadow-sm"><i data-lucide="plus" class="w-4 h-4"></i>ভিডিও পোস্ট</button>
+        <main class="oikko-tube-shell flex-1">
+          <div class="oikko-tube-wrap">
+            <div class="oikko-tube-head">
+              <div class="oikko-tube-brand">
+                <div class="oikko-tube-brand-icon"><i data-lucide="play" class="w-4 h-4 fill-current"></i></div>
+                <div><h1>Oikko Tube</h1><p>Oikko Community-এর ভিডিও জগৎ — শুধু ভিডিও পোস্ট করুন ও দেখুন</p></div>
               </div>
-              <div class="flex flex-wrap items-center gap-2 mb-3">
-                <span class="px-2.5 py-1 rounded-full bg-[#EDF2EF] text-[#2F6F57] text-[11px] font-extrabold">দেখানো হচ্ছে: ${state.oikkoTubeAgeGroup === '18plus' ? '১৮+ ভিডিও' : '১৮ বছরের নিচের ভিডিও'}</span>
-                <button type="button" onclick="clearOikkoTubeAgeVerification(); openOikkoTubeAgeGate();" class="px-2.5 py-1 rounded-full bg-white border border-[#DCE7E0] text-[#5D6A62] text-[11px] font-bold">বয়স মোড পরিবর্তন</button>
+              <div class="oikko-tube-search">
+                <i data-lucide="search" class="w-4 h-4 text-[#2F6F57] shrink-0"></i>
+                <input id="oikko-tube-search" value="${escapeHtml(state.tubeSearch || '')}" oninput="handleTubeSearch(this.value)" placeholder="ভিডিও, বিষয় বা পোস্টদাতার নাম খুঁজুন..." autocomplete="off" enterkeyhint="search" />
+                <button type="button" onclick="openTubeUploadModal()" class="oikko-tube-add" title="ভিডিও পোস্ট করুন" aria-label="ভিডিও পোস্ট করুন"><i data-lucide="plus" class="w-5 h-5"></i></button>
               </div>
-              <div class="flex items-center gap-2 rounded-2xl bg-[#F4F7F5] border border-[#DCE7E0] px-3 py-2.5">
-                <i data-lucide="search" class="w-4 h-4 text-[#7A887E]"></i>
-                <input value="${escapeHtml(state.oikkoTubeSearch || '')}" oninput="handleOikkoTubeSearch(this.value)" class="flex-1 bg-transparent outline-none text-sm" placeholder="ভিডিও, বিষয় বা শিক্ষার্থীর নাম খুঁজুন..." />
+              <div class="oikko-tube-toolbar">
+                <span class="oikko-tube-count"><i data-lucide="video" class="w-3.5 h-3.5"></i> ${videos.length} টি ভিডিও</span>
+                <span class="oikko-tube-limit">সর্বোচ্চ আপলোড: ১০ GB</span>
               </div>
             </div>
-            <div class="mt-4 space-y-4">
-              ${videos.length ? videos.map(v => `
-                <article class="rounded-3xl overflow-hidden bg-white border border-[#DCE7E0] shadow-sm">
-                  ${getOikkoTubeMediaHtml(v.videoUrl)}
-                  <div class="p-4">
-                    <h2 class="font-black text-[#1F2A24] text-base sm:text-lg">${escapeHtml(v.title || 'ভিডিও')}</h2>
-                    ${v.description ? `<p class="text-xs text-[#69756D] mt-1 whitespace-pre-wrap">${escapeHtml(v.description)}</p>` : ''}
-                    <div class="mt-2"><span class="inline-flex px-2 py-1 rounded-full text-[10px] font-extrabold ${v.audience === '18plus' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-[#EDF2EF] text-[#2F6F57] border border-[#DCE7E0]'}">${getOikkoTubeAudienceLabel(v.audience)}</span></div>
-                    <div class="flex flex-wrap items-center justify-between gap-2 mt-3 text-[11px] text-[#7A887E]"><span class="font-bold">${escapeHtml(v.authorName || v.authorStudentId || 'শিক্ষার্থী')}</span><span>${v.timestamp ? new Date(v.timestamp).toLocaleString('bn-BD') : ''}</span></div>
-                    ${String(v.authorId || '') === String(state.currentUser?.id || '') ? `<div class="flex justify-end flex-wrap gap-2 mt-3"><button type="button" onclick="openOikkoTubeEditModal('${escapeHtml(v.id)}')" class="px-3 py-2 rounded-xl bg-[#EDF2EF] hover:bg-[#E1EAE4] text-[#2F6F57] text-xs font-extrabold flex items-center gap-1.5"><i data-lucide="pencil" class="w-3.5 h-3.5"></i>শিরোনাম/বিষয়বস্তু পরিবর্তন</button><button type="button" onclick="openOikkoTubeDeleteModal('${escapeHtml(v.id)}')" class="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-extrabold flex items-center gap-1.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i>ভিডিও ডিলিট</button></div>` : ''}
-                  </div>
-                </article>`).join('') : `
-                <div class="rounded-3xl bg-white border border-dashed border-[#C9D8CF] p-10 text-center text-[#748077]"><i data-lucide="video" class="w-10 h-10 mx-auto mb-2 opacity-60"></i><p class="font-bold">এখনও কোনো ভিডিও নেই</p><p class="text-xs mt-1">আপনার বয়সভিত্তিক শ্রেণিতে এখনো কোনো ভিডিও নেই। “ভিডিও পোস্ট” চাপ দিয়ে ভিডিও যোগ করুন।</p></div>`}
-            </div>
-          </section>
-        </main>`;
+            ${videos.length ? `<div class="oikko-tube-grid">${videos.map(renderTubeCard).join('')}</div>` : `<div class="oikko-tube-empty"><i data-lucide="video-off" class="w-10 h-10 mx-auto mb-3 opacity-50"></i><div class="font-bold text-sm">${state.tubeSearch ? 'কোনো ভিডিও পাওয়া যায়নি' : 'এখনও কোনো ভিডিও পোস্ট করা হয়নি'}</div><div class="text-xs mt-1">উপরের + বাটনে ক্লিক করে প্রথম ভিডিওটি পোস্ট করুন।</div></div>`}
+          </div>
+        </main>
+      `;
     }
 
-    function handleOikkoTubeSearch(value) {
-      state.oikkoTubeSearch = value || '';
+    function renderTubeCard(v) {
+      const avatarUrl = v.authorAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';
+      return `<article class="oikko-tube-card">
+        <div class="oikko-tube-video-wrap">
+          <video class="oikko-tube-video" controls preload="metadata" playsinline src="${escapeHtml(v.videoUrl)}"></video>
+          <span class="oikko-tube-video-badge"><i data-lucide="play" class="w-3 h-3 fill-current"></i> VIDEO</span>
+        </div>
+        <div class="oikko-tube-body">
+          <h2 class="oikko-tube-title">${escapeHtml(v.title || 'Untitled video')}</h2>
+          ${v.description ? `<p class="oikko-tube-desc">${escapeHtml(v.description)}</p>` : ''}
+          <div class="oikko-tube-user"><img src="${escapeHtml(avatarUrl)}" alt="প্রোফাইল"><div><strong>${escapeHtml(v.authorName || 'Oikko User')}</strong><span>${escapeHtml(v.createdAt || '')}</span></div></div>
+        </div>
+      </article>`;
+    }
+
+    function handleTubeSearch(value) {
+      state.tubeSearch = String(value || '');
       const active = document.activeElement;
-      const wasInput = active && active.tagName === 'INPUT';
       renderApp();
-      if (wasInput) {
-        const inputs = document.querySelectorAll('input');
-        const input = Array.from(inputs).find(x => x.placeholder && x.placeholder.includes('ভিডিও, বিষয়'));
-        if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+      const input = document.getElementById('oikko-tube-search');
+      if (input && active?.id === 'oikko-tube-search') { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+    }
+    window.handleTubeSearch = handleTubeSearch;
+
+    function openTubeUploadModal() {
+      if (!state.currentUser) return showToast('ভিডিও পোস্ট করতে আগে লগইন করুন', 'error');
+      const mc = document.getElementById('modal-container');
+      if (!mc) return;
+      mc.innerHTML = `<div class="oikko-tube-modal show" id="oikko-tube-modal" onclick="if(event.target===this) closeTubeUploadModal()">
+        <div class="oikko-tube-dialog">
+          <div class="flex items-center justify-between gap-3 mb-4"><div><h2 class="text-lg font-black text-[var(--text,#18251e)]">Oikko Tube-এ ভিডিও পোস্ট</h2><p class="text-xs text-[var(--text-muted,#748078)] mt-1">শুধু ভিডিও পোস্ট করা যাবে।</p></div><button type="button" onclick="closeTubeUploadModal()" class="p-2 rounded-full bg-black/5 dark:bg-white/10"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+          <form onsubmit="handleTubeUpload(event)" class="space-y-3">
+            <input id="tube-title" class="oikko-tube-field" maxlength="120" required placeholder="ভিডিওর শিরোনাম">
+            <textarea id="tube-description" class="oikko-tube-field min-h-24 resize-none" maxlength="500" placeholder="ভিডিও সম্পর্কে কিছু লিখুন (ঐচ্ছিক)"></textarea>
+            <label class="block"><span class="text-xs font-bold text-[var(--text,#24332b)]">ভিডিও ফাইল</span><input id="tube-video-file" type="file" accept="video/*" required class="mt-1 w-full text-xs" /></label>
+            <p class="text-[11px] text-[var(--text-muted,#748078)]">ডিভাইস থেকে ভিডিও বেছে নিন। সর্বোচ্চ সাইজ: ১০ GB। আপলোড চলাকালে উইন্ডো বন্ধ করবেন না।</p>
+            <div id="tube-upload-progress" class="hidden rounded-xl border border-[var(--border-color,#dce5df)] bg-[var(--surface2,#f5f8f6)] p-3">
+              <div class="flex items-center justify-between text-[11px] font-bold mb-1.5"><span id="tube-progress-label">আপলোড শুরু হচ্ছে...</span><span id="tube-progress-percent">0%</span></div>
+              <div class="h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden"><div id="tube-progress-bar" class="h-full rounded-full bg-[#2f6f57] transition-all duration-200" style="width:0%"></div></div>
+              <div id="tube-progress-detail" class="text-[10px] text-[var(--text-muted,#748078)] mt-1.5">ভিডিও প্রস্তুত করা হচ্ছে...</div>
+            </div>
+            <div class="flex justify-end gap-2 pt-1"><button id="tube-cancel-btn" type="button" onclick="closeTubeUploadModal()" class="oikko-tube-secondary">বাতিল</button><button id="tube-submit-btn" class="oikko-tube-primary" type="submit">ভিডিও পোস্ট করুন</button></div>
+          </form>
+        </div></div>`;
+      if (window.lucide) lucide.createIcons();
+    }
+    window.openTubeUploadModal = openTubeUploadModal;
+    function closeTubeUploadModal(){ const el=document.getElementById('oikko-tube-modal'); if(el) el.remove(); }
+    window.closeTubeUploadModal = closeTubeUploadModal;
+
+    async function handleTubeUpload(e) {
+      e.preventDefault();
+      if (state.tubeUploading) return;
+      const title = document.getElementById('tube-title')?.value.trim();
+      const description = document.getElementById('tube-description')?.value.trim() || '';
+      const file = document.getElementById('tube-video-file')?.files?.[0];
+      if (!title || !file) return showToast('শিরোনাম ও ভিডিও নির্বাচন করুন', 'error');
+      if (!file.type || !file.type.startsWith('video/')) return showToast('শুধু ভিডিও ফাইল পোস্ট করা যাবে', 'error');
+      const MAX_OIKKO_TUBE_VIDEO_BYTES = 10 * 1024 * 1024 * 1024;
+      if (file.size > MAX_OIKKO_TUBE_VIDEO_BYTES) return showToast('ভিডিওর সর্বোচ্চ সাইজ ১০ GB হতে পারবে', 'error');
+
+      const storage = window.firebaseStorage, api = window.firebaseStorageApi, db = window.firebaseDb, fb = window.fb;
+      if (!storage || !api?.storageRef || !api?.uploadBytesResumable || !api?.getDownloadURL) {
+        return showToast('Firebase Storage সংযোগ পাওয়া যাচ্ছে না। Firebase Console-এ Storage চালু আছে কি না দেখুন।', 'error');
+      }
+      if (!db || !fb) {
+        return showToast('Firestore সংযোগ এখনও প্রস্তুত হয়নি। ২–৩ সেকেন্ড পরে আবার চেষ্টা করুন।', 'error');
+      }
+
+      const btn = document.getElementById('tube-submit-btn');
+      const cancelBtn = document.getElementById('tube-cancel-btn');
+      const progressBox = document.getElementById('tube-upload-progress');
+      const progressBar = document.getElementById('tube-progress-bar');
+      const progressPercent = document.getElementById('tube-progress-percent');
+      const progressLabel = document.getElementById('tube-progress-label');
+      const progressDetail = document.getElementById('tube-progress-detail');
+      state.tubeUploading = true;
+      if (btn) { btn.disabled = true; btn.textContent = 'আপলোড হচ্ছে 0%'; }
+      if (cancelBtn) cancelBtn.disabled = true;
+      if (progressBox) progressBox.classList.remove('hidden');
+
+      const formatBytes = bytes => {
+        if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
+        const units = ['B','KB','MB','GB','TB'];
+        const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+        return `${(bytes / Math.pow(1024,i)).toFixed(i ? 1 : 0)} ${units[i]}`;
+      };
+
+      try {
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+        const uid = String(state.currentUser.id);
+        const path = `oikko_tube_videos/${uid}/${Date.now()}_${safeName}`;
+        const storageReference = api.storageRef(storage, path);
+        const metadata = { contentType: file.type || 'video/mp4', cacheControl: 'public,max-age=31536000' };
+        const uploadTask = api.uploadBytesResumable(storageReference, file, metadata);
+
+        await new Promise((resolve, reject) => {
+          let lastTransferred = 0;
+          let lastChangeAt = Date.now();
+          const unsubscribe = uploadTask.on('state_changed', snapshot => {
+            const total = snapshot.totalBytes || file.size || 1;
+            const transferred = snapshot.bytesTransferred || 0;
+            const pct = Math.min(100, Math.floor((transferred / total) * 100));
+            lastTransferred = transferred;
+            lastChangeAt = Date.now();
+            if (progressBar) progressBar.style.width = `${pct}%`;
+            if (progressPercent) progressPercent.textContent = `${pct}%`;
+            if (progressLabel) progressLabel.textContent = snapshot.state === 'paused' ? 'আপলোড বিরতিতে আছে' : 'ভিডিও আপলোড হচ্ছে';
+            if (progressDetail) progressDetail.textContent = `${formatBytes(transferred)} / ${formatBytes(total)}`;
+            if (btn) btn.textContent = `আপলোড হচ্ছে ${pct}%`;
+          }, err => {
+            try { unsubscribe?.(); } catch (_) {}
+            reject(err);
+          }, () => {
+            try { unsubscribe?.(); } catch (_) {}
+            if (progressBar) progressBar.style.width = '100%';
+            if (progressPercent) progressPercent.textContent = '100%';
+            if (progressLabel) progressLabel.textContent = 'আপলোড সম্পন্ন';
+            if (progressDetail) progressDetail.textContent = `${formatBytes(lastTransferred || file.size)} / ${formatBytes(file.size)}`;
+            resolve();
+          });
+        });
+
+        const videoUrl = await api.getDownloadURL(uploadTask.snapshot.ref);
+        const now = new Date();
+        const video = { authorId:uid, authorStudentId:state.currentUser.studentId || '', authorName:state.currentUser.fullName || 'Oikko User', authorAvatar:state.currentUser.profilePicture || '', title, description, videoUrl, storagePath:path, createdAt:now.toLocaleDateString('bn-BD',{day:'numeric',month:'long',year:'numeric'}), timestamp:Date.now() };
+        const ref = await fb.addDoc(fb.collection(db,'oikko_tube_videos'), video);
+        state.tubeVideos.unshift({...video,id:ref.id});
+        closeTubeUploadModal();
+        renderApp();
+        showToast('ভিডিও সফলভাবে Oikko Tube-এ পোস্ট হয়েছে', 'success');
+      } catch(err) {
+        console.error('Oikko Tube upload failed:', err);
+        const code = err?.code || 'upload-error';
+        const message = String(err?.message || '');
+        if (progressLabel) progressLabel.textContent = 'আপলোড ব্যর্থ হয়েছে';
+        if (progressDetail) {
+          if (code === 'storage/unauthorized') progressDetail.textContent = 'Firebase Storage Rules এই ইউজারকে upload করতে দিচ্ছে না।';
+          else if (code === 'storage/bucket-not-found') progressDetail.textContent = 'Firebase Storage bucket পাওয়া যায়নি।';
+          else if (code === 'storage/quota-exceeded') progressDetail.textContent = 'Firebase Storage quota/plan সীমায় পৌঁছেছে।';
+          else if (code === 'storage/retry-limit-exceeded') progressDetail.textContent = 'নেটওয়ার্ক বারবার ব্যর্থ হয়েছে; আবার চেষ্টা করুন।';
+          else progressDetail.textContent = `ত্রুটি: ${code}${message ? ' — ' + message : ''}`;
+        }
+        let userMessage = `ভিডিও আপলোড করা যায়নি: ${code}`;
+        if (code === 'storage/unauthorized') userMessage = 'Firebase Storage Rules-এর কারণে upload বন্ধ আছে।';
+        else if (code === 'storage/bucket-not-found') userMessage = 'Firebase Storage bucket পাওয়া যায়নি।';
+        else if (code === 'storage/quota-exceeded') userMessage = 'Firebase Storage quota/plan সীমায় পৌঁছেছে।';
+        showToast(userMessage, 'error');
+      } finally {
+        state.tubeUploading = false;
+        if (btn) { btn.disabled = false; btn.textContent = 'ভিডিও পোস্ট করুন'; }
+        if (cancelBtn) cancelBtn.disabled = false;
       }
     }
-    window.handleOikkoTubeSearch = handleOikkoTubeSearch;
+    window.handleTubeUpload = handleTubeUpload;
 
     function startOikkoTubeListener() {
-      if (oikkoTubeUnsubscribe || !window.firebaseDb || !window.fb) return !!oikkoTubeUnsubscribe;
+      if (tubeVideosUnsubscribe || !window.firebaseDb || !window.fb) return;
       try {
-        const col = window.fb.collection(window.firebaseDb, 'oikko_tube_videos');
-        oikkoTubeUnsubscribe = window.fb.onSnapshot(col, snap => {
-          state.oikkoTubeVideos = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-            .filter(v => v.status === 'published' && v.videoUrl)
-            .sort((a,b) => Number(b.timestamp || 0) - Number(a.timestamp || 0));
-          oikkoTubeLoaded = true;
-          oikkoTubeLastError = '';
+        const q = window.fb.query(window.fb.collection(window.firebaseDb,'oikko_tube_videos'), window.fb.orderBy('timestamp','desc'));
+        tubeVideosUnsubscribe = window.fb.onSnapshot(q, snap => {
+          state.tubeVideos = snap.docs.map(d => ({id:d.id,...d.data()}));
           if (state.activeView === 'youtube') renderApp();
-        }, err => {
-          oikkoTubeLastError = getTubeErrorMessage(err);
-          console.error('Oikko Tube Firestore listener:', err);
-        });
-        return true;
-      } catch (err) {
-        oikkoTubeLastError = getTubeErrorMessage(err);
-        return false;
-      }
+        }, err => console.warn('Oikko Tube listener:',err));
+      } catch(err) { console.warn('Oikko Tube listener init:',err); }
     }
-
-    function openOikkoTubeUploadModal() {
-      if (!state.currentUser) return;
-      const modal = document.getElementById('modal-container');
-      if (!modal) return;
-      modal.innerHTML = `
-        <div class="fixed inset-0 z-[100] bg-black/45 flex items-center justify-center p-3" onclick="if(event.target===this) closeOikkoTubeUploadModal()">
-          <div class="w-full max-w-lg rounded-3xl bg-white shadow-2xl border border-[#DCE7E0] overflow-hidden">
-            <div class="p-4 sm:p-5 border-b border-[#E5ECE8] flex items-start justify-between gap-3">
-              <div><h2 class="text-lg sm:text-xl font-black text-[#1F2A24]">Oikko Tube-এ ভিডিও পোস্ট</h2><p class="text-xs text-[#788278] mt-1">শুধু ভিডিও URL ও প্রয়োজনীয় তথ্য দিন।</p></div>
-              <button type="button" onclick="closeOikkoTubeUploadModal()" class="text-[#536158] text-xl">×</button>
-            </div>
-            <form onsubmit="handleOikkoTubeUpload(event)" class="p-4 sm:p-5 space-y-3">
-              <input id="oikko-tube-title" required maxlength="160" class="w-full rounded-xl border border-[#DCE7E0] bg-[#F4F7F5] px-3 py-3 outline-none text-sm" placeholder="ভিডিওর বিষয় / শিরোনাম" />
-              <textarea id="oikko-tube-description" maxlength="2000" rows="3" class="w-full rounded-xl border border-[#DCE7E0] bg-[#F4F7F5] px-3 py-3 outline-none text-sm resize-none" placeholder="ভিডিও সম্পর্কে কিছু লিখুন (ঐচ্ছিক)"></textarea>
-              <div>
-                <label class="block text-xs font-bold text-[#445048] mb-1.5">ভিডিও URL</label>
-                <input id="oikko-tube-video-url" type="url" required maxlength="${OIKKO_TUBE_MAX_URL_LENGTH}" class="w-full rounded-xl border border-[#DCE7E0] bg-[#F4F7F5] px-3 py-3 outline-none text-sm" placeholder="https://example.com/video.mp4 বা YouTube link" />
-                <p class="text-[10px] text-[#7A887E] mt-1">ভিডিওর আসল ফাইল Firebase Storage-এ যাবে না; শুধু URL ও metadata Firestore-এ সংরক্ষণ হবে।</p>
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-[#445048] mb-1.5">ভিডিওর বয়সভিত্তিক শ্রেণি</label><p class="text-[10px] text-[#7A887E] mb-2">আপনার ভিডিওটি ১৮+ নাকি ১৮ বছরের নিচের দর্শকদের জন্য—সঠিক শ্রেণি নির্বাচন করুন।</p>
-                <div class="grid grid-cols-2 gap-2">
-                  <label class="cursor-pointer"><input type="radio" name="oikko-tube-audience" value="under18" checked class="peer sr-only" /><span class="block rounded-xl border border-[#DCE7E0] bg-[#F4F7F5] px-3 py-3 text-center text-xs font-extrabold text-[#405047] peer-checked:border-[#2F6F57] peer-checked:bg-[#EDF2EF]">১৮ বছরের নিচে</span></label>
-                  <label class="cursor-pointer"><input type="radio" name="oikko-tube-audience" value="18plus" class="peer sr-only" /><span class="block rounded-xl border border-[#DCE7E0] bg-[#F4F7F5] px-3 py-3 text-center text-xs font-extrabold text-[#405047] peer-checked:border-red-500 peer-checked:bg-red-50 peer-checked:text-red-700">১৮+</span></label>
-                </div>
-              </div>
-              <div id="oikko-tube-progress-wrap" class="hidden rounded-2xl bg-[#F4F7F5] border border-[#DCE7E0] p-3"><div class="flex justify-between text-[11px] font-bold text-[#4B584F]"><span id="oikko-tube-progress-label">Firestore-এ সংরক্ষণ হচ্ছে</span><span id="oikko-tube-progress-pct">0%</span></div><div class="h-2 rounded-full bg-[#DCE7E0] mt-2 overflow-hidden"><div id="oikko-tube-progress-bar" class="h-full w-0 bg-[#2F6F57] transition-all"></div></div><div id="oikko-tube-upload-status" class="text-[10px] mt-1"></div></div>
-              <div class="rounded-2xl bg-[#F8FAF9] border border-[#E2EAE5] p-3 text-[11px] text-[#657168] leading-relaxed">☁️ ভিডিও URL, title, description, author তথ্য ও বয়সভিত্তিক শ্রেণি Cloud Firestore-এর <b>oikko_tube_videos</b> collection-এ সংরক্ষণ হবে। ভিডিও ফাইলের সাইজ Firestore-এ আপলোড করা হচ্ছে না।</div>
-              <div class="flex justify-end gap-2 pt-1"><button type="button" onclick="closeOikkoTubeUploadModal()" class="px-4 py-2.5 rounded-xl bg-[#EDF2EF] text-[#405047] font-bold text-sm">বাতিল</button><button id="oikko-tube-submit" type="submit" class="px-4 py-2.5 rounded-xl bg-[#2F6F57] text-white font-bold text-sm">Firestore-এ পোস্ট করুন</button></div>
-            </form>
-          </div>
-        </div>`;
+    // Firebase module may finish loading after this script. Always start the
+    // Tube listener when Firebase becomes ready, not only on first page load.
+    function ensureOikkoTubeFirebaseSync() {
+      try { startOikkoTubeListener(); } catch (err) { console.warn('Oikko Tube sync start skipped:', err); }
     }
-    window.closeOikkoTubeDeleteModal = closeOikkoTubeDeleteModal;
-
-    async function handleOikkoTubeDelete(videoId) {
-      if (state.oikkoTubeDeleteBusy || !state.currentUser) return;
-      const video = (state.oikkoTubeVideos || []).find(v => String(v.id) === String(videoId));
-      if (!video) {
-        if (window.showToast) showToast('ভিডিওটি আর পাওয়া যাচ্ছে না।','error');
-        closeOikkoTubeDeleteModal();
-        return;
-      }
-      if (String(video.authorId || '') !== String(state.currentUser.id || '')) {
-        if (window.showToast) showToast('শুধু ভিডিওর মালিকই ভিডিও ডিলিট করতে পারবেন।','error');
-        return;
-      }
-      const db = window.firebaseDb, fb = window.fb;
-      if (!db || !fb || typeof fb.deleteDoc !== 'function') {
-        if (window.showToast) showToast('Firestore delete সুবিধাটি পাওয়া যাচ্ছে না। পেজটি refresh করুন।','error');
-        return;
-      }
-      const button = document.getElementById('oikko-tube-delete-submit');
-      const status = document.getElementById('oikko-tube-delete-status');
-      state.oikkoTubeDeleteBusy = true;
-      if (button) { button.disabled = true; button.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>ডিলিট হচ্ছে…'; if (window.lucide) lucide.createIcons(); }
-      if (status) { status.textContent = 'ভিডিওটি Firestore থেকে মুছে ফেলা হচ্ছে…'; status.className = 'text-xs text-[#2F6F57]'; }
-      try {
-        if (video.storagePath && window.firebaseStorage && window.firebaseStorageApi?.storageRef && window.firebaseStorageApi?.deleteObject) {
-          try {
-            await window.firebaseStorageApi.deleteObject(window.firebaseStorageApi.storageRef(window.firebaseStorage, String(video.storagePath)));
-          } catch (storageDeleteErr) {
-            console.warn('Storage file delete skipped:', storageDeleteErr);
-          }
-        }
-        const ref = fb.doc(db, 'oikko_tube_videos', String(video.id));
-        await fb.deleteDoc(ref);
-        if (window.showToast) showToast('ভিডিও সফলভাবে ডিলিট হয়েছে।','success');
-        closeOikkoTubeDeleteModal();
-      } catch (err) {
-        console.error('Oikko Tube delete failed:', err);
-        const msg = getTubeErrorMessage(err);
-        if (status) { status.textContent = msg; status.className = 'text-xs text-red-600'; }
-        if (window.showToast) showToast(msg,'error');
-        if (button) { button.disabled = false; button.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>হ্যাঁ, ডিলিট করুন'; if (window.lucide) lucide.createIcons(); }
-        state.oikkoTubeDeleteBusy = false;
-      }
-    }
-    window.handleOikkoTubeDelete = handleOikkoTubeDelete;
-
-    function closeOikkoTubeUploadModal() {
-      const modal = document.getElementById('modal-container');
-      if (modal) modal.innerHTML = '';
-      state.oikkoTubeUploadBusy = false;
-    }
-    window.closeOikkoTubeUploadModal = closeOikkoTubeUploadModal;
-
-    async function handleOikkoTubeUpload(event) {
-      event.preventDefault();
-      if (state.oikkoTubeUploadBusy) return;
-      const title = document.getElementById('oikko-tube-title')?.value.trim();
-      const description = document.getElementById('oikko-tube-description')?.value.trim() || '';
-      const externalUrl = document.getElementById('oikko-tube-video-url')?.value.trim() || '';
-      const audience = document.querySelector('input[name="oikko-tube-audience"]:checked')?.value === '18plus' ? '18plus' : 'under18';
-      const submit = document.getElementById('oikko-tube-submit');
-
-      if (!title) { setTubeUploadStatus('ভিডিওর শিরোনাম দিন।','error'); return; }
-      if (!externalUrl) { setTubeUploadStatus('ভিডিও URL দিন।','error'); return; }
-
-      let parsedUrl;
-      try { parsedUrl = new URL(externalUrl); } catch (_) { setTubeUploadStatus('সঠিক http/https ভিডিও URL দিন।','error'); return; }
-      if (!/^https?:$/.test(parsedUrl.protocol)) { setTubeUploadStatus('শুধু http/https URL ব্যবহার করুন।','error'); return; }
-      if (externalUrl.length > OIKKO_TUBE_MAX_URL_LENGTH) { setTubeUploadStatus('ভিডিও URL অনেক বড়।','error'); return; }
-
-      const db = window.firebaseDb, fb = window.fb;
-      if (!db || !fb) { setTubeUploadStatus('Firestore initialize হয়নি। পেজটি refresh করুন।','error'); return; }
-
-      state.oikkoTubeUploadBusy = true;
-      if (submit) { submit.disabled = true; submit.textContent = 'Firestore-এ পোস্ট হচ্ছে…'; }
-      document.getElementById('oikko-tube-progress-wrap')?.classList.remove('hidden');
-      const progressBar = document.getElementById('oikko-tube-progress-bar');
-      const progressPct = document.getElementById('oikko-tube-progress-pct');
-      const progressLabel = document.getElementById('oikko-tube-progress-label');
-      progressLabel.textContent = 'Cloud Firestore-এ সংরক্ষণ হচ্ছে';
-      if (progressBar) progressBar.style.width = '30%';
-      if (progressPct) progressPct.textContent = '30%';
-
-      try {
-        const now = Date.now();
-        const docRef = fb.doc(db, 'oikko_tube_videos', `tube_${now}_${Math.random().toString(36).slice(2,8)}`);
-        await fb.setDoc(docRef, {
-          title,
-          description,
-          videoUrl: externalUrl,
-          storagePath: '',
-          authorId: String(state.currentUser.id),
-          authorName: String(state.currentUser.fullName || ''),
-          authorStudentId: String(state.currentUser.studentId || ''),
-          status: 'published',
-          timestamp: now,
-          createdAt: now,
-          sourceType: 'external_url',
-          audience,
-          fileName: '',
-          fileSize: 0,
-          contentType: ''
-        });
-        if (progressBar) progressBar.style.width = '100%';
-        if (progressPct) progressPct.textContent = '100%';
-        setTubeUploadStatus('ভিডিও URL সফলভাবে Firestore-এ সংরক্ষিত হয়েছে।','success');
-        if (window.showToast) showToast('Oikko Tube-এ ভিডিও পোস্ট হয়েছে','success');
-        setTimeout(closeOikkoTubeUploadModal, 650);
-      } catch (err) {
-        console.error('Oikko Tube Firestore save failed:', err);
-        const msg = getTubeErrorMessage(err);
-        setTubeUploadStatus(msg,'error');
-        if (window.showToast) showToast(msg,'error');
-        if (submit) { submit.disabled = false; submit.textContent = 'আবার চেষ্টা করুন'; }
-        state.oikkoTubeUploadBusy = false;
-      }
-    }
-    window.handleOikkoTubeUpload = handleOikkoTubeUpload;
-
-    function ensureOikkoTubeReady() {
-      if (!oikkoTubeUnsubscribe && window.firebaseDb && window.fb) startOikkoTubeListener();
-    }
-    window.addEventListener('firebaseReady', ensureOikkoTubeReady);
-    setTimeout(ensureOikkoTubeReady, 1000);
+    window.addEventListener('firebaseReady', ensureOikkoTubeFirebaseSync);
+    setTimeout(ensureOikkoTubeFirebaseSync, 1500);
 
     function renderApp() {
       const active = document.activeElement;
@@ -2488,16 +2248,18 @@
       if (!state.currentUser) {
         app.innerHTML = renderAuthScreen();
       } else if (state.activeView === 'messenger') {
+        captureMessengerDraft();
         app.innerHTML = renderMessengerScreen();
       } else {
         let viewHtml = '';
         if (state.activeView === 'youtube') {
-          ensureOikkoTubeReady();
           viewHtml = renderOikkoTubeView();
         } else if (state.activeView === 'admin') {
           viewHtml = renderAdminView();
         } else if (state.activeView === 'events') {
           viewHtml = renderEventsView();
+        } else if (state.activeView === 'album') {
+          viewHtml = renderAlbumView();
         } else if (state.activeView === 'admin_posts') {
           viewHtml = renderAdminPostsView();
         } else {
@@ -2507,9 +2269,6 @@
       }
       if (window.lucide) {
         lucide.createIcons();
-      }
-      if (state.activeView === 'youtube') {
-        setTimeout(ensureOikkoTubeAgeGate, 0);
       }
       pendingAppRender = false;
     }
@@ -2522,6 +2281,28 @@
 
     let messengerUnsubscribe = null;
     let messengerListenerChatId = '';
+
+    // প্রতিটি chat-এর draft আলাদাভাবে রাখা হবে। Realtime update/render হলেও
+    // ইউজার যে লেখা টাইপ করছে সেটি আর হারাবে না।
+    state.messengerDrafts = (state.messengerDrafts && typeof state.messengerDrafts === 'object')
+      ? state.messengerDrafts : {};
+
+    function captureMessengerDraft() {
+      const input = document.getElementById('chat-input-field');
+      if (!input || !state.activeChatUserId) return;
+      state.messengerDrafts[String(state.activeChatUserId)] = input.value || '';
+    }
+
+    function saveMessengerDraft(input, targetUserId) {
+      if (!state.messengerDrafts || typeof state.messengerDrafts !== 'object') state.messengerDrafts = {};
+      state.messengerDrafts[String(targetUserId)] = input ? (input.value || '') : '';
+    }
+    window.saveMessengerDraft = saveMessengerDraft;
+
+    function clearMessengerDraft(targetUserId) {
+      if (!state.messengerDrafts || typeof state.messengerDrafts !== 'object') state.messengerDrafts = {};
+      state.messengerDrafts[String(targetUserId)] = '';
+    }
 
     function renderMessengerPeerList(peers, targetId, searchValue) {
       const search = String(searchValue || '').trim().toLowerCase();
@@ -2606,6 +2387,7 @@
 
       return {
         id: data.id || ('cloud_' + createdAt + '_' + Math.random().toString(36).slice(2)),
+        clientMessageId: data.clientMessageId || '',
         text: typeof data.text === 'string' ? data.text : '',
         imageUrl: typeof data.imageUrl === 'string' ? data.imageUrl : '',
         videoUrl: typeof data.videoUrl === 'string' ? data.videoUrl : '',
@@ -2654,13 +2436,21 @@
 
           const localMessages = Array.isArray(state.messages[targetUserId]) ? state.messages[targetUserId] : [];
           const cloudIds = new Set(cloudMessages.map(m => m.id));
+          const cloudClientIds = new Set(cloudMessages.map(m => m.clientMessageId).filter(Boolean));
+          // Only keep messages that are still genuinely pending locally.
+          // A message that has already been saved to Firestore must NOT be
+          // kept when its Firestore document is deleted (for example from
+          // Firebase Console). This is what makes Firebase deletions appear
+          // in the app immediately through onSnapshot.
           const pendingLocal = localMessages.filter(m => {
-            if (!m) return false;
-            if (m.firebaseId && cloudIds.has(m.firebaseId)) return false;
+            if (!m || m.pending !== true) return false;
             if (m.id && cloudIds.has(m.id)) return false;
+            if (m.firebaseId && cloudIds.has(m.firebaseId)) return false;
+            if (m.clientMessageId && cloudClientIds.has(m.clientMessageId)) return false;
             return true;
           });
-          state.messages[targetUserId] = [...cloudMessages, ...pendingLocal].sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
+          state.messages[targetUserId] = [...cloudMessages, ...pendingLocal]
+            .sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
           saveMessages(state.messages);
           window.firestoreStatus = 'connected';
           if (state.activeView === 'messenger' && state.activeChatUserId === targetUserId) {
@@ -2672,7 +2462,7 @@
           console.error('Messenger realtime sync error:', err);
           // Keep any local messages instead of replacing them on a transient error.
           window.firestoreStatus = 'error';
-          if (err?.code === 'permission-denied') { showToast('Messenger Firestore Rules-এ oikko_chats/{chatId}/messages অনুমতি দিন।', 'error'); } else { showToast(`Firestore sync error: ${err?.code || 'unknown'}`, 'error'); }
+          showToast(`Firestore sync error: ${err?.code || 'unknown'}`, 'error');
         }
       );
     }
@@ -2680,6 +2470,7 @@
     function renderMessengerOnly() {
       const app = document.getElementById('app');
       if (!app || !state.currentUser || state.activeView !== 'messenger') return;
+      captureMessengerDraft();
       const active = document.activeElement;
       const activeId = active && active.id ? active.id : '';
       const selectionStart = active && typeof active.selectionStart === 'number' ? active.selectionStart : null;
@@ -2793,8 +2584,12 @@
 
       const now = Date.now();
       const timeStr = new Date(now).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-      const localId = 'local_' + now + '_' + Math.random().toString(36).slice(2,8);
+      // Use one stable client id for optimistic UI + Firestore document.
+      // This prevents the same message from appearing twice when onSnapshot
+      // returns while the send request is still being completed.
+      const localId = 'msg_' + now + '_' + Math.random().toString(36).slice(2,10);
       const messageData = {
+        clientMessageId: localId,
         senderId: String(state.currentUser.id),
         receiverId: String(targetUserId),
         senderName: String(state.currentUser.fullName || ''),
@@ -2808,11 +2603,14 @@
         createdAt: now
       };
 
-      // Show the message immediately in the UI.
+      // Show the message immediately in the UI. The same id is also used
+      // as the Firestore document id, so the realtime listener can reconcile
+      // it instead of adding a second copy.
       const localMessage = {
         id: localId,
         ...messageData,
-        sender: 'me'
+        sender: 'me',
+        pending: true
       };
       if (!state.messages[targetUserId]) state.messages[targetUserId] = [];
       state.messages[targetUserId].push(localMessage);
@@ -2829,10 +2627,21 @@
       try {
         const chatId = makeChatId(state.currentUser.id, targetUserId);
         const messagesCollection = fb.collection(db, 'oikko_chats', chatId, 'messages');
-        const cloudRef = await fb.addDoc(messagesCollection, messageData);
+        const messageRef = fb.doc(messagesCollection, localId);
+        await fb.setDoc(messageRef, messageData);
 
-        localMessage.firebaseId = cloudRef.id;
-        localMessage.id = cloudRef.id;
+        // The Firestore id is exactly the optimistic id. If a realtime
+        // snapshot already replaced state.messages, reconcile that copy too.
+        const currentList = Array.isArray(state.messages[targetUserId]) ? state.messages[targetUserId] : [];
+        const existing = currentList.find(m => m.id === localId || m.firebaseId === localId);
+        if (existing) {
+          existing.firebaseId = localId;
+          existing.id = localId;
+          existing.pending = false;
+        } else {
+          currentList.push({ id: localId, firebaseId: localId, ...messageData, sender: 'me', pending: false });
+          state.messages[targetUserId] = currentList;
+        }
         window.firestoreStatus = 'connected';
         saveMessages(state.messages);
 
@@ -2857,6 +2666,90 @@
       }
     }
 
+    function toggleMessengerDelete(bubble) {
+      if (!bubble) return;
+      const all = document.querySelectorAll('.messenger-own-bubble.messenger-delete-visible');
+      all.forEach(el => { if (el !== bubble) el.classList.remove('messenger-delete-visible'); });
+      bubble.classList.toggle('messenger-delete-visible');
+    }
+    window.toggleMessengerDelete = toggleMessengerDelete;
+
+    async function handleDeleteMessengerMessage(messageId, targetUserId) {
+      if (!state.currentUser || !canMessageUser(targetUserId)) {
+        showToast('এই মেসেজটি ডিলিট করার অনুমতি নেই', 'error');
+        return;
+      }
+
+      const list = Array.isArray(state.messages[targetUserId]) ? state.messages[targetUserId] : [];
+      const index = list.findIndex(m =>
+        String(m?.id || '') === String(messageId || '') ||
+        String(m?.firebaseId || '') === String(messageId || '') ||
+        String(m?.clientMessageId || '') === String(messageId || '')
+      );
+      const message = index >= 0 ? list[index] : null;
+
+      // Only the sender can delete their own message.
+      if (!message || String(message.senderId || '') !== String(state.currentUser.id)) {
+        showToast('শুধু নিজের পাঠানো মেসেজ ডিলিট করা যাবে', 'error');
+        return;
+      }
+
+      if (!confirm('এই মেসেজটি ডিলিট করবেন?')) return;
+
+      const firebaseMessageId = String(message.firebaseId || message.id || message.clientMessageId || '');
+      const db = window.firebaseDb;
+      const fb = window.fb;
+      const chatId = makeChatId(state.currentUser.id, targetUserId);
+
+      // Remove it from the UI FIRST so the click always visibly deletes the
+      // message. If Firestore rejects the operation, the message is restored.
+      const previousList = [...list];
+      state.messages[targetUserId] = list.filter((_, i) => i !== index);
+      saveMessages(state.messages);
+      document.querySelectorAll('.messenger-own-bubble.messenger-delete-visible')
+        .forEach(el => el.classList.remove('messenger-delete-visible'));
+      renderMessengerOnly();
+      scrollChatToBottom();
+
+      // A message that has not reached Firestore yet only needs the local removal.
+      if (!db || !fb || message.pending === true) {
+        showToast('মেসেজ ডিলিট হয়েছে', 'success');
+        return;
+      }
+
+      try {
+        if (!firebaseMessageId) throw new Error('missing-message-id');
+        const messagesCollection = fb.collection(db, 'oikko_chats', chatId, 'messages');
+        const messageRef = fb.doc(messagesCollection, firebaseMessageId);
+        await fb.deleteDoc(messageRef);
+
+        // onSnapshot will confirm the deletion and keep all clients in sync.
+        showToast('মেসেজ ডিলিট হয়েছে', 'success');
+      } catch (err) {
+        console.error('Messenger message delete failed:', err);
+
+        // Restore the message because Firestore deletion did not succeed.
+        state.messages[targetUserId] = previousList;
+        saveMessages(state.messages);
+        renderMessengerOnly();
+        scrollChatToBottom();
+
+        const code = err?.code || 'unknown';
+        if (code === 'permission-denied') {
+          showToast('Firebase Rules-এর কারণে মেসেজ ডিলিট হয়নি। Firestore Rules-এ এই path-এর delete অনুমতি দিন।', 'error');
+        } else if (code === 'not-found') {
+          // The document was already deleted from Firebase. Keep it deleted locally.
+          state.messages[targetUserId] = previousList.filter((_, i) => i !== index);
+          saveMessages(state.messages);
+          renderMessengerOnly();
+          showToast('মেসেজটি Firebase-এ আগেই ডিলিট করা হয়েছিল', 'success');
+        } else {
+          showToast(`মেসেজ ডিলিট করা যায়নি: ${code}`, 'error');
+        }
+      }
+    }
+    window.handleDeleteMessengerMessage = handleDeleteMessengerMessage;
+
     async function handleSendMessengerMessage(e, targetUserId) {
       e.preventDefault();
 
@@ -2870,10 +2763,13 @@
       if (!text) return;
 
       if (input) input.value = '';
+      clearMessengerDraft(targetUserId);
 
       const sent = await persistMessengerMessage(targetUserId, {text});
       if (sent) {
-        renderApp();
+        // Do not rebuild the whole Messenger after sending. The realtime
+        // listener reconciles the optimistic message without duplicating it.
+        if (!messengerUnsubscribe) renderMessengerOnly();
         scrollChatToBottom();
       }
     }
@@ -3097,6 +2993,20 @@
             .messenger-input:focus-within{border-color:#2F6F57!important;box-shadow:0 0 0 4px rgba(47,111,87,.10)}
             .messenger-theme-dark .messenger-input:focus-within{border-color:#6DBA97!important;box-shadow:0 0 0 4px rgba(109,186,151,.12)}
             .messenger-message-bubble{letter-spacing:.005em}
+            /* Own-message delete action: hidden until the user clicks the message bubble. */
+            .messenger-own-bubble{cursor:pointer}
+            .messenger-delete-action{
+              opacity:0!important;
+              pointer-events:none!important;
+              transform:scale(.82) translateX(-3px);
+              transition:opacity .16s ease,transform .16s ease,background .16s ease;
+            }
+            .messenger-own-bubble.messenger-delete-visible .messenger-delete-action{
+              opacity:1!important;
+              pointer-events:auto!important;
+              transform:scale(1) translateX(0);
+            }
+            .messenger-own-bubble.messenger-delete-visible{z-index:20}
             .messenger-shell .send-btn{box-shadow:0 7px 18px rgba(47,111,87,.22);transition:transform .15s ease,box-shadow .15s ease}
             .messenger-shell .send-btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(47,111,87,.28)}
             .messenger-shell .send-btn:active{transform:scale(.94)}
@@ -3206,18 +3116,11 @@
             /* Responsive Messenger: phone, tablet and desktop */
             .messenger-touch{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
             .messenger-conversation,.messenger-sidebar{min-height:0}
-            /* Keep Messenger itself locked to the viewport so the composer never scrolls away. */
-            .messenger-shell{height:100dvh;min-height:100dvh;overflow:hidden}
-            .messenger-main{height:calc(100dvh - 4rem);min-height:0;box-sizing:border-box;overflow:hidden}
-            .messenger-frame{height:100%;min-height:0;box-sizing:border-box}
-            .messenger-conversation{position:relative;min-height:0;overflow:hidden}
-            .messenger-composer{position:sticky;bottom:0;z-index:30;flex-shrink:0}
-            #messages-scroll-container{min-height:0;overscroll-behavior:contain}
             @media (max-width: 767px){
-              .messenger-shell{height:100dvh;min-height:100dvh;overflow:hidden}
+              .messenger-shell{min-height:100dvh;height:100dvh;overflow:hidden}
               .messenger-topbar{height:60px!important;padding-left:10px!important;padding-right:10px!important}
               .messenger-topbar .messenger-top-title{display:block}
-              .messenger-main{height:calc(100dvh - 60px)!important;min-height:0!important;box-sizing:border-box!important;overflow:hidden!important}
+              .messenger-main{height:calc(100dvh - 60px)!important;min-height:0!important}
               .messenger-frame{height:100%!important;min-height:0!important;border-radius:0!important;border-left:0!important;border-right:0!important;border-bottom:0!important;box-shadow:none!important}
               .messenger-sidebar{width:100%!important;display:flex!important;border-right:0!important}
               .messenger-conversation{display:none!important;width:100%;min-width:0}
@@ -3241,8 +3144,8 @@
               .messenger-mobile-note{display:none}
             }
             @media (min-width:768px){
-              .messenger-main{height:calc(100dvh - 4rem);min-height:0;box-sizing:border-box;overflow:hidden}
-              .messenger-frame{height:100%;min-height:0;box-sizing:border-box}
+              .messenger-main{height:calc(100vh - 4rem)}
+              .messenger-frame{height:100%}
             }
             @media (max-width: 380px){
               .messenger-topbar .messenger-subtitle{display:none}
@@ -3327,7 +3230,10 @@
                     </div>
                     ${messages.length ? messages.map(msg => `
                       <div class="flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}">
-                        <div class="messenger-message-bubble max-w-[78%] sm:max-w-[65%] ${msg.sender === 'me' ? 'messenger-outgoing rounded-[20px] rounded-br-[6px]' : 'messenger-incoming rounded-[20px] rounded-bl-[6px]'} px-3.5 py-2 text-[14px] leading-5">
+                        <div onclick="${msg.sender === 'me' ? 'toggleMessengerDelete(this)' : ''}" class="messenger-message-bubble ${msg.sender === 'me' ? 'messenger-own-bubble' : ''} relative max-w-[78%] sm:max-w-[65%] ${msg.sender === 'me' ? 'messenger-outgoing rounded-[20px] rounded-br-[6px]' : 'messenger-incoming rounded-[20px] rounded-bl-[6px]'} px-3.5 py-2 text-[14px] leading-5">
+                          ${msg.sender === 'me' ? `<button type="button" onclick="event.stopPropagation(); handleDeleteMessengerMessage('${String(msg.id).replace(/'/g, "\\'")}', '${String(target.id).replace(/'/g, "\\'")}')" class="messenger-delete-action absolute -top-2 -left-2 w-7 h-7 rounded-full bg-white dark:bg-[#24352D] text-[#7A5A5A] shadow-md border border-[#E2E2D5] dark:border-[#3A4A41] flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-950/40 transition z-10" title="মেসেজ ডিলিট করুন" aria-label="মেসেজ ডিলিট করুন">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                          </button>` : ''}
                           ${msg.mediaType === 'video' && msg.videoUrl ? `<video src="${escapeHtml(msg.videoUrl)}" controls playsinline preload="metadata" class="rounded-xl max-h-80 max-w-full object-contain bg-black/10 mb-1.5"></video>` : ''}
                           ${msg.mediaType !== 'video' && msg.imageUrl ? `<img src="${escapeHtml(msg.imageUrl)}" alt="ছবি" loading="lazy" class="rounded-xl max-h-80 max-w-full object-cover mb-1.5" />` : ''}
                           ${msg.text && !(msg.mediaType === 'video' && msg.text === 'ভিডিও পাঠিয়েছেন') && !(msg.mediaType === 'image' && msg.text === 'ছবি পাঠিয়েছেন') ? `<p class="break-words whitespace-pre-wrap">${escapeHtml(msg.text)}</p>` : ''}
@@ -3360,7 +3266,7 @@
                       </div>
                     </div>
                     <div class="messenger-input flex-1 min-w-0 min-h-10 rounded-[20px] px-4 flex items-center">
-                      <input id="chat-input-field" type="text" autocomplete="off" class="w-full bg-transparent border-0 outline-none text-[14px]" placeholder="${escapeHtml(target.fullName)}-কে মেসেজ লিখুন..." />
+                      <input id="chat-input-field" type="text" autocomplete="off" value="${escapeHtml((state.messengerDrafts && state.messengerDrafts[String(target.id)]) || '')}" oninput="saveMessengerDraft(this, '${escapeHtml(String(target.id))}')" class="w-full bg-transparent border-0 outline-none text-[14px]" placeholder="${escapeHtml(target.fullName)}-কে মেসেজ লিখুন..." />
                     </div>
                     <button type="submit" class="send-btn w-10 h-10 rounded-full messenger-blue text-white flex items-center justify-center hover:opacity-90 shrink-0 messenger-touch" title="পাঠান">
                       <i data-lucide="send" class="w-4 h-4"></i>
@@ -3793,15 +3699,13 @@
 
         <!-- Oikko Messenger button: placed below the Campus header so the original search bar stays unchanged -->
         <div class="w-full px-3 sm:px-6 py-1.5 bg-transparent">
-          <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-2 gap-2">
-              <button type="button" onclick="openMessenger()" class="w-full h-8 rounded-xl bg-emerald-600/95 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-sm" title="Oikko Messenger">
-                <i data-lucide="message-square" class="w-3.5 h-3.5"></i><span>Oikko Messenger</span>
-              </button>
-              <button type="button" onclick="switchView('youtube')" class="w-full h-8 rounded-xl bg-[#2F6F57] hover:bg-[#245844] text-white text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-sm" title="Oikko Tube">
-                <i data-lucide="play-square" class="w-3.5 h-3.5"></i><span>Oikko Tube</span>
-              </button>
-            </div>
+          <div class="max-w-7xl mx-auto grid grid-cols-2 gap-2">
+            <button type="button" onclick="openMessenger()" class="h-8 rounded-xl bg-emerald-600/95 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-sm" title="Oikko Messenger">
+              <i data-lucide="message-square" class="w-3.5 h-3.5"></i><span>Oikko Messenger</span>
+            </button>
+            <button type="button" onclick="switchView('youtube')" class="h-8 rounded-xl bg-[#F27D61]/95 hover:bg-[#df674f] text-white text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-sm" title="Oikko Tube">
+              <i data-lucide="play-square" class="w-3.5 h-3.5"></i><span>Oikko Tube</span>
+            </button>
           </div>
         </div>
       `;
@@ -3828,13 +3732,19 @@
               <span class="text-[11px] font-medium leading-tight">ইভেন্ট</span>
             </button>
 
-            <!-- ৩. Oikko Tube -->
+            <!-- ৩. অ্যালবাম -->
+            <button onclick="switchView('album')" class="app-nav-item flex-1 py-1 sm:py-1.5 px-2 flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${state.activeView === 'album' ? 'active font-bold' : 'text-white/80 hover:text-white hover:bg-white/10'}" title="ক্যাম্পাস ফটো অ্যালবাম">
+              <i data-lucide="images" class="w-5 h-5"></i>
+              <span class="text-[11px] font-medium leading-tight">অ্যালবাম</span>
+            </button>
+
+            <!-- ৪. Oikko Tube -->
             <button onclick="switchView('youtube')" class="app-nav-item flex-1 py-1 sm:py-1.5 px-2 flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${state.activeView === 'youtube' ? 'active font-bold' : 'text-white/80 hover:text-white hover:bg-white/10'}" title="Oikko Tube">
-              <i data-lucide="play-square" class="w-5 h-5"></i>
+              <i data-lucide="play-circle" class="w-5 h-5"></i>
               <span class="text-[11px] font-medium leading-tight">Tube</span>
             </button>
 
-            <!-- ৪. এডমিন পোস্ট -->
+            <!-- ৫. এডমিন পোস্ট -->
             <button onclick="switchView('admin_posts')" class="app-nav-item flex-1 py-1 sm:py-1.5 px-2 flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${state.activeView === 'admin_posts' ? 'active font-bold' : 'text-white/80 hover:text-white hover:bg-white/10'}" title="প্রধান এডমিনের জরুরি নোটিশ ও পোস্ট">
               <i data-lucide="megaphone" class="w-5 h-5"></i>
               <span class="text-[11px] font-medium leading-tight whitespace-nowrap">এডমিন পোস্ট</span>
@@ -4725,7 +4635,7 @@
                   <i data-lucide="image" class="w-5 h-5 text-amber-700"></i>
                   <span>পূর্ববর্তী ইভেন্টসমূহের অ্যালবাম পরিচালনা (শুধুমাত্র এডমিন)</span>
                 </h3>
-                <p class="text-xs text-[#8A8A6A]">আগের হয়ে যাওয়া ইভেন্টের ছবি যুক্ত বা মুছে ফেলুন, যা ইভেন্ট সেকশনে স্বয়ংক্রিয়ভাবে ডান থেকে বামে স্লাইড হবে</p>
+                <p class="text-xs text-[#8A8A6A]">ছবি যোগ করুন, শিরোনাম/তারিখ/ক্যাটাগরি/বিবরণ এডিট করুন অথবা ছবি মুছে ফেলুন। পরিবর্তন Firebase-এও সংরক্ষিত হবে।</p>
               </div>
               <button onclick="openAddPastEventPhotoModal()" class="px-3.5 py-2 rounded-xl bg-[#5A5A40] hover:bg-[#4A4A33] text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 self-start sm:self-auto cursor-pointer">
                 <i data-lucide="plus" class="w-3.5 h-3.5"></i>
@@ -4751,9 +4661,14 @@
                           <span class="text-[10px] text-[#8A8A6A] ml-1 font-medium">${photo.date}</span>
                         </div>
                       </div>
-                      <button onclick="handleDeletePastEventPhoto('${photo.id}')" class="p-1.5 rounded-lg text-red-600 hover:bg-red-100 transition-colors cursor-pointer shrink-0" title="ছবি মুছে ফেলুন">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                      </button>
+                      <div class="flex items-center gap-1 shrink-0">
+                        <button onclick="openEditPastEventPhotoModal('${photo.id}')" class="oikko-admin-action-edit p-1.5 rounded-lg transition-colors cursor-pointer" title="অ্যালবামের তথ্য এডিট করুন">
+                          <i data-lucide="pencil" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="handleDeletePastEventPhoto('${photo.id}')" class="p-1.5 rounded-lg text-red-600 hover:bg-red-100 transition-colors cursor-pointer" title="ছবি মুছে ফেলুন">
+                          <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                      </div>
                     </div>
                   `).join('')}
                 </div>
@@ -5803,11 +5718,8 @@
     }
 
     function switchView(v) {
+      if (v === 'youtube') startOikkoTubeListener();
       state.activeView = v;
-      if (v === 'youtube') {
-        ensureOikkoTubeReady();
-        loadOikkoTubeAgeVerification();
-      }
       renderApp();
     }
 
@@ -6328,6 +6240,191 @@
     }
     window.handleSaveEditPost = handleSaveEditPost;
 
+
+    // --- AMAR ALBUM VIEW & HANDLERS ---
+    let albumFilter = 'all';
+    let albumSearch = '';
+    let albumViewMode = 'grid';
+    let albumCurrentIndex = 0;
+    let albumTouchX = 0;
+
+    function getAlbumFavorites() {
+      try { return JSON.parse(localStorage.getItem('oikko_amar_album_favorites') || '[]'); }
+      catch(e) { return []; }
+    }
+    function saveAlbumFavorites(list) {
+      try { localStorage.setItem('oikko_amar_album_favorites', JSON.stringify(list)); } catch(e) {}
+    }
+    function getAlbumItems() {
+      const list = Array.isArray(state.pastEventPhotos) ? state.pastEventPhotos : [];
+      const q = String(albumSearch || '').trim().toLowerCase();
+      return list.filter(p => {
+        const fav = getAlbumFavorites().includes(p.id);
+        const text = [p.title,p.category,p.date,p.description].filter(Boolean).join(' ').toLowerCase();
+        return (albumFilter === 'all' || fav) && (!q || text.includes(q));
+      });
+    }
+    function toggleAlbumFavorite(id) {
+      let favs = getAlbumFavorites();
+      favs = favs.includes(id) ? favs.filter(x => x !== id) : [...favs, id];
+      saveAlbumFavorites(favs);
+      renderApp();
+      showToast(favs.includes(id) ? 'ছবিটি প্রিয় অ্যালবামে যোগ হয়েছে' : 'প্রিয় তালিকা থেকে সরানো হয়েছে', 'success');
+    }
+    window.toggleAlbumFavorite = toggleAlbumFavorite;
+
+    function renderAlbumView() {
+      const all = Array.isArray(state.pastEventPhotos) ? state.pastEventPhotos : [];
+      const favs = getAlbumFavorites();
+      const items = getAlbumItems();
+      const categories = [...new Set(all.map(p => p.category).filter(Boolean))];
+      const cards = items.map((photo, index) => {
+        const originalIndex = all.findIndex(p => p.id === photo.id);
+        const isFav = favs.includes(photo.id);
+        const safeUrl = escapeHtml(photo.imageUrl || '');
+        const safeTitle = escapeHtml(photo.title || 'স্মৃতির ছবি');
+        const safeCat = escapeHtml(photo.category || 'ইভেন্ট');
+        const safeDate = escapeHtml(photo.date || '');
+        return `
+          <article class="oikko-album-card" tabindex="0" onclick="openAlbumLightbox('${escapeHtml(photo.id)}')" onkeydown="if(event.key==='Enter'||event.key===' ')openAlbumLightbox('${escapeHtml(photo.id)}')">
+            <div class="oikko-album-media">
+              <img src="${safeUrl}" alt="${safeTitle}" loading="${index < 4 ? 'eager':'lazy'}" onerror="this.style.opacity='.35'">
+              <button type="button" class="oikko-album-heart ${isFav?'active':''}" onclick="event.stopPropagation();toggleAlbumFavorite('${escapeHtml(photo.id)}')" aria-label="প্রিয়">${isFav?'♥':'♡'}</button>
+              <span class="oikko-album-badge">${safeCat}</span>
+            </div>
+            <div class="oikko-album-body">
+              <div class="oikko-album-title">${safeTitle}</div>
+              <div class="oikko-album-meta"><span>${safeDate}</span><span>Photo ${String(originalIndex+1).padStart(2,'0')} ›</span></div>
+            </div>
+          </article>`;
+      }).join('');
+
+      return `
+        <main class="oikko-album-shell">
+          <section class="oikko-album-hero">
+            <div class="oikko-album-eyebrow">OIKKO · AMAR ALBUM</div>
+            <h1>স্মৃতিগুলো থাকুক সুন্দর ফ্রেমে।</h1>
+            <p>ক্যাম্পাসের অনুষ্ঠান, প্রতিযোগিতা ও বিশেষ মুহূর্তের ছবিগুলো এখন আপনার Oikko UI-এর সাথেই একটি আধুনিক অ্যালবামে।</p>
+            <div class="oikko-album-stats">
+              <div class="oikko-album-stat"><b>${all.length}</b> মোট ছবি</div>
+              <div class="oikko-album-stat"><b>${favs.length}</b> প্রিয়</div>
+              <div class="oikko-album-stat"><b>${categories.length}</b> ক্যাটাগরি</div>
+            </div>
+          </section>
+
+          <div class="oikko-album-toolbar">
+            <div class="oikko-album-tabs">
+              <button class="oikko-album-tab ${albumFilter==='all'?'active':''}" onclick="setAlbumFilter('all')">সব ছবি</button>
+              <button class="oikko-album-tab ${albumFilter==='fav'?'active':''}" onclick="setAlbumFilter('fav')">♥ প্রিয়</button>
+            </div>
+            <div class="oikko-album-tools">
+              <div class="oikko-album-search-wrap">
+                <i data-lucide="search"></i>
+                <input class="oikko-album-search" value="${escapeHtml(albumSearch)}" placeholder="অ্যালবামে খুঁজুন..." oninput="setAlbumSearch(this.value)" aria-label="অ্যালবামে খুঁজুন">
+              </div>
+              <button class="oikko-album-viewbtn ${albumViewMode==='grid'?'active':''}" onclick="setAlbumViewMode('grid')" title="গ্রিড"><i data-lucide="grid-2x2"></i></button>
+              <button class="oikko-album-viewbtn ${albumViewMode==='list'?'active':''}" onclick="setAlbumViewMode('list')" title="লিস্ট"><i data-lucide="list"></i></button>
+            </div>
+          </div>
+
+          <div class="${albumViewMode==='list'?'oikko-album-list':'oikko-album-grid'}">
+            ${items.length ? cards : `
+              <div class="oikko-album-empty">
+                <div class="oikko-album-empty-icon"><i data-lucide="images"></i></div>
+                <div class="font-bold text-sm">কোনো ছবি পাওয়া যায়নি</div>
+                <div class="text-xs mt-1">অন্য ফিল্টার বা সার্চ দিয়ে চেষ্টা করুন।</div>
+              </div>`}
+          </div>
+        </main>
+        <div id="oikko-album-lightbox" class="oikko-album-lightbox" aria-hidden="true"></div>`;
+    }
+
+    function setAlbumFilter(value){ albumFilter=value; renderApp(); }
+    window.setAlbumFilter=setAlbumFilter;
+    function setAlbumSearch(value){ albumSearch=value; renderApp(); }
+    window.setAlbumSearch=setAlbumSearch;
+    function setAlbumViewMode(value){ albumViewMode=value; renderApp(); }
+    window.setAlbumViewMode=setAlbumViewMode;
+
+    function openAlbumLightbox(id) {
+      const all = Array.isArray(state.pastEventPhotos) ? state.pastEventPhotos : [];
+      const idx = all.findIndex(p => p.id === id);
+      if (idx < 0) return;
+      albumCurrentIndex = idx;
+      const root = document.getElementById('oikko-album-lightbox');
+      if (!root) return;
+      root.classList.add('show');
+      root.setAttribute('aria-hidden','false');
+      document.body.style.overflow='hidden';
+      updateAlbumLightbox();
+    }
+    window.openAlbumLightbox=openAlbumLightbox;
+
+    function updateAlbumLightbox() {
+      const all = Array.isArray(state.pastEventPhotos) ? state.pastEventPhotos : [];
+      if (!all.length) return;
+      if (albumCurrentIndex < 0) albumCurrentIndex = all.length-1;
+      if (albumCurrentIndex >= all.length) albumCurrentIndex = 0;
+      const p = all[albumCurrentIndex];
+      const favs=getAlbumFavorites();
+      const root=document.getElementById('oikko-album-lightbox');
+      if(!root)return;
+      root.innerHTML=`
+        <div class="oikko-album-viewer">
+          <div class="oikko-album-viewer-top">
+            <div><strong>${escapeHtml(p.title || 'স্মৃতির ছবি')}</strong><div class="mt-0.5 text-white/45">${escapeHtml(p.category || 'ইভেন্ট')}</div></div>
+            <div class="flex items-center gap-2"><span>${albumCurrentIndex+1} / ${all.length}</span><button class="oikko-album-close" onclick="closeAlbumLightbox()" aria-label="বন্ধ"><i data-lucide="x"></i></button></div>
+          </div>
+          <div class="oikko-album-viewer-image">
+            <img src="${escapeHtml(p.imageUrl || '')}" alt="${escapeHtml(p.title || '')}">
+            <div class="oikko-album-nav">
+              <button onclick="albumPrev()" aria-label="আগের"><i data-lucide="chevron-left"></i></button>
+              <button onclick="albumNext()" aria-label="পরের"><i data-lucide="chevron-right"></i></button>
+            </div>
+          </div>
+          <div class="oikko-album-viewer-bottom">
+            <span>${escapeHtml(p.date || '')}${p.description ? ' · '+escapeHtml(p.description) : ''}</span>
+            <div class="oikko-album-actions">
+              <button class="oikko-album-action" onclick="toggleAlbumFavorite('${escapeHtml(p.id)}')">${favs.includes(p.id)?'♥':'♡'} প্রিয়</button>
+              <button class="oikko-album-action" onclick="shareAlbumPhoto()">↗ শেয়ার</button>
+              <button class="oikko-album-action" onclick="openAlbumPhotoNewTab()">↗ ছবি খুলুন</button>
+            </div>
+          </div>
+        </div>`;
+      if(window.lucide)lucide.createIcons();
+      const img=root.querySelector('.oikko-album-viewer-image img');
+      if(img){
+        img.addEventListener('touchstart',e=>albumTouchX=e.changedTouches[0].screenX,{passive:true});
+        img.addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-albumTouchX;if(Math.abs(dx)>45)dx<0?albumNext():albumPrev()},{passive:true});
+      }
+    }
+    function closeAlbumLightbox(){const root=document.getElementById('oikko-album-lightbox');if(root){root.classList.remove('show');root.setAttribute('aria-hidden','true')}document.body.style.overflow='';}
+    window.closeAlbumLightbox=closeAlbumLightbox;
+    function albumNext(){const n=Array.isArray(state.pastEventPhotos)?state.pastEventPhotos.length:0;if(n){albumCurrentIndex=(albumCurrentIndex+1)%n;updateAlbumLightbox()}}
+    function albumPrev(){const n=Array.isArray(state.pastEventPhotos)?state.pastEventPhotos.length:0;if(n){albumCurrentIndex=(albumCurrentIndex-1+n)%n;updateAlbumLightbox()}}
+    window.albumNext=albumNext; window.albumPrev=albumPrev;
+    function shareAlbumPhoto(){
+      const all=Array.isArray(state.pastEventPhotos)?state.pastEventPhotos:[],p=all[albumCurrentIndex];
+      if(!p)return;
+      if(navigator.share){navigator.share({title:p.title||'Amar Album',url:p.imageUrl}).catch(()=>{});}
+      else if(navigator.clipboard){navigator.clipboard.writeText(p.imageUrl).then(()=>showToast('ছবির লিংক কপি হয়েছে','success')).catch(()=>showToast('শেয়ার করা যাচ্ছে না','error'));}
+    }
+    window.shareAlbumPhoto=shareAlbumPhoto;
+    function openAlbumPhotoNewTab(){const p=(state.pastEventPhotos||[])[albumCurrentIndex];if(p?.imageUrl)window.open(p.imageUrl,'_blank','noopener')}
+    window.openAlbumPhotoNewTab=openAlbumPhotoNewTab;
+
+    document.addEventListener('keydown',e=>{
+      const root=document.getElementById('oikko-album-lightbox');
+      if(!root || !root.classList.contains('show')) return;
+      if(e.key==='Escape') closeAlbumLightbox();
+      if(e.key==='ArrowRight') albumNext();
+      if(e.key==='ArrowLeft') albumPrev();
+    });
+    document.addEventListener('click',e=>{
+      const root=document.getElementById('oikko-album-lightbox');
+      if(root && e.target===root) closeAlbumLightbox();
+    });
+
     // --- EVENTS VIEW & HANDLERS ---
     function renderEventsView() {
       const u = state.currentUser;
@@ -6762,104 +6859,111 @@
     }
     window.renderPastEventCards = renderPastEventCards;
 
-    function openAddPastEventPhotoModal() {
+    let editingPastPhotoId = '';
+    let selectedPastPhotoDataUrl = '';
+
+    function openAddPastEventPhotoModal(photoId = '') {
       if (!state.currentUser || state.currentUser.role !== 'admin') {
-        showToast('অনুমতি নেই! শুধুমাত্র প্রধান এডমিন পূর্ববর্তী ইভেন্টের ছবি যুক্ত করতে পারেন।', 'error');
+        showToast('অনুমতি নেই! শুধুমাত্র প্রধান এডমিন অ্যালবাম পরিচালনা করতে পারেন।', 'error');
         return;
       }
 
+      const existing = photoId
+        ? (state.pastEventPhotos || []).find(p => String(p.id) === String(photoId))
+        : null;
+
+      if (photoId && !existing) {
+        showToast('এই অ্যালবাম ছবিটি পাওয়া যায়নি।', 'error');
+        return;
+      }
+
+      editingPastPhotoId = existing ? String(existing.id) : '';
+      selectedPastPhotoDataUrl = '';
+
       const modalContainer = document.getElementById('modal-container');
+      if (!modalContainer) return;
+
+      const isEdit = Boolean(existing);
+      const currentCategory = existing?.category || 'অন্যান্য স্মরণীয় মুহূর্ত';
+      const currentUrl = existing?.imageUrl && !String(existing.imageUrl).startsWith('data:') ? existing.imageUrl : '';
+
       modalContainer.innerHTML = `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div class="bg-white dark:bg-[#21211A] w-full max-w-lg rounded-2xl shadow-xl border border-[#E2E2D5] dark:border-[#36362B] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <!-- Modal Header -->
-            <div class="bg-[#5A5A40] text-white p-4 sm:p-5 flex items-center justify-between">
-              <div class="flex items-center gap-2.5">
-                <div class="p-2 bg-white/20 rounded-xl">
-                  <i data-lucide="image-plus" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <h3 class="font-bold text-base">পূর্ববর্তী ইভেন্টের স্মৃতিময় ছবি যুক্ত করুন</h3>
-                  <p class="text-xs text-[#D1D1C2]">যা ইভেন্ট পেইজের উপরে স্বয়ংক্রিয়ভাবে স্লাইড হবে</p>
+        <div class="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onclick="if(event.target===this) closeProfileModal()">
+          <div class="bg-white dark:bg-[#21211A] w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl border border-[#E2E2D5] dark:border-[#36362B]">
+            <div class="bg-[#5A5A40] text-white p-4 sm:p-5 flex items-center justify-between sticky top-0 z-10">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="p-2 bg-white/20 rounded-xl shrink-0"><i data-lucide="${isEdit ? 'pencil' : 'image-plus'}" class="w-5 h-5"></i></div>
+                <div class="min-w-0">
+                  <h3 class="font-bold text-base truncate">${isEdit ? 'অ্যালবামের তথ্য সম্পাদনা' : 'নতুন অ্যালবাম ছবি যুক্ত করুন'}</h3>
+                  <p class="text-xs text-[#D1D1C2]">${isEdit ? 'তথ্য পরিবর্তন করে সংরক্ষণ করুন' : 'ছবি ও ইভেন্টের তথ্য দিন'}</p>
                 </div>
               </div>
-              <button onclick="closeProfileModal()" class="p-1.5 rounded-xl hover:bg-white/20 text-white transition-colors cursor-pointer" title="বন্ধ করুন">
-                <i data-lucide="x" class="w-5 h-5"></i>
-              </button>
+              <button type="button" onclick="closeProfileModal()" class="p-1.5 rounded-xl hover:bg-white/20 text-white" title="বন্ধ করুন"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
 
-            <!-- Form Body -->
             <form onsubmit="handleSavePastEventPhoto(event)" class="p-5 space-y-4 text-xs text-[#42422F] dark:text-[#EDEDE4]">
               <div>
-                <label class="block font-bold text-[#42422F] dark:text-[#EDEDE4] mb-1">ইভেন্টের নাম / শিরোনাম *</label>
-                <input id="past-photo-title" required placeholder="যেমন: বার্ষিক বিজ্ঞান মেলা ও প্রজেক্ট প্রদর্শনী..." class="w-full p-2.5 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] border border-[#E2E2D5] dark:border-[#36362B] text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                <label class="block font-bold mb-1">ইভেন্টের নাম / শিরোনাম *</label>
+                <input id="past-photo-title" required value="${escapeHtml(existing?.title || '')}" placeholder="যেমন: Cultural Carnival 2024" class="w-full p-2.5 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] border border-[#E2E2D5] dark:border-[#36362B] text-xs" />
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label class="block font-bold text-[#42422F] dark:text-[#EDEDE4] mb-1">তারিখ বা বছর *</label>
-                  <input id="past-photo-date" required placeholder="যেমন: ২০২৪ বা ১৫ মার্চ, ২০২৩" class="w-full p-2.5 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] border border-[#E2E2D5] dark:border-[#36362B] text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                  <label class="block font-bold mb-1">তারিখ বা বছর *</label>
+                  <input id="past-photo-date" required value="${escapeHtml(existing?.date || '')}" placeholder="যেমন: ২০২৪" class="w-full p-2.5 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] border border-[#E2E2D5] dark:border-[#36362B] text-xs" />
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] dark:text-[#EDEDE4] mb-1">ক্যাটাগরি</label>
-                  <select id="past-photo-category" class="w-full p-2.5 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] border border-[#E2E2D5] dark:border-[#36362B] text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
-                    <option value="নোটিশ">নোটিশ</option>
-                    <option value="বিজ্ঞান মেলা">বিজ্ঞান মেলা</option>
-                    <option value="ক্রীড়া প্রতিযোগিতা">ক্রীড়া প্রতিযোগিতা</option>
-                    <option value="সাংস্কৃতিক অনুষ্ঠান">সাংস্কৃতিক অনুষ্ঠান</option>
-                    <option value="বিতর্ক ও সাহিত্য">বিতর্ক ও সাহিত্য</option>
-                    <option value="পুরস্কার বিতরণ">পুরস্কার বিতরণ</option>
-                    <option value="অন্যান্য স্মরণীয় মুহূর্ত">অন্যান্য স্মরণীয় মুহূর্ত</option>
+                  <label class="block font-bold mb-1">ক্যাটাগরি</label>
+                  <select id="past-photo-category" class="w-full p-2.5 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] border border-[#E2E2D5] dark:border-[#36362B] text-xs">
+                    <option value="নোটিশ" ${currentCategory==='নোটিশ'?'selected':''}>নোটিশ</option>
+                    <option value="বিজ্ঞান মেলা" ${currentCategory==='বিজ্ঞান মেলা'?'selected':''}>বিজ্ঞান মেলা</option>
+                    <option value="ক্রীড়া প্রতিযোগিতা" ${currentCategory==='ক্রীড়া প্রতিযোগিতা'?'selected':''}>ক্রীড়া প্রতিযোগিতা</option>
+                    <option value="সাংস্কৃতিক অনুষ্ঠান" ${currentCategory==='সাংস্কৃতিক অনুষ্ঠান'?'selected':''}>সাংস্কৃতিক অনুষ্ঠান</option>
+                    <option value="বিতর্ক ও সাহিত্য" ${currentCategory==='বিতর্ক ও সাহিত্য'?'selected':''}>বিতর্ক ও সাহিত্য</option>
+                    <option value="পুরস্কার বিতরণ" ${currentCategory==='পুরস্কার বিতরণ'?'selected':''}>পুরস্কার বিতরণ</option>
+                    <option value="অন্যান্য স্মরণীয় মুহূর্ত" ${currentCategory==='অন্যান্য স্মরণীয় মুহূর্ত'?'selected':''}>অন্যান্য স্মরণীয় মুহূর্ত</option>
                   </select>
                 </div>
               </div>
 
-              <!-- Photo Upload or URL -->
               <div>
-                <label class="block font-bold text-[#42422F] dark:text-[#EDEDE4] mb-1">ইভেন্টের ছবি (ডিভাইস থেকে বা লিংক) *</label>
-                <div class="space-y-2">
-                  <div class="flex items-center gap-2">
-                    <input type="file" id="past-photo-file-input" accept="image/*" onchange="handlePastPhotoFileSelect(event)" class="hidden" />
-                    <button type="button" onclick="document.getElementById('past-photo-file-input').click()" class="px-3.5 py-2 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] hover:bg-[#EAEAE0] text-[#5A5A40] dark:text-[#D6D6BC] font-bold text-xs border border-[#E2E2D5] dark:border-[#36362B] flex items-center gap-1.5 transition-colors cursor-pointer">
-                      <i data-lucide="upload" class="w-4 h-4"></i>
-                      <span>ডিভাইস / গ্যালারি থেকে ছবি বাছুন</span>
-                    </button>
-                    <span id="past-photo-filename" class="text-[11px] text-[#8A8A6A] truncate"></span>
-                  </div>
-
-                  <input id="past-photo-url" placeholder="অথবা সরাসরি ছবির URL পেস্ট করুন..." class="w-full p-2.5 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] border border-[#E2E2D5] dark:border-[#36362B] text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                <label class="block font-bold mb-1">ইভেন্টের ছবি ${isEdit ? '(পরিবর্তন করতে চাইলে নতুন ছবি দিন)' : '(প্রয়োজনীয়)'} *</label>
+                <div class="flex items-center gap-2">
+                  <input type="file" id="past-photo-file-input" accept="image/*" onchange="handlePastPhotoFileSelect(event)" class="hidden" />
+                  <button type="button" onclick="document.getElementById('past-photo-file-input').click()" class="px-3.5 py-2 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] text-[#5A5A40] dark:text-[#D6D6BC] font-bold border border-[#E2E2D5] dark:border-[#36362B] flex items-center gap-1.5">
+                    <i data-lucide="upload" class="w-4 h-4"></i><span>ছবি বাছুন</span>
+                  </button>
+                  <span id="past-photo-filename" class="text-[11px] text-[#8A8A6A] truncate">${isEdit ? 'বর্তমান ছবি রাখা হবে' : ''}</span>
                 </div>
-
-                <!-- Preview Box -->
-                <div id="past-photo-preview-box" class="mt-2 hidden rounded-xl overflow-hidden border border-[#E2E2D5] max-h-48 bg-[#F5F5F0] flex items-center justify-center">
-                  <img id="past-photo-preview-img" src="" class="max-h-48 w-full object-cover" />
+                <input id="past-photo-url" value="${escapeHtml(currentUrl)}" placeholder="অথবা ছবির URL পেস্ট করুন..." class="mt-2 w-full p-2.5 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] border border-[#E2E2D5] dark:border-[#36362B] text-xs" />
+                <div id="past-photo-preview-box" class="mt-2 ${existing?.imageUrl ? '' : 'hidden'} rounded-xl overflow-hidden border border-[#E2E2D5] max-h-48 bg-[#F5F5F0] flex items-center justify-center">
+                  <img id="past-photo-preview-img" src="${escapeHtml(existing?.imageUrl || '')}" class="max-h-48 w-full object-cover" />
                 </div>
               </div>
 
               <div>
-                <label class="block font-bold text-[#42422F] dark:text-[#EDEDE4] mb-1">সংক্ষিপ্ত বিবরণ (ঐচ্ছিক)</label>
-                <textarea id="past-photo-desc" rows="2" placeholder="ইভেন্টের স্মৃতি বা বিবরণ..." class="w-full p-2.5 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] border border-[#E2E2D5] dark:border-[#36362B] text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40] resize-none"></textarea>
+                <label class="block font-bold mb-1">সংক্ষিপ্ত বিবরণ (ঐচ্ছিক)</label>
+                <textarea id="past-photo-desc" rows="3" placeholder="ইভেন্টের স্মৃতি বা বিবরণ..." class="w-full p-2.5 rounded-xl bg-[#F5F5F0] dark:bg-[#1A1A14] border border-[#E2E2D5] dark:border-[#36362B] text-xs resize-none">${escapeHtml(existing?.description || '')}</textarea>
               </div>
 
-              <!-- Actions -->
               <div class="pt-3 border-t border-[#F0F0E0] dark:border-[#36362B] flex items-center justify-end gap-2">
-                <button type="button" onclick="closeProfileModal()" class="px-4 py-2 rounded-xl bg-white dark:bg-[#2A2A20] hover:bg-[#E2E2D5] text-[#5A5A40] dark:text-[#D6D6BC] border border-[#E2E2D5] dark:border-[#36362B] font-bold text-xs transition-colors cursor-pointer">
-                  বাতিল
-                </button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-[#5A5A40] hover:bg-[#4A4A33] text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer">
-                  <i data-lucide="check" class="w-4 h-4"></i>
-                  <span>গ্যালারিতে যুক্ত করুন</span>
+                <button type="button" onclick="closeProfileModal()" class="px-4 py-2 rounded-xl bg-white dark:bg-[#2A2A20] text-[#5A5A40] dark:text-[#D6D6BC] border border-[#E2E2D5] dark:border-[#36362B] font-bold">বাতিল</button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-[#5A5A40] hover:bg-[#4A4A33] text-white font-bold shadow-sm flex items-center gap-1.5">
+                  <i data-lucide="check" class="w-4 h-4"></i><span>${isEdit ? 'পরিবর্তন সংরক্ষণ করুন' : 'গ্যালারিতে যুক্ত করুন'}</span>
                 </button>
               </div>
             </form>
           </div>
-        </div>
-      `;
+        </div>`;
+
       if (window.lucide) lucide.createIcons();
     }
     window.openAddPastEventPhotoModal = openAddPastEventPhotoModal;
 
-    let selectedPastPhotoDataUrl = '';
+    function openEditPastEventPhotoModal(photoId) {
+      openAddPastEventPhotoModal(photoId);
+    }
+    window.openEditPastEventPhotoModal = openEditPastEventPhotoModal;
 
     async function handlePastPhotoFileSelect(e) {
       const file = e.target.files && e.target.files[0];
@@ -6896,42 +7000,72 @@
         return;
       }
 
-      const title = document.getElementById('past-photo-title').value.trim();
-      const date = document.getElementById('past-photo-date').value.trim();
-      const category = document.getElementById('past-photo-category').value;
-      const urlInput = document.getElementById('past-photo-url').value.trim();
-      const desc = document.getElementById('past-photo-desc').value.trim();
-
-      const finalImageUrl = selectedPastPhotoDataUrl || urlInput;
-      if (!finalImageUrl) {
-        showToast('অনুগ্রহ করে ছবি নির্বাচন করুন অথবা ছবির লিংক দিন', 'error');
+      const titleEl = document.getElementById('past-photo-title');
+      const dateEl = document.getElementById('past-photo-date');
+      const categoryEl = document.getElementById('past-photo-category');
+      const urlEl = document.getElementById('past-photo-url');
+      const descEl = document.getElementById('past-photo-desc');
+      if (!titleEl || !dateEl || !categoryEl || !urlEl || !descEl) {
+        showToast('অ্যালবাম ফর্ম পাওয়া যায়নি। আবার চেষ্টা করুন।', 'error');
         return;
       }
 
-      const newPhoto = {
-        id: 'past_ev_' + Date.now(),
-        title,
-        date,
-        category,
-        imageUrl: finalImageUrl,
-        description: desc,
-        timestamp: Date.now()
+      const title = titleEl.value.trim();
+      const date = dateEl.value.trim();
+      const category = categoryEl.value;
+      const urlInput = urlEl.value.trim();
+      const desc = descEl.value.trim();
+      const existingPhoto = editingPastPhotoId
+        ? (state.pastEventPhotos || []).find(p => String(p.id) === String(editingPastPhotoId))
+        : null;
+      const finalImageUrl = selectedPastPhotoDataUrl || urlInput || existingPhoto?.imageUrl || '';
+
+      if (!title || !date) {
+        showToast('শিরোনাম এবং তারিখ/বছর পূরণ করুন।', 'error');
+        return;
+      }
+      if (!finalImageUrl) {
+        showToast('অনুগ্রহ করে একটি ছবি নির্বাচন করুন অথবা ছবির URL দিন।', 'error');
+        return;
+      }
+
+      const savedId = existingPhoto?.id || ('past_ev_' + Date.now());
+      const savedPhoto = {
+        ...(existingPhoto || {}),
+        id: savedId, title, date, category, imageUrl: finalImageUrl, description: desc, timestamp: Date.now()
       };
 
-      selectedPastPhotoDataUrl = '';
-      if (!state.pastEventPhotos) state.pastEventPhotos = [];
-      state.pastEventPhotos.unshift(newPhoto);
-      savePastEventPhotos(state.pastEventPhotos);
-      closeProfileModal();
-      showToast('পূর্ববর্তী ইভেন্টের ছবি সফলভাবে যুক্ত হয়েছে!', 'success');
-      renderApp();
+      const submitBtn = e.submitter;
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.dataset.originalText = submitBtn.innerText; submitBtn.innerText = 'সংরক্ষণ হচ্ছে...'; }
 
-      if (window.firebaseDb && window.fb) {
-        try {
-          await window.fb.setDoc(window.fb.doc(window.firebaseDb, 'past_events_gallery', newPhoto.id), newPhoto);
-        } catch (err) {
-          console.warn('Firebase save past event photo error:', err);
+      try {
+        if (window.firebaseDb && window.fb) {
+          await window.fb.setDoc(
+            window.fb.doc(window.firebaseDb, 'past_events_gallery', String(savedId)),
+            savedPhoto,
+            { merge: true }
+          );
         }
+
+        if (!Array.isArray(state.pastEventPhotos)) state.pastEventPhotos = [];
+        if (existingPhoto) {
+          state.pastEventPhotos = state.pastEventPhotos.map(p => String(p.id) === String(savedId) ? savedPhoto : p);
+        } else {
+          state.pastEventPhotos = [savedPhoto, ...state.pastEventPhotos];
+        }
+        savePastEventPhotos(state.pastEventPhotos);
+        try { localStorage.setItem('oikko_gallery_seeded', '1'); } catch(err) {}
+
+        editingPastPhotoId = '';
+        selectedPastPhotoDataUrl = '';
+        closeProfileModal();
+        renderApp();
+        showToast(existingPhoto ? 'অ্যালবাম সফলভাবে আপডেট হয়েছে!' : 'অ্যালবামে নতুন ছবি যুক্ত হয়েছে!', 'success');
+      } catch (err) {
+        console.error('Album save/update failed:', err);
+        showToast('Firebase-এ সংরক্ষণ করা যায়নি। আপনার Firebase Rules/Authentication পরীক্ষা করুন।', 'error');
+      } finally {
+        if (submitBtn) { submitBtn.disabled = false; if (submitBtn.dataset.originalText) submitBtn.innerText = submitBtn.dataset.originalText; }
       }
     }
     window.handleSavePastEventPhoto = handleSavePastEventPhoto;
@@ -6941,19 +7075,25 @@
         showToast('অনুমতি নেই! শুধুমাত্র প্রধান এডমিন ছবি মুছতে পারেন।', 'error');
         return;
       }
-      if (!confirm('আপনি কি নিশ্চিত যে এই ছবিটি অ্যালবাম থেকে মুছে ফেলতে চান?')) return;
+      const existingPhoto = (state.pastEventPhotos || []).find(p => String(p.id) === String(photoId));
+      if (!existingPhoto) {
+        showToast('এই অ্যালবাম ছবিটি পাওয়া যায়নি।', 'error');
+        return;
+      }
+      if (!confirm(`“${existingPhoto.title || 'এই ছবি'}” অ্যালবাম থেকে মুছে ফেলতে চান?`)) return;
 
-      state.pastEventPhotos = (state.pastEventPhotos || []).filter(p => p.id !== photoId);
-      savePastEventPhotos(state.pastEventPhotos);
-      showToast('ছবিটি অ্যালবাম থেকে মুছে ফেলা হয়েছে', 'info');
-      renderApp();
-
-      if (window.firebaseDb && window.fb && photoId) {
-        try {
-          await window.fb.deleteDoc(window.fb.doc(window.firebaseDb, 'past_events_gallery', photoId));
-        } catch (err) {
-          console.warn('Firebase delete past event photo error:', err);
+      try {
+        if (window.firebaseDb && window.fb) {
+          await window.fb.deleteDoc(window.fb.doc(window.firebaseDb, 'past_events_gallery', String(photoId)));
         }
+        state.pastEventPhotos = (state.pastEventPhotos || []).filter(p => String(p.id) !== String(photoId));
+        savePastEventPhotos(state.pastEventPhotos);
+        if (String(editingPastPhotoId) === String(photoId)) editingPastPhotoId = '';
+        renderApp();
+        showToast('অ্যালবাম থেকে ছবিটি মুছে ফেলা হয়েছে।', 'success');
+      } catch (err) {
+        console.error('Album delete failed:', err);
+        showToast('ছবিটি Firebase থেকে মুছে ফেলা যায়নি। Firebase Rules/Authentication পরীক্ষা করুন।', 'error');
       }
     }
     window.handleDeletePastEventPhoto = handleDeletePastEventPhoto;
@@ -7435,10 +7575,6 @@
     input,textarea,select{
       border-radius:14px;
     }
-
-    /* Fixed Messenger message input */
-    .messenger-input{height:40px!important;min-height:40px!important;max-height:40px!important;overflow:hidden!important;flex:1 1 auto;}
-    #chat-input-field{height:40px!important;min-height:40px!important;max-height:40px!important;line-height:40px!important;resize:none!important;overflow:hidden!important;}
     input:not([type="file"]):hover,textarea:hover,select:hover{border-color:rgba(47,111,87,.25)}
     input:not([type="file"]):focus,textarea:focus,select:focus{transform:none}
 
@@ -7595,6 +7731,72 @@
     });
   })();
   </script>
+
+
+<style id="oikko-fix-v2">
+/* ===== Oikko Messenger: fixed composer + independently scrollable chat ===== */
+.messenger-shell{
+  height:100dvh !important;
+  min-height:100dvh !important;
+  overflow:hidden !important;
+}
+.messenger-main{
+  height:calc(100dvh - 64px) !important;
+  min-height:0 !important;
+  flex:1 1 auto !important;
+  overflow:hidden !important;
+}
+.messenger-frame{
+  height:100% !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+}
+.messenger-conversation{
+  height:100% !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+}
+#messages-scroll-container{
+  min-height:0 !important;
+  height:auto !important;
+  flex:1 1 auto !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior:contain !important;
+  scroll-behavior:smooth;
+}
+.messenger-composer{
+  position:relative !important;
+  z-index:30 !important;
+  flex:0 0 auto !important;
+  width:100% !important;
+}
+@media(max-width:767px){
+  .messenger-main{height:calc(100dvh - 60px) !important;}
+  .messenger-frame{height:100% !important;}
+  .messenger-conversation{height:100% !important;}
+  #messages-scroll-container{min-height:0 !important;}
+  .messenger-composer{padding-bottom:max(8px,env(safe-area-inset-bottom)) !important;}
+}
+
+/* ===== Admin Album Management ===== */
+.oikko-album-admin-card{
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.oikko-album-admin-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(18,35,28,.08);
+  border-color:rgba(47,111,87,.25) !important;
+}
+.dark .oikko-album-admin-card{background:#18221d !important;border-color:#304239 !important;}
+.dark .oikko-album-admin-card h4{color:#f1f6f3 !important;}
+.dark .oikko-album-admin-card .album-admin-meta{color:#b7c6be !important;}
+.oikko-admin-action-edit{color:#2f6f57;background:#e7f3ec;}
+.oikko-admin-action-edit:hover{background:#d6eadf;}
+.dark .oikko-admin-action-edit{color:#a8ddbf;background:#244535;}
+.dark .oikko-admin-action-edit:hover{background:#2c5140;}
+</style>
 
 </body>
 </html>
