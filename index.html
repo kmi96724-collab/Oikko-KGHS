@@ -1987,6 +1987,7 @@
       if (!state.currentUser) {
         app.innerHTML = renderAuthScreen();
       } else if (state.activeView === 'messenger') {
+        captureMessengerDraft();
         app.innerHTML = renderMessengerScreen();
       } else {
         if (state.activeView === 'youtube') state.activeView = 'feed';
@@ -2018,6 +2019,28 @@
 
     let messengerUnsubscribe = null;
     let messengerListenerChatId = '';
+
+    // প্রতিটি chat-এর draft আলাদাভাবে রাখা হবে। Realtime update/render হলেও
+    // ইউজার যে লেখা টাইপ করছে সেটি আর হারাবে না।
+    state.messengerDrafts = (state.messengerDrafts && typeof state.messengerDrafts === 'object')
+      ? state.messengerDrafts : {};
+
+    function captureMessengerDraft() {
+      const input = document.getElementById('chat-input-field');
+      if (!input || !state.activeChatUserId) return;
+      state.messengerDrafts[String(state.activeChatUserId)] = input.value || '';
+    }
+
+    function saveMessengerDraft(input, targetUserId) {
+      if (!state.messengerDrafts || typeof state.messengerDrafts !== 'object') state.messengerDrafts = {};
+      state.messengerDrafts[String(targetUserId)] = input ? (input.value || '') : '';
+    }
+    window.saveMessengerDraft = saveMessengerDraft;
+
+    function clearMessengerDraft(targetUserId) {
+      if (!state.messengerDrafts || typeof state.messengerDrafts !== 'object') state.messengerDrafts = {};
+      state.messengerDrafts[String(targetUserId)] = '';
+    }
 
     function renderMessengerPeerList(peers, targetId, searchValue) {
       const search = String(searchValue || '').trim().toLowerCase();
@@ -2185,6 +2208,7 @@
     function renderMessengerOnly() {
       const app = document.getElementById('app');
       if (!app || !state.currentUser || state.activeView !== 'messenger') return;
+      captureMessengerDraft();
       const active = document.activeElement;
       const activeId = active && active.id ? active.id : '';
       const selectionStart = active && typeof active.selectionStart === 'number' ? active.selectionStart : null;
@@ -2395,7 +2419,12 @@
       }
 
       const list = Array.isArray(state.messages[targetUserId]) ? state.messages[targetUserId] : [];
-      const message = list.find(m => String(m.id) === String(messageId) || String(m.firebaseId || '') === String(messageId));
+      const index = list.findIndex(m =>
+        String(m?.id || '') === String(messageId || '') ||
+        String(m?.firebaseId || '') === String(messageId || '') ||
+        String(m?.clientMessageId || '') === String(messageId || '')
+      );
+      const message = index >= 0 ? list[index] : null;
 
       // Only the sender can delete their own message.
       if (!message || String(message.senderId || '') !== String(state.currentUser.id)) {
@@ -2405,29 +2434,56 @@
 
       if (!confirm('এই মেসেজটি ডিলিট করবেন?')) return;
 
-      const firebaseMessageId = String(message.firebaseId || message.id || '');
+      const firebaseMessageId = String(message.firebaseId || message.id || message.clientMessageId || '');
       const db = window.firebaseDb;
       const fb = window.fb;
+      const chatId = makeChatId(state.currentUser.id, targetUserId);
+
+      // Remove it from the UI FIRST so the click always visibly deletes the
+      // message. If Firestore rejects the operation, the message is restored.
+      const previousList = [...list];
+      state.messages[targetUserId] = list.filter((_, i) => i !== index);
+      saveMessages(state.messages);
+      document.querySelectorAll('.messenger-own-bubble.messenger-delete-visible')
+        .forEach(el => el.classList.remove('messenger-delete-visible'));
+      renderMessengerOnly();
+      scrollChatToBottom();
+
+      // A message that has not reached Firestore yet only needs the local removal.
+      if (!db || !fb || message.pending === true) {
+        showToast('মেসেজ ডিলিট হয়েছে', 'success');
+        return;
+      }
 
       try {
-        // Delete the Firestore document first. The realtime listener will then
-        // remove it from every open client automatically.
-        if (db && fb && firebaseMessageId && !firebaseMessageId.startsWith('local_')) {
-          const chatId = makeChatId(state.currentUser.id, targetUserId);
-          const messagesCollection = fb.collection(db, 'oikko_chats', chatId, 'messages');
-          await fb.deleteDoc(fb.doc(messagesCollection, firebaseMessageId));
-        }
+        if (!firebaseMessageId) throw new Error('missing-message-id');
+        const messagesCollection = fb.collection(db, 'oikko_chats', chatId, 'messages');
+        const messageRef = fb.doc(messagesCollection, firebaseMessageId);
+        await fb.deleteDoc(messageRef);
 
-        state.messages[targetUserId] = list.filter(m =>
-          String(m.id) !== String(messageId) && String(m.firebaseId || '') !== String(messageId)
-        );
-        saveMessages(state.messages);
-        renderMessengerOnly();
-        scrollChatToBottom();
+        // onSnapshot will confirm the deletion and keep all clients in sync.
         showToast('মেসেজ ডিলিট হয়েছে', 'success');
       } catch (err) {
         console.error('Messenger message delete failed:', err);
-        showToast(`মেসেজ ডিলিট করা যায়নি: ${err?.code || 'unknown'}`, 'error');
+
+        // Restore the message because Firestore deletion did not succeed.
+        state.messages[targetUserId] = previousList;
+        saveMessages(state.messages);
+        renderMessengerOnly();
+        scrollChatToBottom();
+
+        const code = err?.code || 'unknown';
+        if (code === 'permission-denied') {
+          showToast('Firebase Rules-এর কারণে মেসেজ ডিলিট হয়নি। Firestore Rules-এ এই path-এর delete অনুমতি দিন।', 'error');
+        } else if (code === 'not-found') {
+          // The document was already deleted from Firebase. Keep it deleted locally.
+          state.messages[targetUserId] = previousList.filter((_, i) => i !== index);
+          saveMessages(state.messages);
+          renderMessengerOnly();
+          showToast('মেসেজটি Firebase-এ আগেই ডিলিট করা হয়েছিল', 'success');
+        } else {
+          showToast(`মেসেজ ডিলিট করা যায়নি: ${code}`, 'error');
+        }
       }
     }
     window.handleDeleteMessengerMessage = handleDeleteMessengerMessage;
@@ -2445,6 +2501,7 @@
       if (!text) return;
 
       if (input) input.value = '';
+      clearMessengerDraft(targetUserId);
 
       const sent = await persistMessengerMessage(targetUserId, {text});
       if (sent) {
@@ -2947,7 +3004,7 @@
                       </div>
                     </div>
                     <div class="messenger-input flex-1 min-w-0 min-h-10 rounded-[20px] px-4 flex items-center">
-                      <input id="chat-input-field" type="text" autocomplete="off" class="w-full bg-transparent border-0 outline-none text-[14px]" placeholder="${escapeHtml(target.fullName)}-কে মেসেজ লিখুন..." />
+                      <input id="chat-input-field" type="text" autocomplete="off" value="${escapeHtml((state.messengerDrafts && state.messengerDrafts[String(target.id)]) || '')}" oninput="saveMessengerDraft(this, '${escapeHtml(String(target.id))}')" class="w-full bg-transparent border-0 outline-none text-[14px]" placeholder="${escapeHtml(target.fullName)}-কে মেসেজ লিখুন..." />
                     </div>
                     <button type="submit" class="send-btn w-10 h-10 rounded-full messenger-blue text-white flex items-center justify-center hover:opacity-90 shrink-0 messenger-touch" title="পাঠান">
                       <i data-lucide="send" class="w-4 h-4"></i>
