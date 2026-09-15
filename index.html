@@ -1960,7 +1960,7 @@
     // --- 6. Render Functions ---
 
     // --- OIKKO TUBE: Firebase video-only feed ---
-    const OIKKO_TUBE_MAX_URL_LENGTH = 2000;
+    const OIKKO_TUBE_MAX_URL_LENGTH = 4096;
     let oikkoTubeUnsubscribe = null;
     let oikkoTubeLoaded = false;
     let oikkoTubeLastError = '';
@@ -1997,63 +1997,242 @@
       if (!raw) return '';
 
       let u;
-      try {
-        u = new URL(raw);
-      } catch (_) {
+      try { u = new URL(raw); }
+      catch (_) {
         return `<div class="aspect-video flex items-center justify-center bg-[#071B15] text-[#A8B9B1] text-sm p-6 text-center">ভিডিও URL সঠিক নয়</div>`;
       }
 
+      if (!/^https?:$/.test(u.protocol)) {
+        return `<div class="aspect-video flex items-center justify-center bg-[#071B15] text-[#A8B9B1] text-sm p-6 text-center">শুধু http/https URL ব্যবহার করা যাবে</div>`;
+      }
+
       const host = u.hostname.replace(/^www\./, '').toLowerCase();
+      const path = decodeURIComponent(u.pathname || '');
+      const parts = path.split('/').filter(Boolean);
+      const esc = (value) => escapeHtml(String(value || ''));
+
+      const iframe = (src, label = 'Oikko Tube video') => `<div class="aspect-video bg-black relative overflow-hidden">
+        <iframe class="w-full h-full border-0"
+          src="${esc(src)}"
+          title="${esc(label)}"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"></iframe>
+      </div>`;
+
+      // 1) YouTube: watch, shorts, embed, youtu.be and live URLs.
       let youtubeId = '';
-
-      if (host === 'youtu.be') {
-        youtubeId = u.pathname.split('/').filter(Boolean)[0] || '';
-      } else if (host === 'youtube.com' || host === 'm.youtube.com') {
-        if (u.pathname === '/watch') {
-          youtubeId = u.searchParams.get('v') || '';
-        } else if (u.pathname.startsWith('/shorts/')) {
-          youtubeId = u.pathname.split('/').filter(Boolean)[1] || '';
-        } else if (u.pathname.startsWith('/embed/')) {
-          youtubeId = u.pathname.split('/').filter(Boolean)[1] || '';
-        }
+      if (host === 'youtu.be') youtubeId = parts[0] || '';
+      else if (host === 'youtube.com' || host === 'm.youtube.com') {
+        if (u.pathname === '/watch') youtubeId = u.searchParams.get('v') || '';
+        else if (parts[0] === 'shorts' || parts[0] === 'embed' || parts[0] === 'live') youtubeId = parts[1] || '';
       }
-
       if (youtubeId && /^[A-Za-z0-9_-]{6,20}$/.test(youtubeId)) {
-        return `<div class="aspect-video bg-black">
-          <iframe class="w-full h-full"
-            src="https://www.youtube.com/embed/${encodeURIComponent(youtubeId)}"
-            title="Oikko Tube video"
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen
-            referrerpolicy="strict-origin-when-cross-origin"></iframe>
-        </div>`;
+        const qs = new URLSearchParams();
+        ['start','end','si'].forEach(k => { if (u.searchParams.get(k)) qs.set(k, u.searchParams.get(k)); });
+        return iframe(`https://www.youtube.com/embed/${encodeURIComponent(youtubeId)}${qs.toString() ? `?${qs}` : ''}`, 'YouTube video');
       }
 
-      const isDirectVideo = /\.(mp4|webm|ogg)(?:$|[?#])/i.test(u.pathname + u.search);
+      // 2) Vimeo.
+      let vimeoId = '';
+      if (host === 'vimeo.com' || host === 'player.vimeo.com') {
+        const match = path.match(/(?:video\/)?(\d{6,15})/);
+        vimeoId = match?.[1] || '';
+      }
+      if (vimeoId) return iframe(`https://player.vimeo.com/video/${encodeURIComponent(vimeoId)}`, 'Vimeo video');
+
+      // 3) Dailymotion / dai.ly.
+      let dmId = '';
+      if (host === 'dai.ly') dmId = parts[0] || '';
+      else if (host === 'dailymotion.com' || host === 'geo.dailymotion.com') {
+        const match = path.match(/(?:video\/|embed\/video\/)?([A-Za-z0-9]+)/);
+        dmId = match?.[1] || '';
+      }
+      if (dmId) return iframe(`https://geo.dailymotion.com/player.html?video=${encodeURIComponent(dmId)}`, 'Dailymotion video');
+
+      // 4) Google Drive shared video/file preview.
+      if (host === 'drive.google.com') {
+        const match = path.match(/\/file\/d\/([^/]+)/i);
+        const fileId = match?.[1] || u.searchParams.get('id') || '';
+        if (fileId) return iframe(`https://drive.google.com/file/d/${encodeURIComponent(fileId)}/preview`, 'Google Drive video');
+      }
+
+      // 5) OneDrive share/embed links.
+      if (host === 'onedrive.live.com' || host === '1drv.ms') {
+        if (/\/embed/i.test(path) || /embed/i.test(u.search)) return iframe(raw, 'OneDrive video');
+        return iframe(raw, 'OneDrive media');
+      }
+
+      // 6) Dropbox shared files. ?raw=1 makes the media resource available directly when permitted.
+      if (host === 'dropbox.com' || host === 'www.dropbox.com') {
+        const dropboxRaw = new URL(raw);
+        dropboxRaw.searchParams.set('raw', '1');
+        return iframe(dropboxRaw.toString(), 'Dropbox video');
+      }
+
+      // 7) Loom.
+      if (host === 'loom.com' || host === 'www.loom.com') {
+        const loomMatch = path.match(/\/share\/([^/]+)/i);
+        if (loomMatch?.[1]) return iframe(`https://www.loom.com/embed/${encodeURIComponent(loomMatch[1])}`, 'Loom video');
+        if (/\/embed\//i.test(path)) return iframe(raw, 'Loom video');
+      }
+
+      // 8) Wistia.
+      if (host === 'wistia.com' || host === 'fast.wistia.net' || host.endsWith('.wistia.net')) {
+        const wistiaMatch = path.match(/(?:medias|embed\/iframe)\/([^/?#]+)/i);
+        if (wistiaMatch?.[1]) return iframe(`https://fast.wistia.net/embed/iframe/${encodeURIComponent(wistiaMatch[1])}`, 'Wistia video');
+        if (host === 'fast.wistia.net') return iframe(raw, 'Wistia video');
+      }
+
+      // 9) Streamable.
+      if (host === 'streamable.com') {
+        const streamId = parts[parts.length - 1] || '';
+        if (streamId) return iframe(`https://streamable.com/e/${encodeURIComponent(streamId)}`, 'Streamable video');
+      }
+
+      // 10) TikTok video/post pages that expose an embeddable page.
+      if (host === 'tiktok.com' || host === 'vm.tiktok.com' || host === 'vt.tiktok.com') {
+        return iframe(raw, 'TikTok video');
+      }
+
+      // 11) Instagram/Facebook/X pages: use their own page when embedding is permitted.
+      if (host === 'instagram.com' || host === 'facebook.com' || host === 'fb.watch' || host === 'x.com' || host === 'twitter.com') {
+        return iframe(raw, `${host} video`);
+      }
+
+      // 12) Direct media resources. Extension is not mandatory: common media query parameters
+      // are also detected for signed/CDN URLs such as ?format=mp4 or ?type=video/mp4.
+      const mediaHint = [
+        u.pathname,
+        u.searchParams.get('format') || '',
+        u.searchParams.get('ext') || '',
+        u.searchParams.get('type') || '',
+        u.searchParams.get('mime') || ''
+      ].join(' ');
+      const isDirectVideo = /\.(mp4|webm|ogg|ogv|m4v|mov|m3u8)(?:$|[?#])/i.test(u.pathname + u.search)
+        || /(?:^|[\s=&])(?:video\/)?(?:mp4|webm|ogg|ogv|m4v|mov|m3u8)(?:$|[\s&#])/i.test(mediaHint)
+        || /(?:^|[?&])(mime|type)=video%2F/i.test(u.search);
+
       if (isDirectVideo) {
-        return `<div class="aspect-video bg-black">
-          <video src="${escapeHtml(raw)}"
-            controls playsinline preload="metadata"
-            class="w-full h-full object-contain"
-            onerror="this.parentElement.querySelector('.tube-video-error')?.classList.remove('hidden')"></video>
+        const mime = /\.webm(?:$|[?#])/i.test(u.pathname) ? 'video/webm'
+          : /\.ogg(?:$|[?#])/i.test(u.pathname) || /\.ogv(?:$|[?#])/i.test(u.pathname) ? 'video/ogg'
+          : /\.m3u8(?:$|[?#])/i.test(u.pathname) ? 'application/vnd.apple.mpegurl'
+          : 'video/mp4';
+        return `<div class="aspect-video bg-black relative overflow-hidden">
+          <video controls playsinline preload="metadata" class="w-full h-full object-contain"
+            onerror="this.parentElement.querySelector('.tube-video-error')?.classList.remove('hidden')">
+            <source src="${esc(raw)}" type="${mime}">
+          </video>
           <div class="tube-video-error hidden absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/85 text-white p-5 text-center">
-            <div class="font-bold">ভিডিওটি চালানো যাচ্ছে না</div>
-            <a href="${escapeHtml(raw)}" target="_blank" rel="noopener noreferrer"
-              class="px-3 py-2 rounded-xl bg-white text-black text-xs font-bold">ভিডিও URL খুলুন</a>
+            <div class="font-bold">ভিডিওটি browser থেকে চালানো যাচ্ছে না</div>
+            <div class="text-xs text-white/70">ভিডিও server-এর MIME type/codec বা access policy-এর কারণে সমস্যা হতে পারে।</div>
+            <a href="${esc(raw)}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-white text-black text-xs font-bold">ভিডিও URL খুলুন</a>
           </div>
         </div>`;
       }
 
-      return `<div class="aspect-video flex flex-col items-center justify-center gap-2 bg-[#071B15] text-[#A8B9B1] p-6 text-center">
-        <i data-lucide="link" class="w-8 h-8 opacity-60"></i>
-        <div class="font-bold">এই URL সরাসরি ভিডিও নয়</div>
-        <div class="text-xs opacity-80">YouTube link অথবা সরাসরি .mp4/.webm URL ব্যবহার করুন।</div>
-        <a href="${escapeHtml(raw)}" target="_blank" rel="noopener noreferrer"
-          class="mt-1 px-3 py-2 rounded-xl bg-[#0B7D5C] text-white text-xs font-bold">ভিডিও URL খুলুন</a>
-      </div>`;
+      // 13) Universal fallback: EVERY valid http/https URL gets a rich visual card.
+      // We do not force arbitrary websites into an iframe because many sites explicitly
+      // disable framing with X-Frame-Options/CSP. Instead, the card is hydrated from
+      // page metadata/screenshot by the preview service; if that fails, a safe URL card
+      // still remains visible. This makes arbitrary links look like a social-media post.
+      return getOikkoTubeUniversalLinkCardHtml(raw);
     }
     window.getOikkoTubeMediaHtml = getOikkoTubeMediaHtml;
+
+    // --- OIKKO TUBE: Universal link-preview card ---
+    // A normal browser page cannot reliably read another site's OG metadata because of
+    // cross-origin restrictions. Microlink provides a browser-rendered metadata/screenshot
+    // endpoint, so arbitrary public URLs can still receive a visual preview card.
+    const oikkoTubeLinkPreviewCache = new Map();
+    const OIKKO_TUBE_PREVIEW_ENDPOINT = 'https://api.microlink.io';
+
+    function getOikkoTubeUniversalLinkCardHtml(rawUrl) {
+      let u;
+      try { u = new URL(rawUrl); } catch (_) {
+        return `<div class="aspect-video flex items-center justify-center bg-[#071B15] text-[#A8B9B1] p-6 text-center text-sm">লিংকটি সঠিক নয়</div>`;
+      }
+      const safeUrl = escapeHtml(u.toString());
+      const domain = escapeHtml(u.hostname.replace(/^www\./i, ''));
+      const key = encodeURIComponent(u.toString());
+      return `<div class="oikko-universal-link-preview bg-[#071B15] overflow-hidden" data-oikko-link-preview="${key}">
+        <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="block relative aspect-video bg-gradient-to-br from-[#0A2A20] via-[#0D3A2B] to-[#06130F] group">
+          <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/90">
+            <div class="w-14 h-14 rounded-full bg-white/10 border border-white/20 backdrop-blur flex items-center justify-center shadow-lg"><i data-lucide="globe-2" class="w-7 h-7"></i></div>
+            <div class="font-extrabold text-sm">লিংক প্রিভিউ তৈরি হচ্ছে…</div>
+            <div class="text-[11px] text-white/60 max-w-[85%] truncate">${domain}</div>
+          </div>
+          <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 to-transparent"><div class="text-xs text-white/80 truncate">${safeUrl}</div></div>
+        </a>
+      </div>`;
+    }
+    window.getOikkoTubeUniversalLinkCardHtml = getOikkoTubeUniversalLinkCardHtml;
+
+    async function hydrateOikkoTubeLinkPreviews(root = document) {
+      const cards = Array.from(root.querySelectorAll?.('[data-oikko-link-preview]') || []);
+      if (!cards.length) return;
+      await Promise.all(cards.map(async card => {
+        const encoded = card.getAttribute('data-oikko-link-preview');
+        let raw = '';
+        try { raw = decodeURIComponent(encoded || ''); } catch (_) {}
+        if (!raw) return;
+
+        try {
+          let data = oikkoTubeLinkPreviewCache.get(raw);
+          if (!data) {
+            const apiUrl = `${OIKKO_TUBE_PREVIEW_ENDPOINT}?url=${encodeURIComponent(raw)}&meta=true&screenshot=true`;
+            const response = await fetch(apiUrl, { headers: { 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`Preview API ${response.status}`);
+            const json = await response.json();
+            data = json?.data || {};
+            oikkoTubeLinkPreviewCache.set(raw, data);
+          }
+
+          const parsed = new URL(raw);
+          const domain = parsed.hostname.replace(/^www\./i, '');
+          const title = String(data.title || data.siteName || domain || 'External link').trim();
+          const description = String(data.description || '').trim();
+          const image = String(data.screenshot?.url || data.image?.url || data.image || '').trim();
+          const logo = String(data.logo?.url || '').trim();
+          const esc = value => escapeHtml(String(value || ''));
+
+          card.innerHTML = `<a href="${esc(raw)}" target="_blank" rel="noopener noreferrer" class="block bg-[#071B15] group">
+            <div class="relative aspect-video bg-[#0B1713] overflow-hidden">
+              ${image ? `<img src="${esc(image)}" alt="" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" onerror="this.style.display='none';this.nextElementSibling?.classList.remove('hidden')">` : ''}
+              <div class="${image ? 'hidden ' : ''}absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0A2A20] to-[#06130F]">
+                ${logo ? `<img src="${esc(logo)}" alt="" class="w-14 h-14 rounded-2xl object-contain bg-white/10 p-2 border border-white/10">` : `<div class="w-14 h-14 rounded-full bg-white/10 border border-white/20 flex items-center justify-center"><i data-lucide="globe-2" class="w-7 h-7 text-white/80"></i></div>`}
+              </div>
+              <div class="absolute left-3 top-3 px-2.5 py-1 rounded-full bg-black/55 backdrop-blur text-[10px] font-extrabold text-white border border-white/10">${esc(domain)}</div>
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none"><span class="w-14 h-14 rounded-full bg-black/45 backdrop-blur border border-white/20 flex items-center justify-center text-white shadow-xl"><i data-lucide="external-link" class="w-6 h-6"></i></span></div>
+            </div>
+            <div class="p-4 bg-[#071B15]">
+              <div class="flex items-start gap-2">
+                ${logo ? `<img src="${esc(logo)}" alt="" class="w-7 h-7 rounded-lg object-contain bg-white/10 p-1 shrink-0">` : ''}
+                <div class="min-w-0"><h3 class="font-black text-[#EAF7F1] text-base line-clamp-2">${esc(title)}</h3>${description ? `<p class="mt-1 text-xs text-[#A8B9B1] line-clamp-2">${esc(description)}</p>` : ''}</div>
+              </div>
+              <div class="mt-3 text-[10px] text-[#6F837A] truncate">${esc(raw)}</div>
+            </div>
+          </a>`;
+          if (window.lucide) lucide.createIcons();
+        } catch (error) {
+          // Keep the universal card visible even when preview metadata is unavailable.
+          const parsed = (() => { try { return new URL(raw); } catch (_) { return null; } })();
+          const domain = parsed ? parsed.hostname.replace(/^www\./i, '') : 'External link';
+          card.innerHTML = `<a href="${escapeHtml(raw)}" target="_blank" rel="noopener noreferrer" class="block aspect-video bg-gradient-to-br from-[#0A2A20] to-[#06130F] relative group">
+            <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/90 p-6 text-center">
+              <div class="w-14 h-14 rounded-full bg-white/10 border border-white/20 flex items-center justify-center"><i data-lucide="link-2" class="w-7 h-7"></i></div>
+              <div class="font-black">${escapeHtml(domain)}</div>
+              <div class="text-xs text-white/60 break-all line-clamp-2">${escapeHtml(raw)}</div>
+              <span class="px-4 py-2 rounded-full bg-white text-[#123B2E] text-xs font-extrabold">লিংক খুলুন</span>
+            </div>
+          </a>`;
+          if (window.lucide) lucide.createIcons();
+        }
+      }));
+    }
+    window.hydrateOikkoTubeLinkPreviews = hydrateOikkoTubeLinkPreviews;
 
     // --- OIKKO TUBE: Internal age verification ---
     // This verification checks the user's registered Oikko Campus profile data.
@@ -2375,11 +2554,8 @@
       if (!state.oikkoTubeAgeVerified) openOikkoTubeAgeGate();
     }
 
-    function renderOikkoTubeView() {
+    function getOikkoTubeVisibleVideos() {
       const q = String(state.oikkoTubeSearch || '').trim().toLowerCase();
-
-      // Always derive the effective mode from the verified profile age so a
-      // stale/local UI mode can never hide an under18 video from an adult.
       const profileAge = calculateAgeFromDob(state.currentUser?.dateOfBirth);
       const ageGroup = profileAge !== null
         ? (profileAge >= 18 ? '18plus' : 'under18')
@@ -2387,23 +2563,84 @@
 
       const videos = (state.oikkoTubeVideos || []).filter(v => {
         if (ageGroup !== 'under18' && ageGroup !== '18plus') return false;
-
         const audience = String(v.audience || '').trim().toLowerCase();
-
-        // Access policy:
-        // • Under-18 users: ONLY under18 videos.
-        // • 18+ users: BOTH under18 and 18plus videos.
-        if (ageGroup === 'under18') {
-          return audience === 'under18';
-        }
-
-        // Adult users can see both content classes.
+        if (ageGroup === 'under18') return audience === 'under18';
         return audience === 'under18' || audience === '18plus';
       }).filter(v => {
         if (!q) return true;
         return [v.title, v.description, v.authorName, v.authorStudentId]
           .some(x => String(x || '').toLowerCase().includes(q));
       });
+
+      return { videos, ageGroup };
+    }
+
+    function getOikkoTubeVideoCardHtml(v) {
+      return `<article data-oikko-tube-video-id="${escapeHtml(v.id)}" class="oikko-tube-video-card rounded-3xl overflow-hidden">
+        ${getOikkoTubeMediaHtml(v.videoUrl)}
+        <div class="p-4">
+          <h2 class="font-black text-[#EAF7F1] text-base sm:text-lg">${escapeHtml(v.title || 'ভিডিও')}</h2>
+          ${v.description ? `<p class="text-xs text-[#A8B9B1] mt-1 whitespace-pre-wrap">${escapeHtml(v.description)}</p>` : ''}
+          <div class="mt-2"><span class="inline-flex px-2 py-1 rounded-full text-[10px] font-extrabold ${v.audience === '18plus' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-[#EDF2EF] text-[#2F6F57] border border-[#DCE7E0]'}">${getOikkoTubeAudienceLabel(v.audience)}</span></div>
+          <div class="flex flex-wrap items-center justify-between gap-2 mt-3 text-[11px] text-[#8EA59B]"><span class="font-bold">${escapeHtml(v.authorName || v.authorStudentId || 'শিক্ষার্থী')}</span><span>${v.timestamp ? new Date(v.timestamp).toLocaleString('bn-BD') : ''}</span></div>
+          ${String(v.authorId || '') === String(state.currentUser?.id || '') ? `<div class="flex justify-end flex-wrap gap-2 mt-3"><button type="button" onclick="openOikkoTubeEditModal('${escapeHtml(v.id)}')" class="px-3 py-2 rounded-xl bg-[#EDF2EF] hover:bg-[#E1EAE4] text-[#2F6F57] text-xs font-extrabold flex items-center gap-1.5"><i data-lucide="pencil" class="w-3.5 h-3.5"></i>শিরোনাম/বিষয়বস্তু পরিবর্তন</button><button type="button" onclick="openOikkoTubeDeleteModal('${escapeHtml(v.id)}')" class="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-extrabold flex items-center gap-1.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i>ভিডিও ডিলিট</button></div>` : ''}
+        </div>
+      </article>`;
+    }
+
+    // Firestore live updates must not replace the existing video DOM. Moving an
+    // existing <article> keeps native <video> currentTime and iframe players alive,
+    // so a new post from another user no longer restarts the video being watched.
+    function syncOikkoTubeVideoFeedDom() {
+      const feed = document.querySelector('[data-oikko-tube-feed-list]');
+      if (!feed || state.activeView !== 'youtube') return false;
+
+      const { videos } = getOikkoTubeVisibleVideos();
+      const wantedIds = new Set(videos.map(v => String(v.id)));
+      const existing = new Map(Array.from(feed.querySelectorAll('[data-oikko-tube-video-id]')).map(el => [String(el.getAttribute('data-oikko-tube-video-id')), el]));
+
+      // Remove cards that disappeared from Firestore / current filter.
+      existing.forEach((el, id) => {
+        if (!wantedIds.has(id)) el.remove();
+      });
+
+      // Insert new cards and move existing cards into the new Firestore order.
+      let cursor = feed.firstElementChild;
+      const added = [];
+      videos.forEach(v => {
+        const id = String(v.id);
+        let el = existing.get(id);
+        if (!el || !el.isConnected) {
+          const holder = document.createElement('div');
+          holder.innerHTML = getOikkoTubeVideoCardHtml(v).trim();
+          el = holder.firstElementChild;
+          if (!el) return;
+          added.push(el);
+        }
+        if (el !== cursor) feed.insertBefore(el, cursor);
+        cursor = el.nextElementSibling;
+      });
+
+      // Keep the loading/empty state correct without touching any video card.
+      const statusNodes = Array.from(feed.children).filter(el => !el.hasAttribute('data-oikko-tube-video-id'));
+      statusNodes.forEach(el => el.remove());
+      if (!videos.length) {
+        const empty = document.createElement('div');
+        empty.className = 'oikko-tube-empty rounded-3xl p-10 text-center';
+        empty.innerHTML = `<i data-lucide="video" class="w-10 h-10 mx-auto mb-2 opacity-60"></i><p class="font-bold">এই বয়সের শ্রেণিতে কোনো ভিডিও নেই</p><p class="text-xs mt-1">আপনার বয়সের অনুমোদিত শ্রেণির সঙ্গে না মিললে ভিডিওটি এখানে দেখানো হবে না।</p>`;
+        feed.appendChild(empty);
+      }
+
+      if (window.lucide) lucide.createIcons();
+      if (added.length) {
+        added.forEach(el => hydrateOikkoTubeLinkPreviews(el));
+      }
+      return true;
+    }
+
+    function renderOikkoTubeView() {
+      const { videos, ageGroup } = getOikkoTubeVisibleVideos();
+
       return `
         <main class="oikko-tube-page min-h-screen pb-24">
           <section class="max-w-5xl mx-auto px-3 sm:px-5 pt-4">
@@ -2424,20 +2661,10 @@
                 <input value="${escapeHtml(state.oikkoTubeSearch || '')}" oninput="handleOikkoTubeSearch(this.value)" class="flex-1 bg-transparent outline-none text-sm" placeholder="ভিডিও, বিষয় বা শিক্ষার্থীর নাম খুঁজুন..." />
               </div>
             </div>
-            <div class="mt-4 space-y-4">
+            <div data-oikko-tube-feed-list class="mt-4 space-y-4">
               ${oikkoTubeLastError ? `<div class="rounded-2xl border border-red-900/40 bg-red-950/20 text-red-300 px-4 py-3 text-xs">${escapeHtml(oikkoTubeLastError)}</div>` : ''}
               ${(!oikkoTubeLoaded && !videos.length) ? `<div class="rounded-2xl border border-emerald-900/30 bg-emerald-950/20 text-emerald-300 px-4 py-3 text-xs">Firestore থেকে ভিডিও লোড হচ্ছে…</div>` : ''}
-              ${videos.length ? videos.map(v => `
-                <article class="oikko-tube-video-card rounded-3xl overflow-hidden">
-                  ${getOikkoTubeMediaHtml(v.videoUrl)}
-                  <div class="p-4">
-                    <h2 class="font-black text-[#EAF7F1] text-base sm:text-lg">${escapeHtml(v.title || 'ভিডিও')}</h2>
-                    ${v.description ? `<p class="text-xs text-[#A8B9B1] mt-1 whitespace-pre-wrap">${escapeHtml(v.description)}</p>` : ''}
-                    <div class="mt-2"><span class="inline-flex px-2 py-1 rounded-full text-[10px] font-extrabold ${v.audience === '18plus' ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-[#EDF2EF] text-[#2F6F57] border border-[#DCE7E0]'}">${getOikkoTubeAudienceLabel(v.audience)}</span></div>
-                    <div class="flex flex-wrap items-center justify-between gap-2 mt-3 text-[11px] text-[#8EA59B]"><span class="font-bold">${escapeHtml(v.authorName || v.authorStudentId || 'শিক্ষার্থী')}</span><span>${v.timestamp ? new Date(v.timestamp).toLocaleString('bn-BD') : ''}</span></div>
-                    ${String(v.authorId || '') === String(state.currentUser?.id || '') ? `<div class="flex justify-end flex-wrap gap-2 mt-3"><button type="button" onclick="openOikkoTubeEditModal('${escapeHtml(v.id)}')" class="px-3 py-2 rounded-xl bg-[#EDF2EF] hover:bg-[#E1EAE4] text-[#2F6F57] text-xs font-extrabold flex items-center gap-1.5"><i data-lucide="pencil" class="w-3.5 h-3.5"></i>শিরোনাম/বিষয়বস্তু পরিবর্তন</button><button type="button" onclick="openOikkoTubeDeleteModal('${escapeHtml(v.id)}')" class="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-extrabold flex items-center gap-1.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i>ভিডিও ডিলিট</button></div>` : ''}
-                  </div>
-                </article>`).join('') : `
+              ${videos.length ? videos.map(v => getOikkoTubeVideoCardHtml(v)).join('') : `
                 <div class="oikko-tube-empty rounded-3xl p-10 text-center"><i data-lucide="video" class="w-10 h-10 mx-auto mb-2 opacity-60"></i><p class="font-bold">এই বয়সের শ্রেণিতে কোনো ভিডিও নেই</p><p class="text-xs mt-1">আপনার বয়সের অনুমোদিত শ্রেণির সঙ্গে না মিললে ভিডিওটি এখানে দেখানো হবে না।</p></div>`}
             </div>
           </section>
@@ -2471,7 +2698,12 @@
             });
           oikkoTubeLoaded = true;
           oikkoTubeLastError = '';
-          if (state.activeView === 'youtube') renderApp();
+          if (state.activeView === 'youtube') {
+            // Do not call renderApp() here: replacing #app would destroy the
+            // currently playing iframe/native video and restart it from 0:00.
+            // Reconcile only the video cards, preserving existing media nodes.
+            if (!syncOikkoTubeVideoFeedDom()) renderApp();
+          }
         }, err => {
           oikkoTubeLastError = getTubeErrorMessage(err);
           console.error('Oikko Tube Firestore listener:', err);
@@ -2499,8 +2731,8 @@
               <textarea id="oikko-tube-description" maxlength="2000" rows="3" class="w-full rounded-xl border border-[#DCE7E0] bg-[#F4F7F5] px-3 py-3 outline-none text-sm resize-none" placeholder="ভিডিও সম্পর্কে কিছু লিখুন (ঐচ্ছিক)"></textarea>
               <div>
                 <label class="block text-xs font-bold text-[#445048] mb-1.5">ভিডিও URL</label>
-                <input id="oikko-tube-video-url" required type="url" maxlength="${OIKKO_TUBE_MAX_URL_LENGTH}" class="w-full rounded-xl border border-[#DCE7E0] bg-[#F4F7F5] px-3 py-3 outline-none text-sm" placeholder="https://example.com/video.mp4" />
-                <p id="oikko-tube-file-info" class="text-[10px] text-[#7A887E] mt-1">YouTube link (যেমন youtube.com/watch?v=...) অথবা সরাসরি .mp4/.webm URL দিন।</p>
+                <input id="oikko-tube-video-url" required type="url" maxlength="${OIKKO_TUBE_MAX_URL_LENGTH}" class="w-full rounded-xl border border-[#DCE7E0] bg-[#F4F7F5] px-3 py-3 outline-none text-sm" placeholder="যেকোনো HTTPS/HTTP link দিন" />
+                <p id="oikko-tube-file-info" class="text-[10px] text-[#7A887E] mt-1">যেকোনো HTTPS/HTTP link দিন — video হলে player, অন্য link হলে ছবির মতো rich preview card হবে।</p>
               </div>
               <div>
                 <label class="block text-xs font-bold text-[#445048] mb-1.5">ভিডিওর বয়সভিত্তিক শ্রেণি</label><p class="text-[10px] text-[#7A887E] mb-2">আপনার ভিডিওটি ১৮+ নাকি ১৮ বছরের নিচের দর্শকদের জন্য—সঠিক শ্রেণি নির্বাচন করুন।</p>
@@ -2511,7 +2743,7 @@
                 <p class="text-[10px] text-[#7A887E] mt-1">আপনার ভিডিওর জন্য সঠিক বয়সের শ্রেণি নির্বাচন করুন।</p>
               </div>
               <div id="oikko-tube-progress-wrap" class="hidden rounded-2xl bg-[#F4F7F5] border border-[#DCE7E0] p-3"><div class="flex justify-between text-[11px] font-bold text-[#4B584F]"><span id="oikko-tube-progress-label">Firestore-এ পোস্ট করা হচ্ছে</span><span id="oikko-tube-progress-pct">0%</span></div><div class="h-2 rounded-full bg-[#DCE7E0] mt-2 overflow-hidden"><div id="oikko-tube-progress-bar" class="h-full w-0 bg-[#2F6F57] transition-all"></div></div><div id="oikko-tube-progress-bytes" class="text-[10px] text-[#788278] mt-1">ভিডিও ফাইল আপলোড করা হচ্ছে না</div><div id="oikko-tube-upload-status"></div></div>
-              <div class="rounded-2xl bg-[#F8FAF9] border border-[#E2EAE5] p-3 text-[11px] text-[#657168] leading-relaxed">⚠️ Firestore ভিডিও ফাইল সংরক্ষণ করে না। ভিডিওটি অন্য কোথাও host করা থাকতে হবে। YouTube link দিলে সরাসরি player দেখা যাবে; MP4/WebM হলে direct video URL লাগবে।</div>
+              <div class="rounded-2xl bg-[#F8FAF9] border border-[#E2EAE5] p-3 text-[11px] text-[#657168] leading-relaxed">⚠️ Firestore শুধু link সংরক্ষণ করে। Video link হলে player/embedded preview, আর সাধারণ web link হলে automatic rich preview card তৈরি হবে। কিছু website নিরাপত্তার কারণে embed/preview বন্ধ রাখতে পারে।</div>
               <div class="flex justify-end gap-2 pt-1"><button type="button" onclick="closeOikkoTubeUploadModal()" class="px-4 py-2.5 rounded-xl bg-[#EDF2EF] text-[#405047] font-bold text-sm">বাতিল</button><button id="oikko-tube-submit" type="submit" class="px-4 py-2.5 rounded-xl bg-[#2F6F57] text-white font-bold text-sm">পোস্ট করুন</button></div>
             </form>
           </div>
@@ -2866,7 +3098,10 @@
         lucide.createIcons();
       }
       if (state.activeView === 'youtube') {
-        setTimeout(ensureOikkoTubeAgeGate, 0);
+        setTimeout(() => {
+          ensureOikkoTubeAgeGate();
+          hydrateOikkoTubeLinkPreviews(document);
+        }, 0);
       }
       pendingAppRender = false;
     }
