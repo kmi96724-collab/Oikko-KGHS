@@ -227,6 +227,14 @@
       border: 1px solid rgba(226,226,213,.9);
       box-shadow: 0 25px 70px rgba(31,42,36,.13);
     }
+    @media (max-width: 640px) {
+      .auth-panel { grid-template-columns: minmax(145px, .82fr) minmax(210px, 1.18fr); }
+      .auth-aside { min-height: 455px; padding: 1rem; }
+      .auth-aside h2 { font-size: 1.45rem; }
+      .auth-aside p { font-size: .72rem; }
+      .auth-feature { padding: .55rem; gap: .5rem; }
+      .auth-feature span:last-child { font-size: .64rem; line-height: 1.25; }
+    }
     .auth-aside {
       background:
         linear-gradient(145deg, rgba(31,42,36,.98), rgba(53,82,66,.96)),
@@ -254,10 +262,41 @@
       .app-brand-name { font-size: 1rem; }
       .app-hero { border-radius: 1.35rem; }
       .app-stat { padding: .8rem; }
+      .auth-aside {
+        min-height: 390px;
+        border-radius: 0;
+      }
+      .auth-aside h2 {
+        font-size: 1.9rem;
+        line-height: 1.12;
+      }
+      .auth-feature {
+        padding: .72rem;
+      }
     }
     html.dark .bg-white {
       background-color: #21211A !important;
       color: #EDEDE4 !important;
+    }
+
+    /* Mobile: hide the desktop-only Campus Hero and use the form full-width. */
+    @media (max-width: 767px) {
+      .auth-panel {
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+      .auth-aside {
+        display: none !important;
+      }
+    }
+
+    /* Desktop: keep the Campus Hero beside the authentication panel. */
+    @media (min-width: 768px) {
+      .auth-panel {
+        grid-template-columns: .82fr 1.18fr !important;
+      }
+      .auth-aside {
+        display: flex !important;
+      }
     }
     html.dark .bg-\[\#F5F5F0\] {
       background-color: #1A1A14 !important;
@@ -3988,12 +4027,12 @@
         </div>
 
         <div class="max-w-5xl w-full mx-auto">
-          <div class="auth-panel bg-white rounded-3xl overflow-hidden grid grid-cols-1 lg:grid-cols-[.9fr_1.1fr]">
-            <aside class="auth-aside hidden lg:flex flex-col justify-between p-8 text-white relative overflow-hidden">
+          <div class="auth-panel bg-white rounded-3xl overflow-hidden grid grid-cols-[.82fr_1.18fr]">
+            <aside class="auth-aside flex flex-col justify-between p-3 sm:p-6 text-white relative overflow-hidden min-h-[420px] sm:min-h-[500px] lg:min-h-0">
               <div class="absolute -right-16 -top-16 w-56 h-56 rounded-full border border-white/10 bg-white/5"></div>
               <div class="relative z-10">
                 <span class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[.18em] text-[#B9D7C3]"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Oikko Campus</span>
-                <h2 class="text-3xl font-black leading-tight mt-5">ক্যাম্পাসের গল্প,<br><span class="text-[#F5CA68]">আপনার কণ্ঠে।</span></h2>
+                <h2 class="text-3xl font-black leading-tight mt-5">ক্যাম্পাসের গল্প,<br><span class="text-[#F5CA68]">আপনার কন্ঠ।</span></h2>
                 <p class="text-sm text-[#D7E7DC] leading-relaxed mt-4 max-w-xs">সহপাঠীদের সঙ্গে যুক্ত হন, ইভেন্টে অংশ নিন এবং আপনার স্কুল কমিউনিটির গুরুত্বপূর্ণ খবর এক নজরে দেখুন।</p>
               </div>
               <div class="relative z-10 space-y-2.5 mt-8">
@@ -4154,15 +4193,16 @@
       `;
     }
 
+    // --- Registration form with dynamic work/education fields ---
     function renderRegisterForm() {
       return `
-        <form onsubmit="handleRegisterSubmit(event)" class="space-y-4">
+        <form onsubmit="handleRegisterSubmit(event)" class="space-y-4" id="register-form">
           <div class="text-center mb-2">
             <h2 class="text-lg font-bold text-[#42422F]">রেজিস্ট্রেশন ফরম</h2>
             <p class="text-xs text-[#8A8A6A]">নিচের সকল তথ্য সঠিকভাবে পূরণ করুন</p>
           </div>
 
-          <!-- Profile Picture (Device Upload or URL) -->
+          <!-- Profile Picture -->
           <div>
             <label class="block text-xs font-bold text-[#42422F] mb-1">
               প্রোফাইল ছবি (আপনার ডিভাইস থেকে আপলোড করুন)
@@ -4181,11 +4221,7 @@
                   <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                   <span>ডিভাইস / গ্যালারি থেকে ছবি বাছুন</span>
                 </button>
-                <input
-                  id="reg-profile-picture"
-                  type="hidden"
-                  value="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80"
-                />
+                <input id="reg-profile-picture" type="hidden" value="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80" />
               </div>
             </div>
           </div>
@@ -4206,113 +4242,20 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">শ্রেনি *</label>
-              <select id="reg-class" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
-                <option value="৬ষ্ঠ শ্রেনি">৬ষ্ঠ শ্রেনি</option>
-                <option value="৭ম শ্রেনি">৭ম শ্রেনি</option>
-                <option value="৮ম শ্রেনি">৮ম শ্রেনি</option>
-                <option value="৯ম শ্রেনি">৯ম শ্রেনি</option>
-                <option value="১০ম শ্রেনি" selected>১০ম শ্রেনি</option>
-                <option value="একাদশ শ্রেনি">একাদশ শ্রেনি</option>
-                <option value="দ্বাদশ শ্রেনি">দ্বাদশ শ্রেনি</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">রোল *</label>
-              <input id="reg-roll" required placeholder="যেমন: ০৫" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">শাখা *</label>
-              <input id="reg-section" required placeholder="ক / মেঘনা" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">শিফট *</label>
-              <select id="reg-shift" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
-                <option value="প্রভাতী">প্রভাতী</option>
-                <option value="দিবা" selected>দিবা</option>
-                <option value="নৈশ">নৈশ</option>
-              </select>
-            </div>
+          <!-- Work selector: nothing below this is shown until a choice is made -->
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">Work *</label>
+            <select id="reg-work" required onchange="handleWorkSelection(this.value)" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
+              <option value="" selected>আপনার অবস্থান নির্বাচন করুন</option>
+              <option value="student">As a student</option>
+              <option value="worker">As a worker</option>
+              <option value="bachelor">As a bachelor</option>
+            </select>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">স্টুডেন্ট আইডি *</label>
-              <input id="reg-student-id" required placeholder="STU202405" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs sm:text-sm font-mono uppercase focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40] font-bold text-[#5A5A40]" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">জন্ম নিবন্ধন নম্বর *</label>
-              <input id="reg-birth-reg" required placeholder="১৭ সংখ্যার নিবন্ধন" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm font-mono focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">জন্ম তারিখ *</label>
-              <input id="reg-dob" type="date" required value="2008-05-15" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">রক্তের গ্রুপ *</label>
-              <select id="reg-blood" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
-                <option value="A+">A+</option>
-                <option value="B+">B+</option>
-                <option value="O+" selected>O+</option>
-                <option value="AB+">AB+</option>
-                <option value="A-">A-</option>
-                <option value="B-">B-</option>
-                <option value="O-">O-</option>
-                <option value="AB-">AB-</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">ধর্ম *</label>
-              <select id="reg-religion" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
-                <option value="ইসলাম" selected>ইসলাম</option>
-                <option value="সনাতন">সনাতন</option>
-                <option value="খ্রিস্টান">খ্রিস্টান</option>
-                <option value="বৌদ্ধ">বৌদ্ধ</option>
-                <option value="অন্যান্য">অন্যান্য</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">বর্তমান ঠিকানা *</label>
-              <input id="reg-present" required placeholder="বর্তমান ঠিকানা লিখুন" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">স্থায়ী ঠিকানা *</label>
-              <input id="reg-permanent" required placeholder="স্থায়ী ঠিকানা লিখুন" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">মোবাইল নাম্বার *</label>
-              <input id="reg-mobile" type="tel" required placeholder="017xxxxxxxx" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs font-mono focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">জিমেইল আইডি *</label>
-              <input id="reg-email" type="email" required placeholder="name@gmail.com" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">ফেসবুক লিঙ্ক *</label>
-              <input id="reg-fb" required placeholder="facebook.com/username" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">পাসওয়ার্ড *</label>
-              <input id="reg-pass" type="password" required placeholder="কমপক্ষে ৬ ডিজিট" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-[#42422F] mb-1">পাসওয়ার্ড নিশ্চিত করুন *</label>
-              <input id="reg-confirm-pass" type="password" required placeholder="পুনরায় পাসওয়ার্ড লিখুন" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
-            </div>
+          <!-- Dynamic fields -->
+          <div id="reg-dynamic-fields">
+            <!-- Intentionally empty until Work is selected -->
           </div>
 
           <button type="submit" class="w-full py-3 px-4 rounded-xl text-white text-xs sm:text-sm font-bold bg-[#5A5A40] hover:bg-[#4A4A33] shadow-sm transition-all flex items-center justify-center gap-2 mt-4">
@@ -4322,6 +4265,196 @@
         </form>
       `;
     }
+
+    function regField(label, id, type='text', placeholder='', extra='') {
+      return `
+        <div>
+          <label class="block text-xs font-bold text-[#42422F] mb-1">${label} *</label>
+          <input id="${id}" type="${type}" required placeholder="${placeholder}" ${extra} class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+        </div>
+      `;
+    }
+
+    function renderStudentDynamicFields() {
+      return `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">শ্রেনি *</label>
+            <select id="reg-class" required onchange="handleStudentClassSelection(this.value)" class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
+              <option value="" selected>শ্রেনি নির্বাচন করুন</option>
+              <option value="৬ষ্ঠ শ্রেনি">৬ষ্ঠ শ্রেনি</option>
+              <option value="৭ম শ্রেনি">৭ম শ্রেনি</option>
+              <option value="৮ম শ্রেনি">৮ম শ্রেনি</option>
+              <option value="৯ম শ্রেনি">৯ম শ্রেনি</option>
+              <option value="১০ম শ্রেনি">১০ম শ্রেনি</option>
+              <option value="একাদশ শ্রেনি">একাদশ শ্রেনি</option>
+              <option value="দ্বাদশ শ্রেনি">দ্বাদশ শ্রেনি</option>
+              <option value="university">University</option>
+            </select>
+          </div>
+        </div>
+        <div id="reg-student-academic-fields" class="mt-3"></div>
+      `;
+    }
+
+    function renderStudentAcademicFields(studentClass='') {
+      if (!studentClass) return '';
+
+      const isUniversity = studentClass === 'university';
+      const isHigherSecondary = studentClass === 'একাদশ শ্রেনি' || studentClass === 'দ্বাদশ শ্রেনি';
+      const isSchool = !isUniversity && !isHigherSecondary;
+
+      return `
+        ${isSchool ? `
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+            ${regField('রোল', 'reg-roll', 'text', 'যেমন: ০৫')}
+            ${regField('শাখা', 'reg-section', 'text', 'ক / মেঘনা')}
+            <div>
+              <label class="block text-xs font-bold text-[#42422F] mb-1">শিফট *</label>
+              <select id="reg-shift" required class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
+                <option value="প্রভাতী">প্রভাতী</option>
+                <option value="দিবা" selected>দিবা</option>
+                <option value="নৈশ">নৈশ</option>
+              </select>
+            </div>
+            ${regField('স্টুডেন্ট আইডি', 'reg-student-id', 'text', 'STU202405', 'autocomplete="off"')}
+          </div>
+        ` : isHigherSecondary ? `
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            ${regField('রোল', 'reg-roll', 'text', 'যেমন: ০৫')}
+            ${regField('শাখা', 'reg-section', 'text', 'ক / মেঘনা')}
+            <div>
+              <label class="block text-xs font-bold text-[#42422F] mb-1">শিফট *</label>
+              <select id="reg-shift" required class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
+                <option value="প্রভাতী">প্রভাতী</option>
+                <option value="দিবা" selected>দিবা</option>
+                <option value="নৈশ">নৈশ</option>
+              </select>
+            </div>
+          </div>
+        ` : ''}
+
+        ${isUniversity ? '' : ''}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          ${regField('জন্ম নিবন্ধন নম্বর', 'reg-birth-reg', 'text', '১৭ সংখ্যার নিবন্ধন', 'inputmode="numeric"')}
+          ${regField('জন্ম তারিখ', 'reg-dob', 'date', '')}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">রক্তের গ্রুপ *</label>
+            <select id="reg-blood" required class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
+              <option value="">নির্বাচন করুন</option>
+              <option value="A+">A+</option><option value="B+">B+</option><option value="O+" selected>O+</option><option value="AB+">AB+</option>
+              <option value="A-">A-</option><option value="B-">B-</option><option value="O-">O-</option><option value="AB-">AB-</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">ধর্ম *</label>
+            <select id="reg-religion" required class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
+              <option value="">নির্বাচন করুন</option>
+              <option value="ইসলাম">ইসলাম</option><option value="সনাতন">সনাতন</option><option value="খ্রিস্টান">খ্রিস্টান</option><option value="বৌদ্ধ">বৌদ্ধ</option><option value="অন্যান্য">অন্যান্য</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          ${regField('বর্তমান ঠিকানা', 'reg-present', 'text', 'বর্তমান ঠিকানা লিখুন')}
+          ${regField('স্থায়ী ঠিকানা', 'reg-permanent', 'text', 'স্থায়ী ঠিকানা লিখুন')}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          ${regField('মোবাইল নাম্বার', 'reg-mobile', 'tel', '017xxxxxxxx', 'inputmode="tel"')}
+          ${regField('জিমেইল আইডি', 'reg-email', 'email', 'name@gmail.com')}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          ${regField('ফেসবুক লিঙ্ক', 'reg-fb', 'text', 'facebook.com/username')}
+          ${regField('পাসওয়ার্ড', 'reg-pass', 'password', 'কমপক্ষে ৬ ডিজিট', 'minlength="6"')}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          ${regField('পাসওয়ার্ড নিশ্চিত করুন', 'reg-confirm-pass', 'password', 'পুনরায় পাসওয়ার্ড লিখুন', 'minlength="6"')}
+        </div>
+      `;
+    }
+
+    function renderWorkerBachelorFields() {
+      return `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          ${regField('জন্ম তারিখ', 'reg-dob', 'date')}
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">রক্তের গ্রুপ *</label>
+            <select id="reg-blood" required class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
+              <option value="">নির্বাচন করুন</option>
+              <option value="A+">A+</option><option value="B+">B+</option><option value="O+">O+</option><option value="AB+">AB+</option>
+              <option value="A-">A-</option><option value="B-">B-</option><option value="O-">O-</option><option value="AB-">AB-</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">ধর্ম *</label>
+            <select id="reg-religion" required class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
+              <option value="">নির্বাচন করুন</option>
+              <option value="ইসলাম">ইসলাম</option><option value="সনাতন">সনাতন</option><option value="খ্রিস্টান">খ্রিস্টান</option><option value="বৌদ্ধ">বৌদ্ধ</option><option value="অন্যান্য">অন্যান্য</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">লিঙ্গ *</label>
+            <select id="reg-gender" required class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
+              <option value="">লিঙ্গ নির্বাচন করুন</option>
+              <option value="পুরুষ">পুরুষ</option>
+              <option value="নারী">নারী</option>
+              <option value="অন্যান্য">অন্যান্য</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          ${regField('ঠিকানা', 'reg-present', 'text', 'আপনার ঠিকানা লিখুন')}
+          ${regField('জিমেইল আইডি', 'reg-email', 'email', 'name@gmail.com')}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          ${regField('মোবাইল নাম্বার', 'reg-mobile', 'tel', '017xxxxxxxx', 'inputmode="tel"')}
+          ${regField('পাসওয়ার্ড', 'reg-pass', 'password', 'কমপক্ষে ৬ ডিজিট', 'minlength="6"')}
+        </div>
+
+        <div>
+          ${regField('পাসওয়ার্ড নিশ্চিত করুন', 'reg-confirm-pass', 'password', 'পুনরায় পাসওয়ার্ড লিখুন', 'minlength="6"')}
+        </div>
+      `;
+    }
+
+    function handleWorkSelection(work) {
+      const host = document.getElementById('reg-dynamic-fields');
+      if (!host) return;
+      if (!work) {
+        host.innerHTML = '';
+        return;
+      }
+
+      if (work === 'student') {
+        host.innerHTML = renderStudentDynamicFields();
+      } else {
+        // Bachelor follows the same non-academic information flow because
+        // no separate bachelor field set was specified.
+        host.innerHTML = renderWorkerBachelorFields();
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+    window.handleWorkSelection = handleWorkSelection;
+
+    function handleStudentClassSelection(studentClass) {
+      const host = document.getElementById('reg-student-academic-fields');
+      if (!host) return;
+      host.innerHTML = renderStudentAcademicFields(studentClass);
+      if (window.lucide) lucide.createIcons();
+    }
+    window.handleStudentClassSelection = handleStudentClassSelection;
 
     // --- TOP HEADER (MODERN CAMPUS DASHBOARD) ---
     function renderTopHeader() {
@@ -6171,8 +6304,18 @@
 
     async function handleRegisterSubmit(e) {
       e.preventDefault();
-      const password = document.getElementById('reg-pass').value;
-      const confirmPassword = document.getElementById('reg-confirm-pass').value;
+
+      const work = document.getElementById('reg-work')?.value || '';
+      if (!work) {
+        state.authError = 'অনুগ্রহ করে Work থেকে একটি অপশন নির্বাচন করুন!';
+        renderApp();
+        return;
+      }
+
+      const passwordEl = document.getElementById('reg-pass');
+      const confirmPasswordEl = document.getElementById('reg-confirm-pass');
+      const password = passwordEl?.value || '';
+      const confirmPassword = confirmPasswordEl?.value || '';
 
       if (password !== confirmPassword) {
         state.authError = 'দুইটি পাসওয়ার্ড মিলছে না!';
@@ -6180,41 +6323,69 @@
         return;
       }
 
-      const newId = document.getElementById('reg-student-id').value.trim().toUpperCase();
-      if (state.users.some(u => u.studentId.toUpperCase() === newId)) {
+      if (password.length < 6) {
+        state.authError = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে!';
+        renderApp();
+        return;
+      }
+
+      const valueOf = (id, fallback = '') => {
+        const el = document.getElementById(id);
+        return el ? String(el.value || '').trim() : fallback;
+      };
+
+      // Student ID is required only for classes 6–10.
+      const studentClass = valueOf('reg-class');
+      const isStudent = work === 'student';
+      const isSchoolStudent = isStudent && ['৬ষ্ঠ শ্রেনি','৭ম শ্রেনি','৮ম শ্রেনি','৯ম শ্রেনি','১০ম শ্রেনি'].includes(studentClass);
+
+      if (isStudent && !studentClass) {
+        state.authError = 'অনুগ্রহ করে শ্রেনি নির্বাচন করুন!';
+        renderApp();
+        return;
+      }
+
+      const newId = isSchoolStudent
+        ? valueOf('reg-student-id').toUpperCase()
+        : ('USER' + Date.now());
+
+      if (state.users.some(u => String(u.studentId || '').toUpperCase() === newId)) {
         state.authError = 'এই স্টুডেন্ট আইডি দিয়ে ইতিমধ্যে অ্যাকাউন্ট তৈরি করা আছে!';
         renderApp();
         return;
       }
 
       const picInput = document.getElementById('reg-profile-picture');
-      const profilePicUrl = (picInput && picInput.value.trim()) 
-        ? picInput.value.trim() 
+      const profilePicUrl = (picInput && picInput.value.trim())
+        ? picInput.value.trim()
         : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80';
 
+      const isWorkerLike = work === 'worker' || work === 'bachelor';
       const newUser = {
         id: 'user_' + Date.now(),
         studentId: newId,
-        fullName: document.getElementById('reg-name').value.trim(),
-        fatherName: document.getElementById('reg-father').value.trim(),
-        motherName: document.getElementById('reg-mother').value.trim(),
-        studentClass: document.getElementById('reg-class').value,
-        roll: document.getElementById('reg-roll').value.trim(),
-        section: document.getElementById('reg-section').value.trim(),
-        shift: document.getElementById('reg-shift').value,
-        birthRegistrationNumber: document.getElementById('reg-birth-reg').value.trim(),
-        dateOfBirth: document.getElementById('reg-dob').value,
-        bloodGroup: document.getElementById('reg-blood').value,
-        religion: document.getElementById('reg-religion').value,
-        presentAddress: document.getElementById('reg-present').value.trim(),
-        permanentAddress: document.getElementById('reg-permanent').value.trim(),
-        mobileNumber: document.getElementById('reg-mobile').value.trim(),
-        email: document.getElementById('reg-email').value.trim(),
-        facebookLink: document.getElementById('reg-fb').value.trim(),
+        fullName: valueOf('reg-name'),
+        fatherName: valueOf('reg-father'),
+        motherName: valueOf('reg-mother'),
+        work: work,
+        studentClass: isStudent ? studentClass : '',
+        roll: isStudent ? valueOf('reg-roll') : '',
+        section: isStudent ? valueOf('reg-section') : '',
+        shift: isStudent ? valueOf('reg-shift') : '',
+        birthRegistrationNumber: isStudent ? valueOf('reg-birth-reg') : '',
+        dateOfBirth: valueOf('reg-dob'),
+        bloodGroup: valueOf('reg-blood'),
+        religion: valueOf('reg-religion'),
+        gender: isWorkerLike ? valueOf('reg-gender') : '',
+        presentAddress: valueOf('reg-present'),
+        permanentAddress: isWorkerLike ? valueOf('reg-present') : valueOf('reg-permanent'),
+        mobileNumber: valueOf('reg-mobile'),
+        email: valueOf('reg-email'),
+        facebookLink: isStudent ? valueOf('reg-fb') : '',
         password: password,
         profilePicture: profilePicUrl,
         isVerified: false,
-        role: 'student',
+        role: isStudent ? 'student' : 'user',
         createdAt: new Date().toISOString()
       };
 
@@ -6223,6 +6394,7 @@
       state.currentUser = newUser;
       saveCurrentUser(newUser);
       state.activeView = 'feed';
+      state.authError = '';
       showToast('রেজিস্ট্রেশন সফল হয়েছে!', 'success');
       renderApp();
 
