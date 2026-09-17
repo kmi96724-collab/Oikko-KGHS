@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oikko - ক্যাম্পাস সোশ্যাল নেটওয়ার্ক</title>
+  <meta name="theme-color" content="#12231c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Oikko Campus">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
@@ -8239,6 +8247,7 @@
     /* Status indicator */
     .oikko-status-pill{border:1px solid rgba(255,255,255,.10);box-shadow:0 12px 34px rgba(0,0,0,.20)!important}
 
+
     /* Mobile-first refinements */
     @media(max-width:768px){
       .app-topbar{box-shadow:0 8px 28px rgba(18,35,28,.18)!important}
@@ -8293,6 +8302,17 @@
         pill.id='oikko-status-pill'; pill.className='oikko-status-pill';
         pill.innerHTML='<span class="oikko-status-dot"></span><span class="oikko-status-text">অনলাইন</span>';
         document.body.appendChild(pill);
+      }
+      if(!document.getElementById('oikko-apk-download')){
+        const dl=document.createElement('a');
+        dl.id='oikko-apk-download';
+        dl.href='https://appsgeyser.io/20177615/Oikko';
+        dl.target='_blank';
+        dl.rel='noopener noreferrer';
+        dl.setAttribute('aria-label','Oikko Android app download');
+        dl.textContent='Download Oikko App';
+        dl.style.cssText='position:fixed;top:16px;right:16px;z-index:9998;display:inline-flex;align-items:center;gap:8px;padding:10px 15px;border-radius:12px;background:#d8f3e4;color:#12231c;font:700 13px Hind Siliguri,sans-serif;text-decoration:none;box-shadow:0 12px 32px rgba(0,0,0,.22);';
+        document.body.appendChild(dl);
       }
       if(!document.getElementById('oikko-backtop')){
         const btn=document.createElement('button');
@@ -8355,6 +8375,9 @@
 
     document.addEventListener('DOMContentLoaded',()=>{
       ensureUtilityUI(); updateConnectionUI(); enhanceIconsAndImages();
+      if('serviceWorker' in navigator && location.protocol !== 'file:'){
+        navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('Oikko service worker:',err));
+      }
       setTimeout(enhanceIconsAndImages,500);
     });
   })();
