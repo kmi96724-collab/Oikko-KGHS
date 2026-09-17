@@ -9,7 +9,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Oikko Campus">
-  <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <!-- Tailwind CSS CDN -->
@@ -400,7 +399,37 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-  </style>
+  
+/* Oikko Messenger & Oikko Tube: device-friendly full-screen views */
+@media (min-width: 769px) {
+  #app.oikko-sidebar-app.oikko-fullscreen-view > .app-topbar { display:none !important; }
+  #app.oikko-sidebar-app.oikko-fullscreen-view > aside { display:none !important; }
+  #app.oikko-sidebar-app.oikko-fullscreen-view > main {
+    width:100% !important; max-width:none !important; margin:0 !important;
+    padding:0 !important; min-height:100vh !important;
+  }
+  #app.oikko-sidebar-app.oikko-fullscreen-view .oikko-fullscreen-shell {
+    width:100vw !important; max-width:none !important;
+    min-height:100vh !important; margin:0 !important;
+    border-radius:0 !important;
+  }
+}
+@media (max-width: 768px) {
+  #app.oikko-sidebar-app.oikko-fullscreen-view > .app-topbar,
+  #app.oikko-sidebar-app.oikko-fullscreen-view > aside { display:none !important; }
+  #app.oikko-sidebar-app.oikko-fullscreen-view > main {
+    width:100% !important; max-width:none !important; margin:0 !important;
+    padding:0 !important; min-height:100dvh !important;
+  }
+  #app.oikko-sidebar-app.oikko-fullscreen-view .oikko-fullscreen-shell {
+    width:100% !important; max-width:none !important;
+    min-height:100dvh !important; margin:0 !important;
+    border-radius:0 !important;
+  }
+}
+.oikko-fullscreen-shell { box-sizing:border-box; overflow:hidden; }
+
+</style>
 
 <style id="oikko-tube-dark-redesign">
   .oikko-tube-page{
@@ -504,6 +533,331 @@
 .oikko-tube-chip-secondary{background:rgba(255,255,255,.025)!important;color:#d1ded8!important;border:1px solid rgba(180,215,202,.22)!important}
 .oikko-tube-empty{background:rgba(6,27,21,.68)!important;border:1px dashed rgba(160,214,195,.18)!important;color:#a8b9b1!important}
 .oikko-tube-video-card{background:rgba(8,29,23,.82)!important;border:1px solid rgba(154,219,194,.14)!important;box-shadow:0 16px 42px rgba(0,0,0,.16)!important}
+</style>
+
+<style id="oikko-settings-style">
+  .oikko-settings-page{max-width:1100px;margin:0 auto;padding:18px 24px 100px}
+  .oikko-settings-hero{background:linear-gradient(135deg,#173f30,#2f6f57);color:#fff;border-radius:22px;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 12px 30px rgba(18,61,46,.16)}
+  .oikko-settings-hero h1{font-size:25px;font-weight:900;margin:0}
+  .oikko-settings-hero p{margin:5px 0 0;color:#d4e8dc;font-size:12px}
+  .oikko-settings-card{background:#fff;border:1px solid #e6e9df;border-radius:18px;margin-top:14px;overflow:hidden;box-shadow:0 7px 22px rgba(35,49,40,.05)}
+  .oikko-settings-title{padding:15px 17px 10px;font-weight:900;color:#44503d;display:flex;align-items:center;gap:9px}
+  .oikko-settings-title i{color:#2f6f57}
+  .oikko-setting-row{min-height:58px;padding:11px 17px;border-top:1px solid #eff1eb;display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .oikko-setting-main{display:flex;align-items:center;gap:12px;min-width:0}
+  .oikko-setting-icon{width:34px;height:34px;border-radius:11px;background:#f1f6f2;color:#2f6f57;display:flex;align-items:center;justify-content:center;flex:0 0 34px}
+  .oikko-setting-label{font-size:13px;font-weight:800;color:#41493f}
+  .oikko-setting-desc{font-size:10px;color:#899188;margin-top:2px;line-height:1.35}
+  .oikko-setting-control{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+  .oikko-setting-select{border:1px solid #dfe4db;border-radius:10px;background:#fafbf8;padding:8px 10px;color:#4c5549;font:inherit;font-size:11px;outline:none}
+  .oikko-switch{width:43px;height:24px;border:0;border-radius:99px;background:#cdd4ce;position:relative;cursor:pointer;padding:0;transition:.2s}
+  .oikko-switch:after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2);transition:.2s}
+  .oikko-switch.on{background:#2f8b6b}.oikko-switch.on:after{left:22px}
+  .oikko-settings-danger{color:#b84f43!important}.oikko-settings-danger .oikko-setting-icon{color:#b84f43;background:#fff0ed}
+  .oikko-settings-links{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 17px 17px}
+  .oikko-settings-link{border:1px solid #e5e9df;background:#fafbf8;border-radius:12px;padding:11px 12px;text-align:left;cursor:pointer;font:inherit;color:#4b554b;font-size:11px;font-weight:800}
+  .oikko-settings-link:hover{background:#f0f6f2;color:#245844}
+  html.dark .oikko-settings-card{background:#0d2119;border-color:#20382d}.dark .oikko-settings-title,.dark .oikko-setting-label{color:#e6f0ea}.dark .oikko-setting-desc{color:#91a39a}.dark .oikko-setting-row{border-color:#20382d}.dark .oikko-setting-icon{background:#143126;color:#78c69f}.dark .oikko-setting-select,.dark .oikko-settings-link{background:#10271e;border-color:#294338;color:#d4e2da}
+  @media(max-width:768px){.oikko-settings-page{padding:12px 12px 90px}.oikko-settings-hero{padding:18px;border-radius:18px}.oikko-settings-hero h1{font-size:21px}.oikko-setting-row{padding:11px 13px}.oikko-settings-links{grid-template-columns:1fr;padding:0 13px 13px}}
+</style>
+<style id="oikko-sidebar-style">
+  #app.oikko-sidebar-app{padding-left:0}
+  .oikko-sidebar{position:fixed;left:0;top:0;bottom:0;width:252px;z-index:60;background:rgba(255,255,255,.96);border-right:1px solid #e3ebe6;box-shadow:12px 0 36px rgba(18,35,28,.07);backdrop-filter:blur(20px);display:flex;flex-direction:column;color:#24332b}
+  .oikko-sidebar-brand{height:88px;padding:18px 18px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #edf2ef;cursor:pointer;position:relative}
+  .oikko-sidebar-logo{width:45px;height:45px;border-radius:15px;background:linear-gradient(145deg,#dff7e8,#8ed9b0);color:#123a2a;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(47,111,87,.16)}
+  .oikko-sidebar-name{font-family:Outfit,'Hind Siliguri',sans-serif;font-size:23px;font-weight:800;line-height:1;letter-spacing:-.05em}
+  .oikko-sidebar-subtitle{font-size:10px;color:#789087;font-weight:700;margin-top:4px;letter-spacing:.08em;text-transform:uppercase}
+  .oikko-sidebar-close{display:none;margin-left:auto;background:#f1f5f2;border:0;border-radius:10px;padding:7px;color:#557066;cursor:pointer}
+  .oikko-sidebar-scroll{flex:1;overflow-y:auto;padding:12px 10px 18px}
+  .oikko-sidebar-section{display:flex;flex-direction:column;gap:3px}
+  .oikko-sidebar-item{width:100%;height:48px;border:0;background:transparent;border-radius:13px;padding:0 12px;display:flex;align-items:center;gap:13px;text-align:left;color:#55635c;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .18s ease}
+  .oikko-sidebar-item:hover{background:#f0f6f2;color:#245844;transform:translateX(2px)}
+  .oikko-sidebar-item.active{background:linear-gradient(100deg,#22634d,#2f765b);color:#fff;box-shadow:0 7px 18px rgba(47,111,87,.20)}
+  .oikko-sidebar-icon{width:25px;height:25px;display:flex;align-items:center;justify-content:center;flex:0 0 25px}
+  .oikko-sidebar-item.active .oikko-sidebar-icon{color:#fff}
+  .oikko-sidebar-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .oikko-sidebar-divider{height:1px;background:#edf2ef;margin:11px 7px}
+  .oikko-sidebar-admin{color:#b55442}
+  .oikko-sidebar-settings{margin-top:1px}
+  .oikko-sidebar-download{margin:18px 3px 4px;padding:17px 15px 14px;border-radius:17px;background:linear-gradient(145deg,#123d2e,#28654e);color:#fff;box-shadow:0 13px 28px rgba(18,61,46,.18);position:relative;overflow:hidden}
+  .oikko-sidebar-download:before{content:"";position:absolute;width:120px;height:120px;border-radius:50%;right:-45px;top:-60px;background:rgba(255,255,255,.08)}
+  .oikko-sidebar-download-mark{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.13);display:flex;align-items:center;justify-content:center;margin-bottom:9px}
+  .oikko-sidebar-download-title{font-weight:800;font-size:13px;position:relative}
+  .oikko-sidebar-download-text{font-size:10px;line-height:1.55;color:#d2e7db;margin-top:4px;position:relative}
+  .oikko-sidebar-download-btn{margin-top:11px;background:#dff5e7;color:#1c4d3b;border-radius:10px;padding:8px 10px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:800;text-decoration:none;position:relative}
+  .oikko-sidebar-toggle{display:none;border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:11px;padding:9px;cursor:pointer;flex:0 0 auto}
+  .oikko-sidebar-overlay{display:none}
+  html.dark .oikko-sidebar{background:rgba(10,26,20,.98);border-right-color:#263c31;color:#eaf4ee;box-shadow:12px 0 40px rgba(0,0,0,.28)}
+  html.dark .oikko-sidebar-brand{border-bottom-color:#21352c}
+  html.dark .oikko-sidebar-item{color:#b9c9c0}
+  html.dark .oikko-sidebar-item:hover{background:#132b21;color:#e5f4eb}
+  html.dark .oikko-sidebar-divider{background:#21352c}
+  html.dark .oikko-sidebar-close{background:#183127;color:#b9c9c0}
+  @media(min-width:769px){
+    #app.oikko-sidebar-app{padding-left:252px}
+    #app.oikko-sidebar-app .app-topbar{width:calc(100% - 252px)}
+    #app.oikko-sidebar-app > main{max-width:calc(100% - 32px);margin-left:auto;margin-right:auto}
+    #app.oikko-sidebar-app > .w-full{width:auto}
+    #app.oikko-sidebar-app .oikko-sidebar-toggle{display:none}
+    #app.oikko-sidebar-app .app-nav{display:none}
+  }
+  @media(max-width:768px){
+    .oikko-sidebar{width:min(84vw,310px);transform:translateX(-102%);transition:transform .24s ease;box-shadow:18px 0 45px rgba(0,0,0,.18)}
+    .oikko-sidebar.open{transform:translateX(0)}
+    .oikko-sidebar-close{display:flex}
+    .oikko-sidebar-overlay{position:fixed;inset:0;z-index:55;background:rgba(9,20,15,.42);backdrop-filter:blur(2px);opacity:0;pointer-events:none;display:block;transition:opacity .22s ease}
+    .oikko-sidebar-overlay.open{opacity:1;pointer-events:auto}
+    .oikko-sidebar-toggle{display:flex;align-items:center;justify-content:center}
+    body.oikko-sidebar-open{overflow:hidden}
+    .app-topbar .app-header-inner{gap:8px}
+  }
+</style>
+
+<style id="oikko-profile-modern-ui">
+  /* Profile modal: match the new Oikko Campus UI */
+  #modal-container .oikko-profile-backdrop{
+    background:rgba(20,24,18,.54)!important;
+    backdrop-filter:blur(7px)!important;
+    -webkit-backdrop-filter:blur(7px)!important;
+  }
+  #modal-container .oikko-profile-modal{
+    background:#f6f8f5!important;
+    border:1px solid rgba(47,111,87,.12)!important;
+    border-radius:24px!important;
+    box-shadow:0 28px 80px rgba(18,35,28,.24)!important;
+    overflow:hidden!important;
+  }
+  #modal-container .oikko-profile-header{
+    background:linear-gradient(135deg,#56583b 0%,#454832 100%)!important;
+    padding:18px 18px!important;
+    min-height:92px;
+  }
+  #modal-container .oikko-profile-avatar{
+    width:56px!important;height:56px!important;border-radius:17px!important;
+    border:2px solid rgba(255,255,255,.42)!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.18)!important;
+  }
+  #modal-container .oikko-profile-name{font-size:16px!important;font-weight:800!important;color:#fff!important}
+  #modal-container .oikko-profile-meta{color:#d9ddca!important}
+  #modal-container .oikko-profile-id{background:rgba(255,255,255,.18)!important;border-color:rgba(255,255,255,.25)!important}
+  #modal-container .oikko-profile-content{
+    background:#f6f8f5!important;
+    padding:18px!important;
+    max-height:calc(100vh - 185px)!important;
+    overscroll-behavior:contain;
+  }
+  #modal-container .oikko-profile-section{
+    background:#fafbf8!important;
+    border:1px solid #e7eadf!important;
+    border-radius:17px!important;
+    padding:14px!important;
+    box-shadow:0 5px 18px rgba(48,57,42,.045)!important;
+  }
+  #modal-container .oikko-profile-section-title{
+    color:#55583d!important;
+    font-size:11px!important;
+    letter-spacing:.01em!important;
+    text-transform:none!important;
+    margin-bottom:11px!important;
+  }
+  #modal-container .oikko-profile-field{
+    background:#fff!important;
+    border:1px solid #dfe3d8!important;
+    border-radius:10px!important;
+    min-height:57px;
+    padding:10px!important;
+    box-shadow:0 2px 7px rgba(40,50,36,.025)!important;
+  }
+  #modal-container .oikko-profile-field-label{color:#8b8d79!important;font-size:9px!important}
+  #modal-container .oikko-profile-field-value{color:#464936!important;font-size:12px!important}
+  #modal-container .oikko-profile-footer{
+    background:rgba(250,251,248,.97)!important;
+    border-top:1px solid #e2e6dc!important;
+    padding:11px 14px!important;
+    box-shadow:0 -8px 24px rgba(18,35,28,.07)!important;
+    position:relative;
+    z-index:3;
+  }
+  #modal-container .oikko-profile-edit-btn{
+    background:#5a5d3f!important;color:#fff!important;border:0!important;
+    border-radius:12px!important;padding:9px 13px!important;
+  }
+  #modal-container .oikko-profile-close-btn{
+    background:#fff!important;color:#5a5d3f!important;border:1px solid #dfe3d8!important;
+    border-radius:11px!important;padding:9px 16px!important;
+  }
+  #modal-container .oikko-profile-header-close{background:rgba(255,255,255,.10)!important;border-radius:11px!important}
+
+  @media(max-width:768px){
+    #modal-container .oikko-profile-backdrop{
+      padding:0!important;
+      align-items:stretch!important;
+      justify-content:stretch!important;
+      background:#f6f8f5!important;
+      backdrop-filter:none!important;
+    }
+    #modal-container .oikko-profile-modal{
+      width:100%!important;
+      max-width:none!important;
+      height:100dvh!important;
+      max-height:100dvh!important;
+      border-radius:0!important;
+      border:0!important;
+      box-shadow:none!important;
+      display:flex!important;
+      flex-direction:column!important;
+    }
+    #modal-container .oikko-profile-header{flex:0 0 auto!important;padding:18px 16px!important}
+    #modal-container .oikko-profile-content{
+      flex:1 1 auto!important;
+      max-height:none!important;
+      padding:16px 18px 22px!important;
+      overflow-y:auto!important;
+      -webkit-overflow-scrolling:touch;
+    }
+    #modal-container .oikko-profile-footer{flex:0 0 auto!important}
+    #modal-container .oikko-profile-section{padding:13px!important;border-radius:15px!important}
+    #modal-container .oikko-profile-section-title{font-size:11px!important}
+    #modal-container .oikko-profile-field{min-height:56px;padding:9px!important}
+  }
+</style>
+
+<style id="oikko-compact-layout">
+/* Compact Oikko Campus feed — reduces unused vertical space without changing functionality */
+@media (min-width:769px){
+  main{padding-top:12px!important}
+  .app-topbar .app-header-inner{min-height:3.55rem!important}
+}
+/* Reduce the gap under the header / Messenger-Tube launcher */
+body > #app > div > .w-full.px-3.sm\\:px-6.py-1\\.5{padding-top:3px!important;padding-bottom:3px!important}
+body > #app > div > .w-full.px-3.sm\\:px-6.py-1\\.5 .max-w-7xl{max-width:none!important}
+body > #app > div > .w-full.px-3.sm\\:px-6.py-1\\.5 button{min-height:32px!important;height:32px!important}
+
+/* Feed spacing */
+main.max-w-7xl{padding-top:12px!important;padding-bottom:70px!important}
+main.max-w-7xl > .app-hero{margin-bottom:14px!important;padding-top:18px!important;padding-bottom:18px!important}
+main.max-w-7xl > .app-hero .relative.z-10{gap:12px!important}
+main.max-w-7xl > .app-hero .flex.flex-wrap{margin-top:12px!important}
+main.max-w-7xl > .grid.grid-cols-2.lg\\:grid-cols-4{gap:8px!important;margin-bottom:14px!important}
+main.max-w-7xl > .grid.grid-cols-1.lg\\:grid-cols-12{gap:14px!important}
+
+/* Make stat cards shorter */
+main.max-w-7xl .app-stat{padding:11px 13px!important}
+main.max-w-7xl .app-stat p.mt-2{margin-top:5px!important}
+
+/* Make the profile/feed cards tighter */
+main.max-w-7xl .app-card{padding-top:14px!important;padding-bottom:14px!important}
+main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
+
+/* Mobile: preserve comfortable touch targets while still tightening whitespace */
+@media(max-width:768px){
+  main.max-w-7xl{padding-top:8px!important;padding-left:12px!important;padding-right:12px!important}
+  main.max-w-7xl > .app-hero{margin-bottom:10px!important;padding:16px!important}
+  main.max-w-7xl > .grid.grid-cols-2.lg\\:grid-cols-4{gap:7px!important;margin-bottom:10px!important}
+  main.max-w-7xl > .grid.grid-cols-1.lg\\:grid-cols-12{gap:10px!important}
+  body > #app > div > .w-full.px-3.sm\\:px-6.py-1\\.5{padding-left:12px!important;padding-right:12px!important}
+}
+</style>
+
+<style id="oikko-header-full-width-fix">
+  /* Full-width desktop header without clipping the right-side controls. */
+  @media (min-width: 769px) {
+    #app.oikko-sidebar-app .app-topbar {
+      width: calc(100% + 252px) !important;
+      position: relative !important;
+      max-width: none !important;
+      margin-left: -252px !important;
+      margin-right: 0 !important;
+    }
+
+    #app.oikko-sidebar-app .app-topbar .app-header-inner {
+      width: 100% !important;
+      max-width: none !important;
+      box-sizing: border-box !important;
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+      gap: 10px !important;
+    }
+
+    #app.oikko-sidebar-app .app-topbar .app-search {
+      min-width: 220px !important;
+      flex: 1 1 420px !important;
+      width: auto !important;
+      position: relative !important;
+      z-index: 2 !important;
+    }
+
+    #app.oikko-sidebar-app .app-topbar .app-header-inner {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      position: relative !important;
+      overflow: visible !important;
+    }
+
+    #app.oikko-sidebar-app .app-topbar .app-search input {
+      min-width: 0 !important;
+    }
+
+    #app.oikko-sidebar-app .app-topbar .oikko-header-download {
+      flex: 0 0 auto !important;
+    }
+  }
+
+  /* Medium desktop/tablet: keep every control visible by making the header more compact. */
+  @media (min-width: 769px) and (max-width: 1150px) {
+    #app.oikko-sidebar-app .app-topbar .app-header-inner {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+      gap: 7px !important;
+    }
+    #app.oikko-sidebar-app .app-topbar .app-brand-mark {
+      width: 38px !important;
+      height: 38px !important;
+    }
+    #app.oikko-sidebar-app .app-topbar .app-brand-name {
+      font-size: 18px !important;
+    }
+    #app.oikko-sidebar-app .app-topbar .app-search {
+      flex-basis: 180px !important;
+    }
+    #app.oikko-sidebar-app .app-topbar .oikko-header-download {
+      padding-left: 10px !important;
+      padding-right: 10px !important;
+    }
+    #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-1.sm\:gap-2.shrink-0 {
+      gap: 4px !important;
+    }
+    #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-1.sm\:gap-2.shrink-0 > button,
+    #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-1.sm\:gap-2.shrink-0 > div {
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+    }
+  }
+
+  /* Prevent accidental horizontal scrolling on all devices. */
+  html, body, #app { max-width: 100%; overflow-x: hidden; }
+</style>
+<style id="oikko-inner-device-friendly">
+/* Messenger + Oikko Tube: responsive INSIDE the normal app layout. No fullscreen behavior. */
+.oikko-messenger-view, .oikko-tube-view { box-sizing:border-box; width:100%; max-width:100%; min-width:0; }
+.oikko-messenger-view *, .oikko-tube-view * { box-sizing:border-box; max-width:100%; }
+.oikko-messenger-view .grid, .oikko-tube-view .grid { min-width:0; }
+@media (max-width: 768px) {
+  .oikko-messenger-view, .oikko-tube-view { width:100% !important; min-width:0 !important; overflow-x:hidden !important; }
+  .oikko-messenger-view .grid, .oikko-tube-view .grid { grid-template-columns:minmax(0,1fr) !important; }
+  .oikko-messenger-view [class*="grid-cols-"], .oikko-tube-view [class*="grid-cols-"] { grid-template-columns:minmax(0,1fr) !important; }
+  .oikko-messenger-view input, .oikko-messenger-view textarea, .oikko-messenger-view select, .oikko-tube-view input, .oikko-tube-view textarea, .oikko-tube-view select { width:100%; min-width:0; }
+  .oikko-messenger-view img, .oikko-tube-view img, .oikko-tube-view iframe, .oikko-tube-view video { max-width:100%; height:auto; }
+  .oikko-messenger-view .overflow-x-auto, .oikko-tube-view .overflow-x-auto { max-width:100%; overflow-x:auto; }
+  .oikko-messenger-view .p-8, .oikko-tube-view .p-8 { padding:1rem !important; }
+  .oikko-messenger-view .p-6, .oikko-tube-view .p-6 { padding:1rem !important; }
+  .oikko-messenger-view .gap-8, .oikko-tube-view .gap-8 { gap:1rem !important; }
+}
+@media (max-width: 480px) {
+  .oikko-messenger-view, .oikko-tube-view { font-size:14px; }
+  .oikko-messenger-view .p-4, .oikko-tube-view .p-4 { padding:.75rem !important; }
+  .oikko-messenger-view button, .oikko-tube-view button { min-height:40px; }
+}
 </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -808,30 +1162,39 @@
       }
     }
 
-    function safeSaveStorage(key, data) {
-      try {
-        localStorage.setItem(key, JSON.stringify(data));
-      } catch (err) {
-        console.warn("LocalStorage write skipped for " + key + " due to quota limit:", err);
-        try {
-          if (Array.isArray(data)) {
-            const stripped = data.map(item => {
-              if (item && typeof item === "object") {
-                const copy = { ...item };
-                if (copy.imageUrl && copy.imageUrl.length > 2000) {
-                  copy.imageUrl = "";
-                }
-                if (copy.videoUrl && copy.videoUrl.length > 2000) {
-                  copy.videoUrl = "";
-                }
-                return copy;
-              }
-              return item;
-            });
-            localStorage.setItem(key, JSON.stringify(stripped));
+    function compactForLocalStorage(value, depth = 0) {
+      if (depth > 6) return null;
+      if (Array.isArray(value)) return value.map(v => compactForLocalStorage(v, depth + 1));
+      if (!value || typeof value !== 'object') return value;
+      const copy = {};
+      for (const [k, v] of Object.entries(value)) {
+        if ((k === 'imageUrl' || k === 'videoUrl' || k === 'dataUrl' || k === 'base64' || k === 'fileData') && typeof v === 'string') {
+          // Data URLs/base64 media do not belong in localStorage. Firebase/remote URLs are kept.
+          if (v.startsWith('data:') || v.length > 20000) {
+            copy[k] = '';
+            continue;
           }
+        }
+        copy[k] = compactForLocalStorage(v, depth + 1);
+      }
+      return copy;
+    }
+
+    function safeSaveStorage(key, data) {
+      const serialized = JSON.stringify(data);
+      try {
+        localStorage.setItem(key, serialized);
+        return true;
+      } catch (err) {
+        console.warn('LocalStorage quota reached for ' + key + '; saving a lightweight cache instead.', err);
+        try {
+          const compact = compactForLocalStorage(data);
+          localStorage.setItem(key, JSON.stringify(compact));
+          return true;
         } catch (e2) {
-          // In-memory state remains authoritative
+          // Last resort: remove only this cache. Firebase remains the source of truth.
+          try { localStorage.removeItem(key); } catch (_) {}
+          return false;
         }
       }
     }
@@ -1099,22 +1462,22 @@
       }
     ];
 
+    // Past-event gallery is Firebase-backed. Do NOT cache image records in localStorage:
+    // gallery images can make browser storage exceed its quota and cause console errors.
     function loadPastEventPhotos() {
-      try {
-        const d = localStorage.getItem('student_portal_past_event_photos');
-        if (!d) {
-          localStorage.setItem('student_portal_past_event_photos', JSON.stringify(INITIAL_PAST_EVENT_PHOTOS));
-          return INITIAL_PAST_EVENT_PHOTOS;
-        }
-        return JSON.parse(d);
-      } catch (e) {
-        return INITIAL_PAST_EVENT_PHOTOS;
-      }
+      return INITIAL_PAST_EVENT_PHOTOS.map(photo => ({ ...photo }));
     }
 
     function savePastEventPhotos(photos) {
-      safeSaveStorage('student_portal_past_event_photos', photos);
+      // Intentionally no-op. Firebase collection `past_events_gallery` is the source of truth.
+      // Keeping image URLs/data out of localStorage prevents QuotaExceededError.
+      return true;
     }
+
+    // Remove any legacy oversized gallery cache left by older versions.
+    try {
+      localStorage.removeItem('student_portal_past_event_photos');
+    } catch (_) {}
 
     // --- 3. App State ---
     const initialIsDark = localStorage.getItem('student_portal_theme') === 'dark';
@@ -1141,6 +1504,7 @@
       oikkoTubeAgeGroup: null, // 'under18' | '18plus'
       oikkoTubeAgeVerified: false,
       oikkoTubeAgeGateBusy: false,
+       sidebarOpen: false,
       pendingOikkoTubeAgeGroup: null,
       searchQuery: '',
       globalSearchQuery: '',
@@ -1151,7 +1515,8 @@
       expandedComments: {},   // { [postId]: boolean }
       openReplyBoxes: {},     // { [commentId]: boolean }
       isDarkMode: initialIsDark,
-      eventFilterCategory: 'সকল'
+      eventFilterCategory: 'সকল',
+      settings: JSON.parse(localStorage.getItem('oikko_settings') || '{\"profileVisibility\":\"public\",\"pushNotifications\":true,\"emailNotifications\":false,\"commentNotifications\":true,\"likeNotifications\":true,\"messageNotifications\":true,\"fontSize\":\"medium\",\"language\":\"বাংলা\",\"timezone\":\"Asia/Dhaka\",\"camera\":true,\"microphone\":true,\"location\":false,\"contacts\":false,\"autoDownload\":false,\"downloadQuality\":\"সেরা মান\",\"highContrast\":false,\"screenReader\":false,\"textToSpeech\":false}')
     };
 
     function toggleDarkMode() {
@@ -1162,6 +1527,7 @@
       showToast(state.isDarkMode ? 'ডার্ক মোড সক্রিয় করা হয়েছে' : 'লাইট মোড সক্রিয় করা হয়েছে', 'info');
     }
     window.toggleDarkMode = toggleDarkMode;
+    try { document.documentElement.style.setProperty('--oikko-user-font-scale', state.settings.fontSize === 'small' ? '.92' : state.settings.fontSize === 'large' ? '1.08' : '1'); } catch(e) {}
 
     // --- কমেন্ট ভিউ টগল (শুধু প্রথম কমেন্ট নাকি সকল কমেন্ট দেখানো হবে) ---
     function toggleAllComments(postId) {
@@ -2705,7 +3071,7 @@
       const { videos, ageGroup } = getOikkoTubeVisibleVideos();
 
       return `
-        <main class="oikko-tube-page min-h-screen pb-24">
+        <main class="oikko-tube-page oikko-fullscreen-shell min-h-screen pb-24">
           <div class="oikko-tube-download-wrap max-w-5xl mx-auto px-3 sm:px-5 pt-3">
             <a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-tube-download w-full items-center justify-center rounded-2xl px-5 py-3.5 bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] font-black text-sm shadow-lg transition" aria-label="Download Oikko App">Download Oikko App</a>
           </div>
@@ -3145,6 +3511,8 @@
       }
 
       const app = document.getElementById('app');
+      app.classList.toggle('oikko-sidebar-app', !!state.currentUser);
+      app.classList.toggle('oikko-fullscreen-view', !!state.currentUser && (state.activeView === 'messenger' || state.activeView === 'youtube'));
       if (!state.currentUser) {
         app.innerHTML = renderAuthScreen();
       } else if (state.activeView === 'messenger') {
@@ -3162,6 +3530,8 @@
           }, 0);
           pendingAppRender = false;
           return;
+        } else if (state.activeView === 'settings') {
+          viewHtml = renderSettingsView();
         } else if (state.activeView === 'admin') {
           viewHtml = renderAdminView();
         } else if (state.activeView === 'events') {
@@ -3171,7 +3541,7 @@
         } else {
           viewHtml = renderFeedView();
         }
-        app.innerHTML = renderTopHeader() + viewHtml + renderBottomNavbar();
+        app.innerHTML = renderTopHeader() + viewHtml + renderSidebar();
       }
       if (window.lucide) {
         lucide.createIcons();
@@ -3704,7 +4074,7 @@
       const peers = getMessengerPeers();
       if (!peers.length) {
         return `
-          <div class="messenger-shell min-h-screen flex flex-col">
+          <div class="messenger-shell oikko-fullscreen-shell min-h-screen flex flex-col">
             <style>
               .messenger-shell{background:#F5F5F0;color:#42422F}
               .dark .messenger-shell{background:#12231C;color:#E2E2D5}
@@ -4535,6 +4905,10 @@
       return `
         <header class="app-topbar sticky top-0 z-30 text-white transition-all">
           <div class="app-header-inner max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-3">
+            <button type="button" class="oikko-sidebar-toggle" onclick="toggleSidebar()" aria-label="মেনু খুলুন" title="মেনু">
+              <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+
             <!-- Brand -->
             <div class="flex items-center gap-2.5 cursor-pointer shrink-0" onclick="switchView('feed')" title="হোম ফিডে যান">
               <div class="app-brand-mark w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center shrink-0">
@@ -4610,58 +4984,69 @@
     }
 
     // --- BOTTOM NAVIGATION BAR (ALL DEVICES FRIENDLY) ---
-    function renderBottomNavbar() {
+    function renderSidebar() {
       const u = state.currentUser;
       if (!u) return '';
       const isAdmin = u.role === 'admin';
+      const navItem = (icon, label, action, active=false, extra='') => `
+        <button type="button" onclick="${action}" class="oikko-sidebar-item ${active ? 'active' : ''} ${extra}" title="${escapeHtml(label)}">
+          <span class="oikko-sidebar-icon"><i data-lucide="${icon}" class="w-[19px] h-[19px]"></i></span>
+          <span class="oikko-sidebar-label">${escapeHtml(label)}</span>
+        </button>`;
 
       return `
-        <nav class="app-nav fixed bottom-0 left-0 right-0 z-40 text-white pb-safe transition-all">
-          <div class="max-w-xl md:max-w-2xl mx-auto px-2 sm:px-4 py-1.5 flex items-center justify-around gap-1 sm:gap-2">
-            <!-- ১. হোম -->
-            <button onclick="switchView('feed')" class="app-nav-item flex-1 py-1 sm:py-1.5 px-2 flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${state.activeView === 'feed' ? 'active font-bold' : 'text-white/80 hover:text-white hover:bg-white/10'}" title="হোম ফিড">
-              <i data-lucide="home" class="w-5 h-5"></i>
-              <span class="text-[11px] font-medium leading-tight">হোম</span>
+        <div class="oikko-sidebar-overlay ${state.sidebarOpen ? 'open' : ''}" onclick="toggleSidebar(false)"></div>
+        <aside class="oikko-sidebar ${state.sidebarOpen ? 'open' : ''}" aria-label="প্রধান নেভিগেশন">
+          <div class="oikko-sidebar-brand" onclick="switchView('feed')" title="হোম">
+            <div class="oikko-sidebar-logo"><i data-lucide="graduation-cap" class="w-7 h-7"></i></div>
+            <div class="oikko-sidebar-brand-text">
+              <div class="oikko-sidebar-name">Oikko</div>
+              <div class="oikko-sidebar-subtitle">Campus</div>
+            </div>
+            <button type="button" class="oikko-sidebar-close" onclick="event.stopPropagation(); toggleSidebar(false)" aria-label="মেনু বন্ধ করুন">
+              <i data-lucide="x" class="w-5 h-5"></i>
             </button>
-
-            <!-- ২. ইভেন্ট -->
-            <button onclick="switchView('events')" class="app-nav-item flex-1 py-1 sm:py-1.5 px-2 flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${state.activeView === 'events' ? 'active font-bold' : 'text-white/80 hover:text-white hover:bg-white/10'}" title="ক্যাম্পাস ইভেন্ট ও আয়োজন">
-              <i data-lucide="calendar" class="w-5 h-5"></i>
-              <span class="text-[11px] font-medium leading-tight">ইভেন্ট</span>
-            </button>
-
-            <!-- ৩. Oikko Tube -->
-            <button onclick="switchView('youtube')" class="app-nav-item flex-1 py-1 sm:py-1.5 px-2 flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${state.activeView === 'youtube' ? 'active font-bold' : 'text-white/80 hover:text-white hover:bg-white/10'}" title="Oikko Tube">
-              <i data-lucide="play-square" class="w-5 h-5"></i>
-              <span class="text-[11px] font-medium leading-tight">Tube</span>
-            </button>
-
-            <!-- ৪. এডমিন পোস্ট -->
-            <button onclick="switchView('admin_posts')" class="app-nav-item flex-1 py-1 sm:py-1.5 px-2 flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${state.activeView === 'admin_posts' ? 'active font-bold' : 'text-white/80 hover:text-white hover:bg-white/10'}" title="প্রধান এডমিনের জরুরি নোটিশ ও পোস্ট">
-              <i data-lucide="megaphone" class="w-5 h-5"></i>
-              <span class="text-[11px] font-medium leading-tight whitespace-nowrap">এডমিন পোস্ট</span>
-            </button>
-
-            <!-- ৫. প্রোফাইল -->
-            <button onclick="openProfileModal('${u.id}')" class="app-nav-item flex-1 py-1 sm:py-1.5 px-2 flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer text-white/80 hover:text-white hover:bg-white/10" title="আমার সম্পূর্ণ প্রোফাইল দেখুন ও এডিট করুন">
-              <div class="relative">
-                <img src="${u.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200'}" class="w-5 h-5 rounded-full object-cover border border-white/70" />
-                ${u.isVerified ? '<span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-blue-500 rounded-full border border-white"></span>' : ''}
-              </div>
-              <span class="text-[11px] font-medium leading-tight">প্রোফাইল</span>
-            </button>
-
-            <!-- ৬. এডমিন (if admin) -->
-            ${isAdmin ? `
-              <button onclick="switchView('admin')" class="app-nav-item flex-1 py-1 sm:py-1.5 px-2 flex flex-col items-center justify-center gap-0.5 transition-all cursor-pointer ${state.activeView === 'admin' ? 'active text-red-600 font-bold' : 'text-white/80 hover:text-white hover:bg-white/10'}" title="এডমিন প্যানেল">
-                <i data-lucide="shield-check" class="w-5 h-5 ${state.activeView === 'admin' ? 'text-red-600' : 'text-red-300'}"></i>
-                <span class="text-[11px] font-medium leading-tight">এডমিন</span>
-              </button>
-            ` : ''}
           </div>
-        </nav>
+
+          <div class="oikko-sidebar-scroll">
+            <div class="oikko-sidebar-section">
+              ${navItem('home', 'হোম', "switchView('feed')", state.activeView === 'feed')}
+              ${navItem('message-circle', 'ঐক্য মেসেঞ্জার', 'openMessenger()', state.activeView === 'messenger')}
+              ${navItem('play-square', 'ঐক্য টিউব', "switchView('youtube')", state.activeView === 'youtube')}
+              ${navItem('image', 'অ্যালবাম', "showToast('অ্যালবাম শীঘ্রই যুক্ত হবে', 'info')")}
+              ${navItem('users', 'কমিউনিটি', "showToast('কমিউনিটি শীঘ্রই যুক্ত হবে', 'info')")}
+              ${navItem('calendar-days', 'ইভেন্ট', "switchView('events')", state.activeView === 'events')}
+              ${navItem('book-open', 'বুকশেলফ', "showToast('বুকশেলফ শীঘ্রই যুক্ত হবে', 'info')")}
+              ${navItem('bell', 'নোটিশ', "switchView('admin_posts')", state.activeView === 'admin_posts')}
+            </div>
+
+            <div class="oikko-sidebar-divider"></div>
+            <div class="oikko-sidebar-section">
+              ${navItem('user-round', 'প্রোফাইল', `openProfileModal('${u.id}')`)}
+              ${navItem('settings', 'সেটিংস', "switchView('settings')", state.activeView === 'settings', 'oikko-sidebar-settings')}
+              ${isAdmin ? navItem('shield-check', 'এডমিন প্যানেল', "switchView('admin')", state.activeView === 'admin', 'oikko-sidebar-admin') : ''}
+            </div>
+
+            <div class="oikko-sidebar-download">
+              <div class="oikko-sidebar-download-mark"><i data-lucide="download" class="w-5 h-5"></i></div>
+              <div class="oikko-sidebar-download-title">ঐক্য অ্যাপ ডাউনলোড করুন</div>
+              <div class="oikko-sidebar-download-text">হোম, ঐক্য টিউব এবং আরও অনেক কিছু একসাথে!</div>
+              <a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="oikko-sidebar-download-btn">ডাউনলোড অ্যাপ <i data-lucide="download" class="w-3.5 h-3.5"></i></a>
+            </div>
+          </div>
+        </aside>
       `;
     }
+
+    function toggleSidebar(force) {
+      state.sidebarOpen = typeof force === 'boolean' ? force : !state.sidebarOpen;
+      document.body.classList.toggle('oikko-sidebar-open', state.sidebarOpen);
+      const sidebar = document.querySelector('.oikko-sidebar');
+      const overlay = document.querySelector('.oikko-sidebar-overlay');
+      if (sidebar) sidebar.classList.toggle('open', state.sidebarOpen);
+      if (overlay) overlay.classList.toggle('open', state.sidebarOpen);
+    }
+    window.toggleSidebar = toggleSidebar;
 
     // Backwards compatibility alias
     function renderNavbar() {
@@ -4853,15 +5238,6 @@
                 <div class="flex flex-wrap gap-2 mt-5">
                   <button type="button" onclick="document.getElementById('new-post-content')?.focus()" class="app-action app-action-primary"><i data-lucide="pen-line" class="w-4 h-4"></i> নতুন পোস্ট লিখুন</button>
                   <button type="button" onclick="switchView('events')" class="app-action app-action-soft"><i data-lucide="calendar-days" class="w-4 h-4"></i> ইভেন্ট দেখুন</button>
-                </div>
-              </div>
-              <div class="hidden sm:flex items-center gap-3 shrink-0">
-                <div class="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 p-1.5">
-                  <img src="${u.profilePicture}" class="w-full h-full rounded-xl object-cover" alt="${escapeHtml(u.fullName)}" />
-                </div>
-                <div>
-                  <p class="font-bold text-sm">${escapeHtml(u.fullName)}</p>
-                  <p class="text-[11px] text-[#B9D7C3]">${escapeHtml(u.studentClass || 'শিক্ষার্থী')} • ID ${escapeHtml(u.studentId || '')}</p>
                 </div>
               </div>
             </div>
@@ -5642,107 +6018,107 @@
       const modalContainer = document.getElementById('modal-container');
 
       modalContainer.innerHTML = `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div class="bg-white w-full max-w-xl rounded-2xl shadow-xl border border-[#E2E2D5] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div class="oikko-profile-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div class="oikko-profile-modal bg-white w-full max-w-xl rounded-2xl shadow-xl border border-[#E2E2D5] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <!-- Modal Header -->
-            <div class="bg-[#5A5A40] text-white p-5 flex items-center justify-between">
+            <div class="oikko-profile-header bg-[#5A5A40] text-white p-5 flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <img src="${user.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200'}" class="w-14 h-14 rounded-2xl object-cover border-2 border-white/40 shadow-xs" />
                 <div>
-                  <h3 class="font-bold text-base sm:text-lg flex items-center gap-1.5 leading-tight">
+                  <h3 class="oikko-profile-name font-bold text-base sm:text-lg flex items-center gap-1.5 leading-tight">
                     <span>${user.fullName}</span>
                     ${user.isVerified ? getVerifiedBadgeHTML('sm') : ''}
                   </h3>
-                  <div class="flex items-center gap-2 mt-1 text-xs text-[#D1D1C2]">
-                    <span class="font-mono bg-white/20 px-2 py-0.5 rounded border border-white/30 text-white font-semibold">ID: ${user.studentId}</span>
+                  <div class="oikko-profile-meta flex items-center gap-2 mt-1 text-xs text-[#D1D1C2]">
+                    <span class="oikko-profile-id font-mono bg-white/20 px-2 py-0.5 rounded border border-white/30 text-white font-semibold">ID: ${user.studentId}</span>
                     <span>•</span>
                     <span>${user.studentClass}</span>
                     ${isOwnProfile ? '<span class="bg-emerald-500/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">আপনার প্রোফাইল</span>' : ''}
                   </div>
                 </div>
               </div>
-              <button onclick="closeProfileModal()" class="p-1.5 rounded-xl hover:bg-white/20 text-white transition-colors" title="বন্ধ করুন">
+              <button onclick="closeProfileModal()" class="oikko-profile-header-close p-1.5 rounded-xl hover:bg-white/20 text-white transition-colors" title="বন্ধ করুন">
                 <i data-lucide="x" class="w-5 h-5"></i>
               </button>
             </div>
 
             <!-- Modal Content -->
-            <div class="p-5 max-h-[75vh] overflow-y-auto space-y-4 text-xs text-[#42422F]">
+            <div class="oikko-profile-content p-5 max-h-[75vh] overflow-y-auto space-y-4 text-xs text-[#42422F]">
               
               <!-- Academic Info -->
-              <div class="bg-[#F9F9F4] p-4 rounded-xl border border-[#F0F0E0]">
-                <h4 class="font-bold text-[#5A5A40] mb-2.5 uppercase text-[11px] tracking-wider flex items-center gap-1.5">
+              <div class="oikko-profile-section bg-[#F9F9F4] p-4 rounded-xl border border-[#F0F0E0]">
+                <h4 class="oikko-profile-section-title font-bold text-[#5A5A40] mb-2.5 uppercase text-[11px] tracking-wider flex items-center gap-1.5">
                   <i data-lucide="graduation-cap" class="w-4 h-4 text-[#5A5A40]"></i>
                   <span>শিক্ষা সংক্রান্ত তথ্য</span>
                 </h4>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">শ্রেণি</span>
-                    <strong class="text-sm font-bold text-[#42422F]">${user.studentClass || 'প্রযোজ্য নয়'}</strong>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">শ্রেণি</span>
+                    <strong class="oikko-profile-field-value text-sm font-bold text-[#42422F]">${user.studentClass || 'প্রযোজ্য নয়'}</strong>
                   </div>
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">রোল নম্বর</span>
-                    <strong class="text-sm font-bold font-mono text-[#42422F]">#${user.roll || 'N/A'}</strong>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">রোল নম্বর</span>
+                    <strong class="oikko-profile-field-value text-sm font-bold font-mono text-[#42422F]">#${user.roll || 'N/A'}</strong>
                   </div>
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">শাখা</span>
-                    <strong class="text-sm font-bold text-[#42422F]">${user.section || 'সাধারণ'}</strong>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">শাখা</span>
+                    <strong class="oikko-profile-field-value text-sm font-bold text-[#42422F]">${user.section || 'সাধারণ'}</strong>
                   </div>
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">শিফট</span>
-                    <strong class="text-sm font-bold text-[#42422F]">${user.shift || 'দিবা'}</strong>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">শিফট</span>
+                    <strong class="oikko-profile-field-value text-sm font-bold text-[#42422F]">${user.shift || 'দিবা'}</strong>
                   </div>
                 </div>
               </div>
 
               <!-- Personal & Family Info -->
-              <div class="bg-[#F9F9F4] p-4 rounded-xl border border-[#F0F0E0]">
-                <h4 class="font-bold text-[#5A5A40] mb-2.5 uppercase text-[11px] tracking-wider flex items-center gap-1.5">
+              <div class="oikko-profile-section bg-[#F9F9F4] p-4 rounded-xl border border-[#F0F0E0]">
+                <h4 class="oikko-profile-section-title font-bold text-[#5A5A40] mb-2.5 uppercase text-[11px] tracking-wider flex items-center gap-1.5">
                   <i data-lucide="user" class="w-4 h-4 text-[#5A5A40]"></i>
                   <span>ব্যক্তিগত ও পারিবারিক তথ্য</span>
                 </h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">পিতার নাম</span>
-                    <strong class="text-xs font-semibold text-[#42422F]">${user.fatherName || 'দেওয়া হয়নি'}</strong>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">পিতার নাম</span>
+                    <strong class="oikko-profile-field-value text-xs font-semibold text-[#42422F]">${user.fatherName || 'দেওয়া হয়নি'}</strong>
                   </div>
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">মাতার নাম</span>
-                    <strong class="text-xs font-semibold text-[#42422F]">${user.motherName || 'দেওয়া হয়নি'}</strong>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">মাতার নাম</span>
+                    <strong class="oikko-profile-field-value text-xs font-semibold text-[#42422F]">${user.motherName || 'দেওয়া হয়নি'}</strong>
                   </div>
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">জন্ম তারিখ</span>
-                    <strong class="text-xs font-semibold text-[#42422F]">${user.dateOfBirth || 'দেওয়া হয়নি'}</strong>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">জন্ম তারিখ</span>
+                    <strong class="oikko-profile-field-value text-xs font-semibold text-[#42422F]">${user.dateOfBirth || 'দেওয়া হয়নি'}</strong>
                   </div>
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">রক্তের গ্রুপ</span>
-                    <strong class="text-xs font-bold text-rose-600">${user.bloodGroup || 'অজানা'}</strong>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">রক্তের গ্রুপ</span>
+                    <strong class="oikko-profile-field-value text-xs font-bold text-rose-600">${user.bloodGroup || 'অজানা'}</strong>
                   </div>
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">ধর্ম</span>
-                    <strong class="text-xs font-semibold text-[#42422F]">${user.religion || 'উল্লেখ করা হয়নি'}</strong>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">ধর্ম</span>
+                    <strong class="oikko-profile-field-value text-xs font-semibold text-[#42422F]">${user.religion || 'উল্লেখ করা হয়নি'}</strong>
                   </div>
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">জন্ম নিবন্ধন নম্বর</span>
-                    <strong class="text-xs font-mono font-semibold text-[#42422F]">${user.birthRegistrationNumber || 'দেওয়া হয়নি'}</strong>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">জন্ম নিবন্ধন নম্বর</span>
+                    <strong class="oikko-profile-field-value text-xs font-mono font-semibold text-[#42422F]">${user.birthRegistrationNumber || 'দেওয়া হয়নি'}</strong>
                   </div>
                 </div>
 
                 <div class="mt-2.5 pt-2.5 border-t border-[#E2E2D5] space-y-2">
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">বর্তমান ঠিকানা</span>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">বর্তমান ঠিকানা</span>
                     <span class="text-xs text-[#42422F] font-medium">${user.presentAddress || 'দেওয়া হয়নি'}</span>
                   </div>
-                  <div class="bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
-                    <span class="text-[#8A8A6A] block text-[10px]">স্থায়ী ঠিকানা</span>
+                  <div class="oikko-profile-field bg-white p-2.5 rounded-lg border border-[#E2E2D5]">
+                    <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">স্থায়ী ঠিকানা</span>
                     <span class="text-xs text-[#42422F] font-medium">${user.permanentAddress || 'দেওয়া হয়নি'}</span>
                   </div>
                 </div>
               </div>
 
               <!-- Contact & Social Media -->
-              <div class="bg-[#F9F9F4] p-4 rounded-xl border border-[#F0F0E0]">
-                <h4 class="font-bold text-[#5A5A40] mb-2.5 uppercase text-[11px] tracking-wider flex items-center gap-1.5">
+              <div class="oikko-profile-section bg-[#F9F9F4] p-4 rounded-xl border border-[#F0F0E0]">
+                <h4 class="oikko-profile-section-title font-bold text-[#5A5A40] mb-2.5 uppercase text-[11px] tracking-wider flex items-center gap-1.5">
                   <i data-lucide="phone" class="w-4 h-4 text-[#5A5A40]"></i>
                   <span>যোগাযোগ ও সোশ্যাল মিডিয়া</span>
                 </h4>
@@ -5753,7 +6129,7 @@
                         <i data-lucide="phone" class="w-3.5 h-3.5"></i>
                       </div>
                       <div>
-                        <span class="text-[#8A8A6A] block text-[10px]">মোবাইল নম্বর</span>
+                        <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">মোবাইল নম্বর</span>
                         ${user.mobileNumber ? `
                           <a href="tel:${user.mobileNumber}" class="font-mono text-xs font-bold text-[#5A5A40] hover:underline">${user.mobileNumber}</a>
                         ` : '<span class="text-xs text-[#8A8A6A]">দেওয়া হয়নি</span>'}
@@ -5772,7 +6148,7 @@
                       <i data-lucide="mail" class="w-3.5 h-3.5"></i>
                     </div>
                     <div>
-                      <span class="text-[#8A8A6A] block text-[10px]">ইমেইল অ্যাড্রেস</span>
+                      <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">ইমেইল অ্যাড্রেস</span>
                       ${user.email ? `
                         <a href="mailto:${user.email}" class="text-xs font-semibold text-[#5A5A40] hover:underline">${user.email}</a>
                       ` : '<span class="text-xs text-[#8A8A6A]">দেওয়া হয়নি</span>'}
@@ -5785,7 +6161,7 @@
                         <i data-lucide="globe" class="w-3.5 h-3.5"></i>
                       </div>
                       <div class="min-w-0 flex-1">
-                        <span class="text-[#8A8A6A] block text-[10px]">ফেসবুক প্রোফাইল</span>
+                        <span class="oikko-profile-field-label text-[#8A8A6A] block text-[10px]">ফেসবুক প্রোফাইল</span>
                         <a href="${user.facebookLink.startsWith('http') ? user.facebookLink : 'https://' + user.facebookLink}" target="_blank" class="text-xs text-blue-600 hover:underline break-all font-semibold">${user.facebookLink}</a>
                       </div>
                     </div>
@@ -5796,7 +6172,7 @@
             </div>
 
             <!-- Modal Footer Actions -->
-            <div class="p-4 bg-[#F5F5F0] border-t border-[#E2E2D5] flex items-center justify-between gap-2 flex-wrap">
+            <div class="oikko-profile-footer p-4 bg-[#F5F5F0] border-t border-[#E2E2D5] flex items-center justify-between gap-2 flex-wrap">
               <div class="flex items-center gap-2">
                 ${state.lastOpenedEventId ? `
                   <button onclick="openEventParticipantsModal('${state.lastOpenedEventId}')" class="px-3.5 py-2 rounded-xl bg-[#F0F0E0] hover:bg-[#EAEAE0] text-[#5A5A40] border border-[#E2E2D5] text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs">
@@ -5805,13 +6181,13 @@
                   </button>
                 ` : ''}
                 ${canEdit ? `
-                  <button onclick="closeProfileModal(); openEditProfileModal('${user.id}')" class="px-4 py-2 rounded-xl bg-[#5A5A40] hover:bg-[#4A4A33] text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer">
+                  <button onclick="closeProfileModal(); openEditProfileModal('${user.id}')" class="oikko-profile-edit-btn px-4 py-2 rounded-xl bg-[#5A5A40] hover:bg-[#4A4A33] text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer">
                     <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                     <span>তথ্য পরিবর্তন ও এডিট করুন</span>
                   </button>
                 ` : ''}
               </div>
-              <button onclick="closeProfileModal()" class="px-5 py-2 rounded-xl bg-white hover:bg-[#E2E2D5] text-[#5A5A40] border border-[#E2E2D5] text-xs font-bold transition-colors shadow-2xs cursor-pointer">
+              <button onclick="closeProfileModal()" class="oikko-profile-close-btn px-5 py-2 rounded-xl bg-white hover:bg-[#E2E2D5] text-[#5A5A40] border border-[#E2E2D5] text-xs font-bold transition-colors shadow-2xs cursor-pointer">
                 বন্ধ করুন
               </button>
             </div>
@@ -6643,8 +7019,100 @@
       renderApp();
     }
 
+    function saveOikkoSettings(){
+      try { localStorage.setItem('oikko_settings', JSON.stringify(state.settings)); } catch(e) {}
+    }
+    function toggleOikkoSetting(key){
+      state.settings[key] = !state.settings[key];
+      saveOikkoSettings();
+      renderApp();
+    }
+    window.toggleOikkoSetting = toggleOikkoSetting;
+    function updateOikkoSetting(key, value){
+      state.settings[key] = value;
+      saveOikkoSettings();
+      if(key === 'fontSize'){
+        document.documentElement.style.setProperty('--oikko-user-font-scale', value === 'small' ? '.92' : value === 'large' ? '1.08' : '1');
+      }
+      renderApp();
+    }
+    window.updateOikkoSetting = updateOikkoSetting;
+
+    function renderSettingsView(){
+      const u=state.currentUser || {}; const st=state.settings;
+      const row=(icon,label,desc,control,extra='')=>`<div class="oikko-setting-row ${extra}"><div class="oikko-setting-main"><span class="oikko-setting-icon"><i data-lucide="${icon}" class="w-4 h-4"></i></span><div><div class="oikko-setting-label">${label}</div>${desc?`<div class="oikko-setting-desc">${desc}</div>`:''}</div></div><div class="oikko-setting-control">${control}</div></div>`;
+      const sw=(key)=>`<button type="button" class="oikko-switch ${st[key]?'on':''}" aria-label="টগল" onclick="toggleOikkoSetting('${key}')"></button>`;
+      const select=(key,opts)=>`<select class="oikko-setting-select" onchange="updateOikkoSetting('${key}',this.value)">${opts.map(([v,t])=>`<option value="${v}" ${st[key]===v?'selected':''}>${t}</option>`).join('')}</select>`;
+      return `<main class="oikko-settings-page">
+        <section class="oikko-settings-hero"><div><h1>সেটিংস</h1><p>আপনার Oikko Campus অ্যাপের অ্যাকাউন্ট, প্রাইভেসি ও অভিজ্ঞতা নিয়ন্ত্রণ করুন</p></div><div class="oikko-settings-icon"><i data-lucide="settings-2" class="w-9 h-9"></i></div></section>
+        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="user-round" class="w-5 h-5"></i> অ্যাকাউন্ট ও প্রোফাইল</div>
+          ${row('pencil','প্রোফাইল এডিট','নাম, প্রোফাইল ছবি ও অন্যান্য তথ্য পরিবর্তন',`<button class="oikko-settings-link" onclick="openProfileModal('${escapeHtml(u.id||'')}')">প্রোফাইল এডিট করুন</button>`)}
+          ${row('mail','ইমেইল / ফোন নম্বর','যোগাযোগের তথ্য পরিবর্তন',`<button class="oikko-settings-link" onclick="showToast('ইমেইল/ফোন পরিবর্তন ফর্ম শীঘ্রই যুক্ত হবে','info')">পরিবর্তন</button>`)}
+          ${row('key-round','পাসওয়ার্ড পরিবর্তন','আপনার লগইন পাসওয়ার্ড আপডেট করুন',`<button class="oikko-settings-link" onclick="showToast('পাসওয়ার্ড পরিবর্তন অপশন শীঘ্রই যুক্ত হবে','info')">পরিবর্তন</button>`)}
+          ${row('user-x','অ্যাকাউন্ট ডিঅ্যাক্টিভেট / ডিলিট','অ্যাকাউন্ট বন্ধ বা মুছে ফেলার অপশন',`<button class="oikko-settings-link oikko-settings-danger" onclick="showToast('অ্যাকাউন্ট ডিলিট করার আগে নিশ্চিতকরণ ধাপ প্রয়োজন','info')">অ্যাকাউন্ট ম্যানেজ</button>`,'oikko-settings-danger')}
+        </section>
+        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="shield-check" class="w-5 h-5"></i> প্রাইভেসি ও সিকিউরিটি</div>
+          ${row('lock-keyhole','টু-ফ্যাক্টর অথেন্টিকেশন (2FA)','অতিরিক্ত লগইন নিরাপত্তা',`<button class="oikko-settings-link" onclick="showToast('2FA সেটআপ শীঘ্রই যুক্ত হবে','info')">সেটআপ</button>`)}
+          ${row('eye','প্রোফাইল ও পোস্টের দৃশ্যমানতা','কে আপনার প্রোফাইল ও পোস্ট দেখতে পারবে',select('profileVisibility',[['public','Public'],['private','Private']]))}
+          ${row('user-round-x','ব্লক করা ব্যবহারকারী','ব্লক করা অ্যাকাউন্টের তালিকা',`<button class="oikko-settings-link" onclick="showToast('ব্লক তালিকা শীঘ্রই যুক্ত হবে','info')">দেখুন</button>`)}
+          ${row('monitor-smartphone','লগইন অ্যাক্টিভিটি','কোন ডিভাইস থেকে অ্যাকাউন্ট ব্যবহার হয়েছে',`<button class="oikko-settings-link" onclick="showToast('লগইন অ্যাক্টিভিটি শীঘ্রই যুক্ত হবে','info')">দেখুন</button>`)}
+          ${row('database','ডেটা শেয়ারিং পারমিশন','অ্যাপের ডেটা শেয়ারিং নিয়ন্ত্রণ',`<button class="oikko-settings-link" onclick="showToast('ডেটা শেয়ারিং অপশন শীঘ্রই যুক্ত হবে','info')">ম্যানেজ</button>`)}
+        </section>
+        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="bell" class="w-5 h-5"></i> নোটিফিকেশন</div>
+          ${row('bell-ring','পুশ নোটিফিকেশন','ডিভাইসে নোটিফিকেশন দেখান',sw('pushNotifications'))}
+          ${row('mail','ইমেইল নোটিফিকেশন','ইমেইলের মাধ্যমে আপডেট পান',sw('emailNotifications'))}
+          ${row('message-circle','মেসেজ নোটিফিকেশন','নতুন মেসেজের নোটিফিকেশন',sw('messageNotifications'))}
+          ${row('message-square-text','কমেন্ট নোটিফিকেশন','আপনার পোস্টে কমেন্ট হলে জানাবে',sw('commentNotifications'))}
+          ${row('heart','লাইক নোটিফিকেশন','আপনার পোস্টে লাইক হলে জানাবে',sw('likeNotifications'))}
+        </section>
+        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="palette" class="w-5 h-5"></i> ডিসপ্লে ও অ্যাপিয়ারেন্স</div>
+          ${row('moon','ডার্ক / লাইট মোড','অ্যাপের থিম পরিবর্তন',`<button class="oikko-settings-link" onclick="toggleDarkMode()">${state.isDarkMode?'লাইট মোড':'ডার্ক মোড'}</button>`)}
+          ${row('type','ফন্ট সাইজ','অ্যাপের লেখা ছোট বা বড় করুন',select('fontSize',[['small','ছোট'],['medium','মাঝারি'],['large','বড়']]))}
+          ${row('paintbrush','থিম / কালার স্কিম','অ্যাপের রঙের স্কিম',`<button class="oikko-settings-link" onclick="showToast('Oikko Green থিম বর্তমানে সক্রিয়','info')">Oikko Green</button>`)}
+        </section>
+        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="globe-2" class="w-5 h-5"></i> ভাষা ও অঞ্চল</div>
+          ${row('languages','অ্যাপের ভাষা','ইন্টারফেসের ভাষা নির্বাচন',select('language',[['বাংলা','বাংলা'],['English','English']]))}
+          ${row('clock-3','টাইম জোন','তারিখ ও সময়ের অঞ্চল',select('timezone',[['Asia/Dhaka','Asia/Dhaka'],['UTC','UTC']]))}
+          ${row('banknote','কারেন্সি','যদি বিলিং/পেমেন্ট চালু থাকে',`<span class="oikko-setting-desc">BDT (৳)</span>`)}
+        </section>
+        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="shield" class="w-5 h-5"></i> পারমিশন</div>
+          ${row('camera','ক্যামেরা অ্যাক্সেস','ছবি/ভিডিও তোলার অনুমতি',sw('camera'))}
+          ${row('mic','মাইক্রোফোন','ভয়েস/ভিডিও ফিচারের অনুমতি',sw('microphone'))}
+          ${row('map-pin','লোকেশন','লোকেশনভিত্তিক ফিচারের অনুমতি',sw('location'))}
+          ${row('contact','কন্টাক্টস','কন্টাক্ট অ্যাক্সেস',sw('contacts'))}
+        </section>
+        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="hard-drive" class="w-5 h-5"></i> স্টোরেজ ও ডেটা</div>
+          ${row('trash-2','ক্যাশে / ডেটা ক্লিয়ার','লোকাল ক্যাশে পরিষ্কার করুন',`<button class="oikko-settings-link" onclick="showToast('ক্যাশে ক্লিয়ার করার অপশন শীঘ্রই যুক্ত হবে','info')">ক্লিয়ার</button>`)}
+          ${row('download','ডাউনলোড কোয়ালিটি','ভিডিও/ইমেজ ডাউনলোডের মান',select('downloadQuality',[['সেরা মান','সেরা মান'],['উচ্চ','উচ্চ'],['মাঝারি','মাঝারি'],['ডেটা সেভার','ডেটা সেভার']]))}
+          ${row('download-cloud','অটো-ডাউনলোড','মিডিয়া স্বয়ংক্রিয়ভাবে ডাউনলোড',sw('autoDownload'))}
+        </section>
+        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="credit-card" class="w-5 h-5"></i> সাবস্ক্রিপশন ও বিলিং</div>
+          ${row('arrow-up-circle','প্ল্যান আপগ্রেড / ডাউনগ্রেড','বর্তমান ও ভবিষ্যৎ প্ল্যান ম্যানেজ করুন',`<button class="oikko-settings-link" onclick="showToast('সাবস্ক্রিপশন ফিচার বর্তমানে সক্রিয় নয়','info')">ম্যানেজ</button>`)}
+          ${row('credit-card','পেমেন্ট মেথড','পেমেন্ট মাধ্যম যোগ বা পরিবর্তন',`<button class="oikko-settings-link" onclick="showToast('পেমেন্ট মেথড শীঘ্রই যুক্ত হবে','info')">ম্যানেজ</button>`)}
+          ${row('receipt','বিলিং হিস্টোরি','আগের পেমেন্টের তথ্য',`<button class="oikko-settings-link" onclick="showToast('বিলিং হিস্টোরি শীঘ্রই যুক্ত হবে','info')">দেখুন</button>`)}
+        </section>
+        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="accessibility" class="w-5 h-5"></i> অ্যাক্সেসিবিলিটি</div>
+          ${row('screen-reader','স্ক্রিন রিডার সাপোর্ট','সহায়ক প্রযুক্তির জন্য অপশন',sw('screenReader'))}
+          ${row('contrast','হাই কনট্রাস্ট মোড','কনট্রাস্ট বাড়িয়ে দেখুন',sw('highContrast'))}
+          ${row('volume-2','টেক্সট-টু-স্পিচ','সমর্থিত টেক্সট উচ্চস্বরে পড়া',sw('textToSpeech'))}
+        </section>
+        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="circle-help" class="w-5 h-5"></i> অন্যান্য</div>
+          <div class="oikko-settings-links">
+            <button class="oikko-settings-link" onclick="showToast('Help & Support শীঘ্রই যুক্ত হবে','info')">হেল্প / সাপোর্ট সেন্টার</button>
+            <button class="oikko-settings-link" onclick="showToast('Oikko Campus v1.0','info')">অ্যাপ ভার্সন: v1.0</button>
+            <button class="oikko-settings-link" onclick="showToast('Terms of Service শীঘ্রই যুক্ত হবে','info')">Terms of Service</button>
+            <button class="oikko-settings-link" onclick="showToast('Privacy Policy শীঘ্রই যুক্ত হবে','info')">Privacy Policy</button>
+            <button class="oikko-settings-link" onclick="showToast('Feedback ফর্ম শীঘ্রই যুক্ত হবে','info')">ফিডব্যাক পাঠান</button>
+            <button class="oikko-settings-link" onclick="showToast('অ্যাপ শেয়ার অপশন শীঘ্রই যুক্ত হবে','info')">অ্যাপ শেয়ার করুন</button>
+          </div>
+        </section>
+      </main>`;
+    }
+
     function switchView(v) {
       state.activeView = v;
+      state.sidebarOpen = false;
+      document.body.classList.remove('oikko-sidebar-open');
       if (v === 'youtube') {
         ensureOikkoTubeReady();
         loadOikkoTubeAgeVerification();
@@ -8464,9 +8932,6 @@
 
     document.addEventListener('DOMContentLoaded',()=>{
       ensureUtilityUI(); updateConnectionUI(); enhanceIconsAndImages();
-      if('serviceWorker' in navigator && location.protocol !== 'file:'){
-        navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('Oikko service worker:',err));
-      }
       setTimeout(enhanceIconsAndImages,500);
     });
   })();
