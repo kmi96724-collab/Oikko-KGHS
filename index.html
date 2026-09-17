@@ -885,9 +885,25 @@
       }
     }
 
+    // Messenger cache must be isolated per logged-in account.
+    // Otherwise a newly created account on the same browser can inherit another
+    // account's old localStorage chat cache. Firestore remains the shared source.
+    function getMessengerStorageKey() {
+      try {
+        const current = loadCurrentUser();
+        const identity = String(current?.id || current?.studentId || '').trim();
+        return identity
+          ? `oikko_messenger_messages_v2_${identity}`
+          : 'oikko_messenger_messages_v2_guest';
+      } catch (e) {
+        return 'oikko_messenger_messages_v2_guest';
+      }
+    }
+
     function loadMessages() {
       try {
-        const d = localStorage.getItem('oikko_messenger_messages');
+        const key = getMessengerStorageKey();
+        const d = localStorage.getItem(key);
         return d ? JSON.parse(d) : {};
       } catch (e) {
         return {};
@@ -895,7 +911,7 @@
     }
 
     function saveMessages(messages) {
-      safeSaveStorage('oikko_messenger_messages', messages);
+      safeSaveStorage(getMessengerStorageKey(), messages);
     }
 
     // --- Device Media File Helpers (Photo & Video) ---
@@ -2690,12 +2706,20 @@
 
       return `
         <main class="oikko-tube-page min-h-screen pb-24">
+          <div class="oikko-tube-download-wrap max-w-5xl mx-auto px-3 sm:px-5 pt-3">
+            <a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-tube-download w-full items-center justify-center rounded-2xl px-5 py-3.5 bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] font-black text-sm shadow-lg transition" aria-label="Download Oikko App">Download Oikko App</a>
+          </div>
           <section class="max-w-5xl mx-auto px-3 sm:px-5 pt-4">
             <div class="oikko-tube-panel rounded-3xl p-4 sm:p-5">
               <div class="flex items-center justify-between gap-3 mb-4">
-                <div>
-                  <div class="flex items-center gap-2"><span class="oikko-tube-icon w-9 h-9 rounded-xl bg-[#2F6F57] text-white flex items-center justify-center"><i data-lucide="play" class="w-4 h-4"></i></span><h1 class="oikko-tube-title text-xl sm:text-2xl font-black">Oikko Tube</h1></div>
-                  <p class="oikko-tube-muted text-xs mt-1">ভিডিও দেখুন ও শেয়ার করুন — আপনার বয়স অনুযায়ী উপযুক্ত ভিডিও দেখানো হবে।</p>
+                <div class="min-w-0 flex items-center gap-2.5">
+                  <button type="button" onclick="backToCampus()" class="oikko-tube-back w-10 h-10 shrink-0 rounded-2xl flex items-center justify-center transition cursor-pointer" title="Oikko Campus-এ ফিরে যান" aria-label="Back to Oikko Campus">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                  </button>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2"><span class="oikko-tube-icon w-9 h-9 rounded-xl bg-[#2F6F57] text-white flex items-center justify-center"><i data-lucide="play" class="w-4 h-4"></i></span><h1 class="oikko-tube-title text-xl sm:text-2xl font-black truncate">Oikko Tube</h1></div>
+                    <p class="oikko-tube-muted text-xs mt-1">ভিডিও দেখুন ও শেয়ার করুন — আপনার বয়স অনুযায়ী উপযুক্ত ভিডিও দেখানো হবে।</p>
+                  </div>
                 </div>
                 <button type="button" onclick="openOikkoTubeUploadModal()" class="oikko-tube-post shrink-0 rounded-2xl bg-[#2F6F57] hover:bg-[#245844] text-white px-4 py-2.5 text-xs sm:text-sm font-extrabold flex items-center gap-1.5 shadow-sm"><i data-lucide="plus" class="w-4 h-4"></i>ভিডিও পোস্ট</button>
               </div>
@@ -3130,6 +3154,14 @@
         if (state.activeView === 'youtube') {
           ensureOikkoTubeReady();
           viewHtml = renderOikkoTubeView();
+          app.innerHTML = viewHtml;
+          if (window.lucide) { lucide.createIcons(); }
+          setTimeout(() => {
+            ensureOikkoTubeAgeGate();
+            hydrateOikkoTubeLinkPreviews(document);
+          }, 0);
+          pendingAppRender = false;
+          return;
         } else if (state.activeView === 'admin') {
           viewHtml = renderAdminView();
         } else if (state.activeView === 'events') {
@@ -3287,19 +3319,50 @@
       messengerUnsubscribe = fb.onSnapshot(
         messagesRef,
         snapshot => {
+          // A chat document is shared by two users, but only messages whose
+          // sender/receiver pair exactly matches the current conversation are
+          // allowed into the UI. This prevents stale/malformed records from
+          // appearing for a newly created account.
+          const meId = String(state.currentUser.id);
+          const targetId = String(targetUserId);
           const cloudMessages = snapshot.docs
             .map(d => normalizeCloudMessage({id: d.id, ...d.data()}))
+            .filter(m => {
+              const senderId = String(m.senderId || '');
+              const receiverId = String(m.receiverId || '');
+              return (senderId === meId && receiverId === targetId) ||
+                     (senderId === targetId && receiverId === meId);
+            })
             .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
 
           const localMessages = Array.isArray(state.messages[targetUserId]) ? state.messages[targetUserId] : [];
           const cloudIds = new Set(cloudMessages.map(m => m.id));
           const pendingLocal = localMessages.filter(m => {
             if (!m) return false;
+            const senderId = String(m.senderId || '');
+            const receiverId = String(m.receiverId || '');
+            const belongsToPair = (senderId === meId && receiverId === targetId) ||
+                                  (senderId === targetId && receiverId === meId) ||
+                                  // Keep legacy local messages only when they are
+                                  // explicitly marked as belonging to this user/chat.
+                                  (!senderId && !receiverId && m.sender === 'me');
+            if (!belongsToPair) return false;
             if (m.firebaseId && cloudIds.has(m.firebaseId)) return false;
             if (m.id && cloudIds.has(m.id)) return false;
             return true;
           });
-          state.messages[targetUserId] = [...cloudMessages, ...pendingLocal].sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
+
+          const merged = [...cloudMessages, ...pendingLocal];
+          const seen = new Set();
+          state.messages[targetUserId] = merged
+            .filter(m => {
+              const key = String(m.firebaseId || m.id || '');
+              if (!key) return true;
+              if (seen.has(key)) return false;
+              seen.add(key);
+              return true;
+            })
+            .sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
           saveMessages(state.messages);
           window.firestoreStatus = 'connected';
           if (state.activeView === 'messenger' && state.activeChatUserId === targetUserId) {
@@ -3913,6 +3976,7 @@
               <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] flex items-center justify-center transition" title="থিম পরিবর্তন">
                 <i data-lucide="${state.isDarkMode ? 'sun' : 'moon'}" class="w-5 h-5"></i>
               </button>
+              <a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-messenger-download hidden md:flex items-center justify-center whitespace-nowrap px-3 py-2 rounded-full bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] text-xs font-black transition" aria-label="Download Oikko App">Download Oikko App</a>
             </div>
           </header>
 
@@ -4081,6 +4145,7 @@
             </div>
             </div>
           </div>
+          <a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-login-download w-full items-center justify-center mt-4 px-6 py-4 rounded-2xl bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] font-black text-base shadow-lg transition-all" aria-label="Download Oikko App">Download Oikko App</a>
         </div>
       </div>
       `;
@@ -4499,15 +4564,18 @@
                 <span class="hidden sm:inline">${state.cloudStatus === 'connected' ? 'অনলাইন' : state.cloudStatus === 'connecting' ? 'সংযুক্ত হচ্ছে...' : 'অফলাইন'}</span>
               </div>
               
+              <!-- Notification Bell Button -->
+              <button onclick="requestNotificationPermission()" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer" title="ডিভাইস নোটিফিকেশন সক্রিয় করুন">
+                <i data-lucide="bell" class="w-4 h-4"></i>
+              </button>
+
               <!-- Dark Mode Toggle Button -->
               <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer" title="${state.isDarkMode ? 'লাইট মোডে পরিবর্তন করুন' : 'ডার্ক মোড সক্রিয় করুন'}">
                 <i data-lucide="${state.isDarkMode ? 'sun' : 'moon'}" class="w-4 h-4"></i>
               </button>
 
-              <!-- Notification Bell Button -->
-              <button onclick="requestNotificationPermission()" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer" title="ডিভাইস নোটিফিকেশন সক্রিয় করুন">
-                <i data-lucide="bell" class="w-4 h-4"></i>
-              </button>
+              <!-- Desktop Download Oikko App -->
+              <a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-header-download hidden md:flex items-center justify-center whitespace-nowrap px-3 py-2.5 rounded-xl bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] text-xs font-black transition-colors cursor-pointer" aria-label="Download Oikko App">Download Oikko App</a>
 
               <!-- Logout Button -->
               <button onclick="handleLogout()" title="লগআউট" class="p-2.5 rounded-xl bg-[#F27D61]/90 hover:bg-[#df674f] text-white transition-colors cursor-pointer">
@@ -4524,7 +4592,8 @@
           </div>
         </header>
 
-        <!-- Oikko Messenger button: placed below the Campus header so the original search bar stays unchanged -->
+        <!-- Messenger / Tube switcher. Hidden while Oikko Tube is open. -->
+        ${state.activeView !== 'youtube' ? `
         <div class="w-full px-3 sm:px-6 py-1.5 bg-transparent">
           <div class="max-w-7xl mx-auto">
             <div class="grid grid-cols-2 gap-2">
@@ -4536,7 +4605,7 @@
               </button>
             </div>
           </div>
-        </div>
+        </div>` : ''}
       `;
     }
 
@@ -8296,23 +8365,43 @@
       try{ if(window.lucide) window.lucide.createIcons(); }catch(e){}
     }
 
+    // Show download buttons only for desktop/PC users. Mobile users see no download control.
+    const oikkoDesktopDownloadStyle = document.createElement('style');
+    oikkoDesktopDownloadStyle.id = 'oikko-desktop-download-only-style';
+    oikkoDesktopDownloadStyle.textContent = `
+      #oikko-apk-download { display: none !important; }
+      .oikko-header-download, .oikko-messenger-download { display: none !important; }
+      .oikko-login-download, .oikko-tube-download { display: none !important; }
+      .oikko-tube-back {
+        background: rgba(47,111,87,.10);
+        color: #2F6F57;
+        border: 1px solid rgba(47,111,87,.18);
+      }
+      .oikko-tube-back:hover {
+        background: rgba(47,111,87,.18);
+      }
+      @media (min-width: 768px) {
+        .oikko-header-download, .oikko-messenger-download,
+        .oikko-login-download, .oikko-tube-download { display: flex !important; }
+      }
+      @media (max-width: 767px) {
+        .oikko-header-download, .oikko-messenger-download,
+        .oikko-login-download, .oikko-tube-download { display: none !important; }
+      }
+      .dark .oikko-tube-back, body.dark .oikko-tube-back {
+        background: rgba(216,243,228,.10);
+        color: #D8F3E4;
+        border-color: rgba(216,243,228,.18);
+      }
+    `;
+    document.head.appendChild(oikkoDesktopDownloadStyle);
+
     function ensureUtilityUI(){
       if(!document.getElementById('oikko-status-pill')){
         const pill=document.createElement('div');
         pill.id='oikko-status-pill'; pill.className='oikko-status-pill';
         pill.innerHTML='<span class="oikko-status-dot"></span><span class="oikko-status-text">অনলাইন</span>';
         document.body.appendChild(pill);
-      }
-      if(!document.getElementById('oikko-apk-download')){
-        const dl=document.createElement('a');
-        dl.id='oikko-apk-download';
-        dl.href='https://appsgeyser.io/20177615/Oikko';
-        dl.target='_blank';
-        dl.rel='noopener noreferrer';
-        dl.setAttribute('aria-label','Oikko Android app download');
-        dl.textContent='Download Oikko App';
-        dl.style.cssText='position:fixed;top:16px;right:16px;z-index:9998;display:inline-flex;align-items:center;gap:8px;padding:10px 15px;border-radius:12px;background:#d8f3e4;color:#12231c;font:700 13px Hind Siliguri,sans-serif;text-decoration:none;box-shadow:0 12px 32px rgba(0,0,0,.22);';
-        document.body.appendChild(dl);
       }
       if(!document.getElementById('oikko-backtop')){
         const btn=document.createElement('button');
