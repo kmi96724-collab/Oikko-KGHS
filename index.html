@@ -4188,10 +4188,23 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     }
     window.clearMessengerSearch = clearMessengerSearch;
 
+    function isAcceptedFriend(userId) {
+      const meId = String(state.currentUser?.id || '');
+      const targetId = String(userId || '');
+      if (!meId || !targetId || meId === targetId) return false;
+      return (state.friendships || []).some(f => {
+        if (f?.status !== 'accepted' || !Array.isArray(f.userIds)) return false;
+        const ids = f.userIds.map(String);
+        return ids.length === 2 && ids.includes(meId) && ids.includes(targetId);
+      });
+    }
+    window.isAcceptedFriend = isAcceptedFriend;
+
     function getMessengerPeers() {
       const me = state.currentUser;
       if (!me) return [];
-      return state.users.filter(u => u && u.id !== me.id);
+      // Messenger is intentionally limited to accepted Friends only.
+      return state.users.filter(u => u && String(u.id) !== String(me.id) && isAcceptedFriend(u.id));
     }
 
     function makeChatId(a, b) {
@@ -4203,8 +4216,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       return Boolean(
         me &&
         userId &&
-        userId !== me.id &&
-        state.users.some(u => u && u.id === userId)
+        String(userId) !== String(me.id) &&
+        state.users.some(u => u && String(u.id) === String(userId)) &&
+        isAcceptedFriend(userId)
       );
     }
 
@@ -4374,7 +4388,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       }
       const targetId = String(userId || '').trim();
       if (!canMessageUser(targetId)) {
-        showToast('এই ব্যবহারকারীকে মেসেজ করা যাচ্ছে না', 'error');
+        showToast('এই user-এর সাথে Messenger-এ যোগাযোগ করতে আগে Friend Request Accept হতে হবে।', 'error');
         return;
       }
       state.activeChatUserId = targetId;
@@ -4392,6 +4406,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       requestAnimationFrame(() => scrollChatToBottom());
     }
     window.startMessengerWithUser = startMessengerWithUser;
+
+    function handleMessengerAccess(userId) {
+      const status = friendStatusFor(userId);
+      if (status === 'incoming') {
+        showToast('এই user-এর Friend Request আগে Accept করুন। তারপর Messenger-এ মেসেজ করা যাবে।', 'info');
+        switchView('friends');
+      } else if (status === 'outgoing') {
+        showToast('Friend Request পাঠানো হয়েছে। Request Accept হলে Messenger-এ chat চালু হবে।', 'info');
+      } else {
+        showToast('Messenger ব্যবহার করতে আগে Friend Request পাঠিয়ে Accept করাতে হবে।', 'info');
+      }
+    }
+    window.handleMessengerAccess = handleMessengerAccess;
 
     function openMessenger() {
       if (!state.currentUser) {
@@ -4435,7 +4462,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
     function selectChatUser(userId) {
       if (!canMessageUser(userId)) {
-        showToast('শুধু Oikko Campus-এর ব্যবহারকারীদের সাথেই মেসেজ করা যাবে', 'error');
+        showToast('শুধু Accepted Friends-দের সাথেই Messenger-এ মেসেজ করা যাবে।', 'error');
         return;
       }
       state.activeChatUserId = userId;
@@ -4744,9 +4771,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
                 <div class="w-16 h-16 rounded-full messenger-blue text-white mx-auto flex items-center justify-center mb-4">
                   <i data-lucide="users-round" class="w-8 h-8"></i>
                 </div>
-                <h2 class="font-bold text-lg">কোনো Campus user পাওয়া যায়নি</h2>
-                <p class="text-sm text-[#8A8A6A] dark:text-[#B9D7C3] mt-2">Oikko Campus-এ অন্য কোনো user যুক্ত হলে এখান থেকে Messenger ব্যবহার করতে পারবেন।</p>
-                <button onclick="backToCampus()" class="mt-5 px-5 py-2.5 rounded-lg messenger-blue text-white text-sm font-bold hover:opacity-90">Oikko Campus-এ ফিরুন</button>
+                <h2 class="font-bold text-lg">কোনো Friend Chat পাওয়া যাচ্ছে না</h2>
+                <p class="text-sm text-[#8A8A6A] dark:text-[#B9D7C3] mt-2">প্রথমে অন্য user-কে Friend Request পাঠান। তারা Request Accept করার পরই তাদের profile Messenger-এ দেখা যাবে এবং মেসেজ/যোগাযোগ করা যাবে।</p>
+                <button onclick="switchView('friends')" class="mt-5 px-5 py-2.5 rounded-lg messenger-blue text-white text-sm font-bold hover:opacity-90">Friends খুলুন</button>
               </div>
             </main>
           </div>
@@ -7658,13 +7685,35 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     }
 
     function friendStatusFor(targetId) {
-      const me = state.currentUser?.id;
-      if (!me || !targetId || me === targetId) return 'self';
-      if ((state.friendships || []).some(f => f.id === friendPairId(me, targetId) && f.status === 'accepted')) return 'friends';
-      if ((state.friendRequests || []).some(r => r.status === 'pending' && r.fromId === targetId && r.toId === me)) return 'incoming';
-      if ((state.friendRequests || []).some(r => r.status === 'pending' && r.fromId === me && r.toId === targetId)) return 'outgoing';
+      const me = String(state.currentUser?.id || '').trim();
+      const target = String(targetId || '').trim();
+      if (!me || !target || me === target) return 'self';
+      const pair = friendPairId(me, target);
+      if ((state.friendships || []).some(f => {
+        if (f?.status !== 'accepted') return false;
+        const ids = Array.isArray(f.userIds) ? f.userIds.map(v => String(v).trim()) : [];
+        return f.id === pair || (ids.length === 2 && ids.includes(me) && ids.includes(target));
+      })) return 'friends';
+      if ((state.friendRequests || []).some(r => r?.status === 'pending' && String(r.fromId) === target && String(r.toId) === me)) return 'incoming';
+      if ((state.friendRequests || []).some(r => r?.status === 'pending' && String(r.fromId) === me && String(r.toId) === target)) return 'outgoing';
       return 'none';
     }
+
+    function renderFriendActionHTML(targetId) {
+      const status = friendStatusFor(targetId);
+      const id = escapeHtml(String(targetId || ''));
+      if (status === 'friends') {
+        return `<button class="app-action app-action-primary" type="button" onclick="startMessengerWithUser('${id}')"><i data-lucide="message-circle" class="w-4 h-4"></i><span>মেসেজ</span></button>`;
+      }
+      if (status === 'outgoing') {
+        return `<button class="app-action app-action-soft" type="button" disabled style="opacity:.85;cursor:default"><i data-lucide="clock-3" class="w-4 h-4"></i><span>Request sent</span></button>`;
+      }
+      if (status === 'incoming') {
+        return `<button class="app-action app-action-primary" type="button" onclick="switchView('friends')"><i data-lucide="user-check" class="w-4 h-4"></i><span>Accept request</span></button>`;
+      }
+      return `<button class="app-action app-action-primary" type="button" onclick="handleFriendAction('${id}')"><i data-lucide="user-plus" class="w-4 h-4"></i><span>Add friend</span></button>`;
+    }
+    window.renderFriendActionHTML = renderFriendActionHTML;
 
     let friendsRequestsUnsubscribe = null;
     let friendsListUnsubscribe = null;
@@ -7683,14 +7732,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
         friendsRequestsUnsubscribe = fb.onSnapshot(
           fb.collection(db, 'oikko_friend_requests'),
           snap => {
-            state.friendRequests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            if (state.activeView === 'friends' || state.activeView === 'profile') {
+            state.friendRequests = Array.from(new Map(snap.docs.map(d => { const data={ id:d.id, ...d.data() }; return [data.id,data]; })).values());
+            if (state.activeView === 'friends' || state.activeView === 'profile' || state.activeView === 'messenger') {
               renderApp();
             }
           },
           err => {
             console.warn('Friend requests listener failed:', err);
-            friendsListenersStarted = false;
             if (err?.code === 'permission-denied') showToast('Friend Requests-এর Firestore Rules অনুমতি দিচ্ছে না।', 'error');
           }
         );
@@ -7698,14 +7746,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
         friendsListUnsubscribe = fb.onSnapshot(
           fb.collection(db, 'oikko_friends'),
           snap => {
-            state.friendships = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            if (state.activeView === 'friends' || state.activeView === 'profile') {
+            state.friendships = Array.from(new Map(snap.docs.map(d => { const data={ id:d.id, ...d.data() }; const ids=Array.isArray(data.userIds)?data.userIds.map(String).sort():[]; const key=ids.length===2 ? ids.join('__') : data.id; return [key,data]; })).values());
+            if (state.activeView === 'friends' || state.activeView === 'profile' || state.activeView === 'messenger') {
               renderApp();
             }
           },
           err => {
             console.warn('Friends listener failed:', err);
-            friendsListenersStarted = false;
             if (err?.code === 'permission-denied') showToast('My Friends-এর Firestore Rules অনুমতি দিচ্ছে না।', 'error');
           }
         );
@@ -7724,16 +7771,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
     async function sendFriendRequest(targetId) {
       const me = state.currentUser, db = window.firebaseDb, fb = window.fb;
-      if (!me || !targetId || me.id === targetId || !db || !fb || friendStatusFor(targetId) !== 'none') return;
+      const meId = String(me?.id || '').trim();
       const target = getProfileUserById(targetId);
-      const requestId = `${me.id}__${targetId}`;
+      const targetIdClean = String(target?.id || targetId || '').trim();
+      if (!meId || !targetIdClean || meId === targetIdClean || !db || !fb || friendStatusFor(targetIdClean) !== 'none') return;
+      const requestId = `${meId}__${targetIdClean}`;
       try {
         await fb.setDoc(fb.doc(db, 'oikko_friend_requests', requestId), {
           fromId: me.id, fromName: me.fullName || '', fromAvatar: me.profilePicture || '',
-          toId: targetId, toName: target?.fullName || '', toAvatar: target?.profilePicture || '',
+          toId: targetIdClean, toName: target?.fullName || '', toAvatar: target?.profilePicture || '',
           status: 'pending', createdAt: Date.now(), ownerUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '', fromUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''
         });
-        state.friendRequests.push({id:requestId, fromId:me.id, toId:targetId, status:'pending',
+        if (!state.friendRequests.some(r => r.id === requestId)) state.friendRequests.push({id:requestId, fromId:me.id, toId:targetIdClean, status:'pending',
           fromName:me.fullName||'', fromAvatar:me.profilePicture||'', toName:target?.fullName||'', toAvatar:target?.profilePicture||''});
         showToast('Friend request পাঠানো হয়েছে', 'success');
         renderApp();
@@ -7746,13 +7795,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     async function acceptFriendRequest(requestId) {
       const me = state.currentUser, req = (state.friendRequests||[]).find(r => r.id === requestId);
       const db = window.firebaseDb, fb = window.fb;
-      if (!me || !req || req.toId !== me.id || req.status !== 'pending' || !db || !fb) return;
+      if (!me || !req || String(req.toId) !== String(me.id) || req.status !== 'pending' || !db || !fb) return;
       try {
         const pairId = friendPairId(req.fromId, req.toId);
         await fb.setDoc(fb.doc(db, 'oikko_friends', pairId), {userIds:[req.fromId, req.toId], status:'accepted', createdAt:Date.now(), ownerUid:window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '', fromUid:req.fromId, toId:req.toId});
         await fb.updateDoc(fb.doc(db, 'oikko_friend_requests', requestId), {status:'accepted', respondedAt:Date.now()});
         req.status = 'accepted';
-        state.friendships.push({id:pairId, userIds:[req.fromId,req.toId], status:'accepted'});
+        state.friendships = Array.from(new Map([...(state.friendships||[]), {id:pairId, userIds:[req.fromId,req.toId], status:'accepted'}].map(f => [friendPairId(f.userIds?.[0]||f.fromId||'', f.userIds?.[1]||f.toId||''), f])).values());
         showToast('Friend request গ্রহণ করা হয়েছে', 'success');
         renderApp();
       } catch (err) {
@@ -7802,11 +7851,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     function renderFriendsView() {
       const me = state.currentUser;
       if (!me) return '';
-      const incoming = (state.friendRequests||[]).filter(r=>r.toId===me.id && r.status==='pending');
-      const outgoing = (state.friendRequests||[]).filter(r=>r.fromId===me.id && r.status==='pending');
-      const friendIds = (state.friendships||[])
+      const incoming = (state.friendRequests||[]).filter(r=>String(r.toId)===String(me.id) && r.status==='pending');
+      const outgoing = (state.friendRequests||[]).filter(r=>String(r.fromId)===String(me.id) && r.status==='pending');
+      const friendIds = [...new Set((state.friendships||[])
         .filter(f=>f.status==='accepted' && Array.isArray(f.userIds) && f.userIds.includes(me.id))
-        .map(f=>f.userIds.find(id=>id!==me.id)).filter(Boolean);
+        .map(f=>f.userIds.find(id=>id!==me.id)).filter(Boolean).map(String))];
       const friends = friendIds.map(id=>getProfileUserById(id)).filter(Boolean);
 
       return `<main class="oikko-friends-page max-w-6xl mx-auto px-4 sm:px-6 py-6 pb-28">
@@ -7816,7 +7865,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
             ${incoming.length?incoming.map(r=>{const u=getProfileUserById(r.fromId)||{id:r.fromId,fullName:r.fromName,profilePicture:r.fromAvatar};return renderFriendUserCard(u,`<button class="app-action app-action-primary" onclick="acceptFriendRequest('${escapeHtml(r.id)}')"><i data-lucide="check" class="w-4 h-4"></i> গ্রহণ</button><button class="app-action app-action-soft" onclick="rejectFriendRequest('${escapeHtml(r.id)}')">বাদ</button>`)}).join(''):`<div class="oikko-friends-empty"><i data-lucide="inbox" class="w-7 h-7"></i><p>এখন কোনো Friend request নেই।</p></div>`}
           </section>
           <section class="app-card oikko-friends-section"><div class="oikko-friends-section-title"><div><h2>My Friends</h2><p>আপনার Friends এখানে দেখা যাবে</p></div><span>${friends.length}</span></div>
-            ${friends.length?friends.map(u=>renderFriendUserCard(u,`<button class="app-action app-action-soft" onclick="startMessengerWithUser('${escapeHtml(u.id)}')"><i data-lucide="message-circle" class="w-4 h-4"></i> মেসেজ</button>`)).join(''):`<div class="oikko-friends-empty"><i data-lucide="users" class="w-7 h-7"></i><p>এখনো কোনো Friend নেই। অন্যদের Profile থেকে Add friend চাপুন।</p></div>`}
+            ${friends.length?friends.map(u=>renderFriendUserCard(u,`${friendStatusFor(u.id)==='friends' ? `<button class="app-action app-action-soft" onclick="startMessengerWithUser('${escapeHtml(u.id)}')"><i data-lucide="message-circle" class="w-4 h-4"></i> মেসেজ</button>` : `<button class="app-action app-action-soft opacity-70" onclick="handleMessengerAccess('${escapeHtml(u.id)}')"><i data-lucide="lock" class="w-4 h-4"></i> Friend হলে মেসেজ</button>`}`)).join(''):`<div class="oikko-friends-empty"><i data-lucide="users" class="w-7 h-7"></i><p>এখনো কোনো Friend নেই। অন্যদের Profile থেকে Add friend চাপুন।</p></div>`}
           </section>
           <section class="app-card oikko-friends-section oikko-friends-outgoing"><div class="oikko-friends-section-title"><div><h2>Sent Requests</h2><p>আপনার পাঠানো pending request</p></div><span>${outgoing.length}</span></div>
             ${outgoing.length?outgoing.map(r=>{const u=getProfileUserById(r.toId)||{id:r.toId,fullName:r.toName,profilePicture:r.toAvatar};return renderFriendUserCard(u,`<span class="oikko-request-pending">Pending</span>`)}).join(''):`<div class="oikko-friends-empty"><p>কোনো pending sent request নেই।</p></div>`}
@@ -7839,7 +7888,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
           <div class="oikko-profile-identity">
             <div class="relative shrink-0"><img src="${escapeHtml(u.profilePicture||'')}" class="oikko-profile-avatar" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300'"></div>
             <div class="min-w-0 flex-1"><h1>${escapeHtml(u.fullName||'শিক্ষার্থী')} ${u.isVerified?getVerifiedBadgeHTML('sm'):''}</h1><p>${escapeHtml(u.bio||'Oikko Campus-এর সদস্য')} </p><div class="oikko-profile-meta-row"><span>${escapeHtml(u.studentClass||'শিক্ষার্থী')}</span><span>•</span><span>ID: ${escapeHtml(u.studentId||'N/A')}</span></div></div>
-            <div class="oikko-profile-actions">${isOwn?`<button class="app-action app-action-soft" onclick="openProfileModal('${escapeHtml(u.id)}')"><i data-lucide="pencil" class="w-4 h-4"></i> তথ্য পরিবর্তন</button>`:`<div class="flex flex-wrap items-center gap-2 justify-end"><button id="profile-friend-btn-${escapeHtml(u.id)}" class="app-action app-action-primary" onclick="handleFriendAction('${escapeHtml(u.id)}')"><i data-lucide="user-plus" class="w-4 h-4"></i><span>Add friend</span></button><button class="app-action app-action-soft" onclick="startMessengerWithUser('${escapeHtml(u.id)}')"><i data-lucide="message-circle" class="w-4 h-4"></i> মেসেজ</button></div>`}</div>
+            <div class="oikko-profile-actions">${isOwn?`<button class="app-action app-action-soft" onclick="openProfileModal('${escapeHtml(u.id)}')"><i data-lucide="pencil" class="w-4 h-4"></i> তথ্য পরিবর্তন</button>`:`<div class="flex flex-wrap items-center gap-2 justify-end">${renderFriendActionHTML(u.id)}</div>`}</div>
           </div>
           <div class="oikko-profile-tabs"><span class="active">সব পোস্ট</span></div>
         </section>
