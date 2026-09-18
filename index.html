@@ -4585,6 +4585,53 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       }
     }
 
+    function toggleMessengerMessageMenu(messageId) {
+      const id = String(messageId || '');
+      if (!id) return;
+      document.querySelectorAll('.messenger-message-menu').forEach(menu => {
+        if (menu.dataset.messageId !== id) menu.classList.add('hidden');
+      });
+      const menu = Array.from(document.querySelectorAll('.messenger-message-menu')).find(el => el.dataset.messageId === id);
+      if (menu) menu.classList.toggle('hidden');
+    }
+    window.toggleMessengerMessageMenu = toggleMessengerMessageMenu;
+
+    async function deleteMessengerMessage(targetUserId, messageId, clientMessageId) {
+      const me = state.currentUser;
+      const targetId = String(targetUserId || '');
+      const msgId = String(messageId || '');
+      const clientId = String(clientMessageId || '');
+      if (!me || !targetId || !msgId) return;
+
+      const messages = Array.isArray(state.messages[targetId]) ? state.messages[targetId] : [];
+      const msg = messages.find(m => String(m?.id || '') === msgId || String(m?.firebaseId || '') === msgId || (clientId && String(m?.clientMessageId || '') === clientId));
+      if (!msg || String(msg.senderId || '') !== String(me.id)) {
+        showToast('শুধু নিজের পাঠানো মেসেজ ডিলিট করা যাবে।', 'error');
+        return;
+      }
+
+      const firestoreId = String(msg.clientMessageId || msg.firebaseId || msg.id || '');
+      const keys = new Set([String(msg.id || ''), String(msg.firebaseId || ''), String(msg.clientMessageId || '')].filter(Boolean));
+      state.messages[targetId] = messages.filter(m => !keys.has(String(m?.id || '')) && !keys.has(String(m?.firebaseId || '')) && !keys.has(String(m?.clientMessageId || '')));
+      saveMessages(state.messages);
+      renderMessengerOnly();
+      scrollChatToBottom();
+
+      const db = window.firebaseDb;
+      const fb = window.fb;
+      if (!db || !fb || !firestoreId || firestoreId.startsWith('local_')) return;
+      try {
+        await (window.firebaseAuthReady || Promise.resolve());
+        const chatId = makeChatId(me.id, targetId);
+        await fb.deleteDoc(fb.doc(db, 'oikko_chats', chatId, 'messages', firestoreId));
+        window.firestoreStatus = 'connected';
+      } catch (err) {
+        console.error('FIRESTORE MESSAGE DELETE FAILED:', err);
+        showToast(`মেসেজ ডিলিট করা যায়নি: ${err?.code || 'unknown'}`, 'error');
+      }
+    }
+    window.deleteMessengerMessage = deleteMessengerMessage;
+
     async function handleSendMessengerMessage(e, targetUserId) {
       e.preventDefault();
 
@@ -5066,12 +5113,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
                       <p class="text-xs text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text mt-1">Oikko Campus user</p>
                     </div>
                     ${messages.length ? messages.map(msg => `
-                      <div class="flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}">
-                        <div class="messenger-message-bubble max-w-[78%] sm:max-w-[65%] ${msg.sender === 'me' ? 'messenger-outgoing rounded-[20px] rounded-br-[6px]' : 'messenger-incoming rounded-[20px] rounded-bl-[6px]'} px-3.5 py-2 text-[14px] leading-5">
+                      <div class="group flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}">
+                        <div class="messenger-message-bubble relative max-w-[78%] sm:max-w-[65%] ${msg.sender === 'me' ? 'messenger-outgoing rounded-[20px] rounded-br-[6px]' : 'messenger-incoming rounded-[20px] rounded-bl-[6px]'} px-3.5 py-2 text-[14px] leading-5 cursor-pointer" onclick="toggleMessengerMessageMenu('${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}')">
+                          ${msg.sender === 'me' ? `<button type="button" class="messenger-message-menu-trigger absolute -top-2 -right-2 w-7 h-7 rounded-full bg-white dark:bg-[#20352B] border border-[#D9E6DD] dark:border-[#3A4A41] shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-100 hover:opacity-100 transition z-20" aria-label="মেসেজ অপশন" onclick="event.stopPropagation(); toggleMessengerMessageMenu('${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}')"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>` : ''}
                           ${msg.mediaType === 'video' && msg.videoUrl ? `<video src="${escapeHtml(msg.videoUrl)}" controls playsinline preload="metadata" class="rounded-xl max-h-80 max-w-full object-contain bg-black/10 mb-1.5"></video>` : ''}
                           ${msg.mediaType !== 'video' && msg.imageUrl ? `<img src="${escapeHtml(msg.imageUrl)}" alt="ছবি" loading="lazy" class="rounded-xl max-h-80 max-w-full object-cover mb-1.5" />` : ''}
                           ${msg.text && !(msg.mediaType === 'video' && msg.text === 'ভিডিও পাঠিয়েছেন') && !(msg.mediaType === 'image' && msg.text === 'ছবি পাঠিয়েছেন') ? `<p class="break-words whitespace-pre-wrap">${escapeHtml(msg.text)}</p>` : ''}
                           <div class="text-[9px] mt-0.5 opacity-60 ${msg.sender === 'me' ? 'text-right' : 'text-left'}">${escapeHtml(msg.time || '')}</div>
+                          ${msg.sender === 'me' ? `<div class="messenger-message-menu hidden absolute right-2 bottom-full mb-1 z-50 min-w-[135px] rounded-xl border border-[#E2E2D5] dark:border-[#3A4A41] bg-white dark:bg-[#17251E] shadow-xl p-1" data-message-id="${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}" onclick="event.stopPropagation()"><button type="button" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30" onclick="deleteMessengerMessage('${escapeHtml(target.id)}','${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}','${escapeHtml(msg.clientMessageId || '')}')"><i data-lucide="trash-2" class="w-4 h-4"></i><span>মেসেজ ডিলিট</span></button></div>` : ''}
                         </div>
                       </div>
                     `).join('') : `
@@ -7778,12 +7827,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       const requestId = `${meId}__${targetIdClean}`;
       try {
         await fb.setDoc(fb.doc(db, 'oikko_friend_requests', requestId), {
-          fromId: me.id, fromName: me.fullName || '', fromAvatar: me.profilePicture || '',
-          toId: targetIdClean, toName: target?.fullName || '', toAvatar: target?.profilePicture || '',
+          fromId: meId, fromStudentId: me.studentId || '', fromName: me.fullName || '', fromAvatar: me.profilePicture || '',
+          toId: targetIdClean, toStudentId: target?.studentId || '', toName: target?.fullName || '', toAvatar: target?.profilePicture || '',
           status: 'pending', createdAt: Date.now(), ownerUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '', fromUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''
         });
-        if (!state.friendRequests.some(r => r.id === requestId)) state.friendRequests.push({id:requestId, fromId:me.id, toId:targetIdClean, status:'pending',
-          fromName:me.fullName||'', fromAvatar:me.profilePicture||'', toName:target?.fullName||'', toAvatar:target?.profilePicture||''});
+        if (!state.friendRequests.some(r => r.id === requestId)) state.friendRequests.push({id:requestId, fromId:meId, fromStudentId:me.studentId||'', toId:targetIdClean, status:'pending',
+          fromName:me.fullName||'', fromAvatar:me.profilePicture||'', toName:target?.fullName||'', toAvatar:target?.profilePicture||'', toStudentId:target?.studentId||''});
         showToast('Friend request পাঠানো হয়েছে', 'success');
         renderApp();
       } catch (err) {
@@ -7851,8 +7900,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     function renderFriendsView() {
       const me = state.currentUser;
       if (!me) return '';
-      const incoming = (state.friendRequests||[]).filter(r=>String(r.toId)===String(me.id) && r.status==='pending');
-      const outgoing = (state.friendRequests||[]).filter(r=>String(r.fromId)===String(me.id) && r.status==='pending');
+      const meId = String(me.id || '').trim();
+      const meStudentId = String(me.studentId || '').trim();
+      const sameMe = (value, studentValue) => String(value || '').trim() === meId || (meStudentId && String(studentValue || '').trim() === meStudentId);
+      const incoming = (state.friendRequests||[]).filter(r=>sameMe(r.toId, r.toStudentId) && r.status==='pending');
+      const outgoing = (state.friendRequests||[]).filter(r=>sameMe(r.fromId, r.fromStudentId) && r.status==='pending');
       const friendIds = [...new Set((state.friendships||[])
         .filter(f=>f.status==='accepted' && Array.isArray(f.userIds) && f.userIds.includes(me.id))
         .map(f=>f.userIds.find(id=>id!==me.id)).filter(Boolean).map(String))];
