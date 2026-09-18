@@ -693,7 +693,16 @@
   html.dark .oikko-settings-card{background:#0d2119;border-color:#20382d}.dark .oikko-settings-title,.dark .oikko-setting-label{color:#e6f0ea}.dark .oikko-setting-desc{color:#91a39a}.dark .oikko-setting-row{border-color:#20382d}.dark .oikko-setting-icon{background:#143126;color:#78c69f}.dark .oikko-setting-select,.dark .oikko-settings-link{background:#10271e;border-color:#294338;color:#d4e2da}
   @media(max-width:900px){.oikko-settings-grid{grid-template-columns:1fr}.oikko-settings-card-wide{grid-column:auto}}
   @media(max-width:768px){.oikko-settings-page{padding:12px 12px 90px}.oikko-settings-hero{padding:18px;border-radius:18px}.oikko-settings-hero h1{font-size:21px}.oikko-setting-row{padding:11px 13px}.oikko-settings-links{grid-template-columns:1fr;padding:0 13px 13px}}
-  :root{--oikko-accent:#2f6f57;--oikko-accent-dark:#173b2d}\n  html{font-size:calc(100% * var(--oikko-user-font-scale,1))}\n  .oikko-settings-icon{width:58px;height:58px;border-radius:18px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center}\n  .oikko-setting-action,.oikko-setting-theme{border:1px solid #dce6df;background:#f5f9f6;color:#286049;border-radius:10px;padding:8px 11px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}.oikko-setting-action:hover,.oikko-setting-theme:hover{background:#e8f3ed}\n  .oikko-setting-action.warning{color:#9a6818;background:#fff8e8;border-color:#f1dfb5}.oikko-setting-action.danger{color:#b43e38;background:#fff1ef;border-color:#f1cbc6}\n  .oikko-theme-swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;padding:0 17px 17px}.oikko-color-choice{border:1px solid #e2e8e3;background:#fafcfb;border-radius:13px;padding:10px 7px;font-size:10px;font-weight:800;color:#4c5b52;cursor:pointer}.oikko-color-choice span{display:block;width:25px;height:25px;border-radius:50%;margin:0 auto 6px}.oikko-color-choice.green span{background:#2f6f57}.oikko-color-choice.blue span{background:#2563eb}.oikko-color-choice.purple span{background:#7c3aed}.oikko-color-choice.orange span{background:#ea580c}.oikko-color-choice.pink span{background:#db2777}.oikko-color-choice.selected{outline:2px solid var(--oikko-accent);outline-offset:1px}\n  .oikko-plan-badge{padding:7px 11px;border-radius:10px;background:#e8f5ed;color:#286049;font-size:10px;font-weight:900}.oikko-billing-actions{display:flex;flex-wrap:wrap;gap:9px;padding:0 17px 13px}.oikko-billing-note{padding:0 17px 17px;font-size:10px;color:#8a948d;line-height:1.5}.oikko-mini-modal{width:min(460px,100%);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,.25)}.oikko-modal-backdrop{background:rgba(13,29,22,.58);backdrop-filter:blur(6px)}.oikko-mini-head{padding:16px 18px;background:linear-gradient(135deg,#173f30,#2f6f57);color:#fff;display:flex;justify-content:space-between;align-items:center}.oikko-mini-head button{border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:9px;width:30px;height:30px;font-size:20px;cursor:pointer}.oikko-mini-body{padding:18px;display:grid;gap:10px}.oikko-mini-body input{width:100%;padding:11px 12px;border:1px solid #dfe7e1;border-radius:11px;outline:none}.oikko-setting-primary{border:0;border-radius:11px;padding:11px;background:#2f6f57;color:#fff;font-weight:800;cursor:pointer}.oikko-blocked-row,.oikko-activity-row{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;border:1px solid #e4ebe6;border-radius:12px}.oikko-blocked-row button{border:0;background:#edf6f0;color:#2f6f57;border-radius:8px;padding:6px 9px;font-weight:800}.oikko-activity-row{justify-content:flex-start;gap:10px}.oikko-activity-row small{display:block;color:#8a948d;margin-top:2px}\n  html.dark .oikko-setting-action,html.dark .oikko-setting-theme,html.dark .oikko-color-choice{background:#10271e;border-color:#294338;color:#d4e2da}html.dark .oikko-plan-badge{background:#143126;color:#8dd2ae}html.dark .oikko-mini-modal{background:#0d2119;color:#e6f0ea}html.dark .oikko-mini-body input{background:#10271e;border-color:#294338;color:#e6f0ea}html.dark .oikko-blocked-row,html.dark .oikko-activity-row{border-color:#294338}\n  @media(max-width:700px){.oikko-theme-swatches{grid-template-columns:repeat(2,1fr)}.oikko-setting-row{align-items:flex-start}.oikko-setting-control{padding-top:2px}.oikko-billing-actions{display:grid;grid-template-columns:1fr 1fr}.oikko-setting-action{white-space:normal}}\n</style>
+  :root{--oikko-accent:#2f6f57;--oikko-accent-dark:#173b2d}
+  html{font-size:calc(100% * var(--oikko-user-font-scale,1))}
+  .oikko-settings-icon{width:58px;height:58px;border-radius:18px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center}
+  .oikko-setting-action,.oikko-setting-theme{border:1px solid #dce6df;background:#f5f9f6;color:#286049;border-radius:10px;padding:8px 11px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}.oikko-setting-action:hover,.oikko-setting-theme:hover{background:#e8f3ed}
+  .oikko-setting-action.warning{color:#9a6818;background:#fff8e8;border-color:#f1dfb5}.oikko-setting-action.danger{color:#b43e38;background:#fff1ef;border-color:#f1cbc6}
+  .oikko-theme-swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;padding:0 17px 17px}.oikko-color-choice{border:1px solid #e2e8e3;background:#fafcfb;border-radius:13px;padding:10px 7px;font-size:10px;font-weight:800;color:#4c5b52;cursor:pointer}.oikko-color-choice span{display:block;width:25px;height:25px;border-radius:50%;margin:0 auto 6px}.oikko-color-choice.green span{background:#2f6f57}.oikko-color-choice.blue span{background:#2563eb}.oikko-color-choice.purple span{background:#7c3aed}.oikko-color-choice.orange span{background:#ea580c}.oikko-color-choice.pink span{background:#db2777}.oikko-color-choice.selected{outline:2px solid var(--oikko-accent);outline-offset:1px}
+  .oikko-plan-badge{padding:7px 11px;border-radius:10px;background:#e8f5ed;color:#286049;font-size:10px;font-weight:900}.oikko-billing-actions{display:flex;flex-wrap:wrap;gap:9px;padding:0 17px 13px}.oikko-billing-note{padding:0 17px 17px;font-size:10px;color:#8a948d;line-height:1.5}.oikko-mini-modal{width:min(460px,100%);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,.25)}.oikko-modal-backdrop{background:rgba(13,29,22,.58);backdrop-filter:blur(6px)}.oikko-mini-head{padding:16px 18px;background:linear-gradient(135deg,#173f30,#2f6f57);color:#fff;display:flex;justify-content:space-between;align-items:center}.oikko-mini-head button{border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:9px;width:30px;height:30px;font-size:20px;cursor:pointer}.oikko-mini-body{padding:18px;display:grid;gap:10px}.oikko-mini-body input{width:100%;padding:11px 12px;border:1px solid #dfe7e1;border-radius:11px;outline:none}.oikko-setting-primary{border:0;border-radius:11px;padding:11px;background:#2f6f57;color:#fff;font-weight:800;cursor:pointer}.oikko-blocked-row,.oikko-activity-row{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;border:1px solid #e4ebe6;border-radius:12px}.oikko-blocked-row button{border:0;background:#edf6f0;color:#2f6f57;border-radius:8px;padding:6px 9px;font-weight:800}.oikko-activity-row{justify-content:flex-start;gap:10px}.oikko-activity-row small{display:block;color:#8a948d;margin-top:2px}
+  html.dark .oikko-setting-action,html.dark .oikko-setting-theme,html.dark .oikko-color-choice{background:#10271e;border-color:#294338;color:#d4e2da}html.dark .oikko-plan-badge{background:#143126;color:#8dd2ae}html.dark .oikko-mini-modal{background:#0d2119;color:#e6f0ea}html.dark .oikko-mini-body input{background:#10271e;border-color:#294338;color:#e6f0ea}html.dark .oikko-blocked-row,html.dark .oikko-activity-row{border-color:#294338}
+  @media(max-width:700px){.oikko-theme-swatches{grid-template-columns:repeat(2,1fr)}.oikko-setting-row{align-items:flex-start}.oikko-setting-control{padding-top:2px}.oikko-billing-actions{display:grid;grid-template-columns:1fr 1fr}.oikko-setting-action{white-space:normal}}
+</style>
 <style id="oikko-sidebar-style">
   #app.oikko-sidebar-app{padding-left:0}
   .oikko-sidebar{position:fixed;left:0;top:0;bottom:0;width:252px;z-index:60;background:rgba(255,255,255,.96);border-right:1px solid #e3ebe6;box-shadow:12px 0 36px rgba(18,35,28,.07);backdrop-filter:blur(20px);display:flex;flex-direction:column;color:#24332b}
@@ -1291,7 +1300,7 @@ html.dark #modal-container .oikko-edit-danger{
 
 <style id="oikko-friends-v10">
 .oikko-friends-page{width:100%}
-.oikko-friends-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:28px;background:linear-gradient(135deg,#123f30 0%,#176248 52%,#238463 100%);color:#fff;box-shadow:0 18px 48px rgba(22,85,62,.18)}
+.oikko-friends-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:28px;background:linear-gradient(135deg,#123f30 0%,#176248 52%,#238463 100%);color:#fff;box-shadow:0 18px 48px rgba(22,85,62,.18)}.oikko-friends-hero{min-height:150px;visibility:visible!important;opacity:1!important;z-index:1}.oikko-friends-hero>*{position:relative;z-index:2}.oikko-friends-page{position:relative;z-index:1}.oikko-friends-page .app-card{visibility:visible}
 .oikko-friends-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 20%,rgba(255,255,255,.16),transparent 30%),repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 1px,transparent 1px 12px);pointer-events:none}
 .oikko-friends-hero h1,.oikko-friends-hero p{position:relative}.oikko-friends-hero h1{font-size:clamp(28px,4vw,40px);font-weight:900;letter-spacing:-.04em}.oikko-friends-hero p{margin-top:6px;color:#d8eee2;font-size:14px;max-width:680px}
 .oikko-friends-hero-icon{position:relative;width:64px;height:64px;border-radius:20px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.16)}
@@ -1302,6 +1311,28 @@ html.dark #modal-container .oikko-edit-danger{
 html.dark .oikko-friends-section-title h2{color:#dcece4}html.dark .oikko-friends-section-title p{color:#88a498}html.dark .oikko-friends-section-title>span{background:#143b2d;color:#b9ead1}html.dark .oikko-friend-card{border-color:#234137}html.dark .oikko-friend-avatar{border-color:#315546}html.dark .oikko-friend-name{color:#e0eee7}html.dark .oikko-friends-empty{background:#10251d;border-color:#2c4b3e;color:#88a498}html.dark .oikko-request-pending{background:#173127;color:#a9c9ba}
 </style>
 
+<style id="oikko-global-theme-css">
+:root{
+  --oikko-accent:#2f6f57;--oikko-accent-dark:#173b2d;--oikko-accent-soft:#e7f6ee;
+  --oikko-accent-pale:#f1f8f4;--oikko-accent-mid:#176248;--oikko-accent-glow:#bfe6d0;
+  --theme-selection:#bfe6d0;
+}
+::selection{background:var(--theme-selection)!important}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline-color:color-mix(in srgb,var(--oikko-accent) 35%,transparent)!important}
+/* Semantic/custom components */
+.oikko-setting-primary,.oikko-color-choice.selected,.oikko-setting-theme,
+.oikko-friends-hero,.oikko-friends-section-title>span{background-color:var(--oikko-accent)!important}
+.oikko-setting-primary,.oikko-setting-theme{border-color:var(--oikko-accent)!important}
+.oikko-friend-name,.oikko-settings-title,.oikko-sidebar-active,.oikko-plan-badge{color:var(--oikko-accent)!important}
+.oikko-friends-hero{background:linear-gradient(135deg,var(--oikko-accent-dark),var(--oikko-accent-mid),var(--oikko-accent))!important}
+.oikko-friends-empty{border-color:color-mix(in srgb,var(--oikko-accent) 22%,#d7e4dc)!important;background:var(--oikko-accent-pale)!important}
+.oikko-friend-avatar{border-color:var(--oikko-accent-glow)!important}
+.oikko-request-pending{background:var(--oikko-accent-pale)!important;color:var(--oikko-accent)!important}
+.oikko-theme-swatches .oikko-color-choice.selected span{box-shadow:0 0 0 3px var(--oikko-accent-glow)!important}
+/* Fixed green brand colors used by the shell */
+.app-brand-mark{background:linear-gradient(135deg,var(--oikko-accent-soft),var(--oikko-accent-glow))!important}
+.app-search:focus-within{border-color:var(--oikko-accent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--oikko-accent) 15%,transparent)!important}
+</style>
 </head>
 <body class="min-h-screen flex flex-col">
 
@@ -7635,20 +7666,51 @@ html.dark .oikko-friends-section-title h2{color:#dcece4}html.dark .oikko-friends
       return 'none';
     }
 
+    let friendsRequestsUnsubscribe = null;
+    let friendsListUnsubscribe = null;
+    let friendsListenersStarted = false;
+
     async function loadFriendsData() {
       const db = window.firebaseDb, fb = window.fb, me = state.currentUser;
       if (!db || !fb || !me) return;
+      if (friendsListenersStarted) return;
+      friendsListenersStarted = true;
       try {
-        const [reqSnap, friendSnap] = await Promise.all([
-          fb.getDocs(fb.collection(db, 'oikko_friend_requests')),
-          fb.getDocs(fb.collection(db, 'oikko_friends'))
-        ]);
-        state.friendRequests = [];
-        reqSnap.forEach(d => state.friendRequests.push({id:d.id, ...d.data()}));
-        state.friendships = [];
-        friendSnap.forEach(d => state.friendships.push({id:d.id, ...d.data()}));
-        if (state.activeView === 'friends' || state.activeView === 'profile') renderApp();
+        await (window.firebaseAuthReady || Promise.resolve());
+
+        // Realtime listeners are used here so a request sent from another
+        // device/account appears immediately without refreshing the page.
+        friendsRequestsUnsubscribe = fb.onSnapshot(
+          fb.collection(db, 'oikko_friend_requests'),
+          snap => {
+            state.friendRequests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            if (state.activeView === 'friends' || state.activeView === 'profile') {
+              renderApp();
+            }
+          },
+          err => {
+            console.warn('Friend requests listener failed:', err);
+            friendsListenersStarted = false;
+            if (err?.code === 'permission-denied') showToast('Friend Requests-এর Firestore Rules অনুমতি দিচ্ছে না।', 'error');
+          }
+        );
+
+        friendsListUnsubscribe = fb.onSnapshot(
+          fb.collection(db, 'oikko_friends'),
+          snap => {
+            state.friendships = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            if (state.activeView === 'friends' || state.activeView === 'profile') {
+              renderApp();
+            }
+          },
+          err => {
+            console.warn('Friends listener failed:', err);
+            friendsListenersStarted = false;
+            if (err?.code === 'permission-denied') showToast('My Friends-এর Firestore Rules অনুমতি দিচ্ছে না।', 'error');
+          }
+        );
       } catch (err) {
+        friendsListenersStarted = false;
         console.warn('Friends data load failed:', err);
         if (err?.code === 'permission-denied') {
           showToast('Friends চালু করতে Firestore Rules-এ oikko_friend_requests ও oikko_friends অনুমতি দিন।', 'error');
@@ -7656,6 +7718,9 @@ html.dark .oikko-friends-section-title h2{color:#dcece4}html.dark .oikko-friends
       }
     }
     window.loadFriendsData = loadFriendsData;
+    window.addEventListener('firebaseReady', () => {
+      if (state.currentUser) loadFriendsData();
+    });
 
     async function sendFriendRequest(targetId) {
       const me = state.currentUser, db = window.firebaseDb, fb = window.fb;
@@ -7892,10 +7957,93 @@ function renderSettingsView(){
       saveCurrentUser(state.currentUser); saveUsers(state.users||[]);
       if(window.firebaseDb&&window.fb&&state.currentUser.id) (window.firebaseAuthReady || Promise.resolve()).then(() => window.fb.setDoc(window.fb.doc(window.firebaseDb,'users',state.currentUser.id),{[field]:value, ownerUid:window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''},{merge:true})).catch(console.warn);
     }
-    function applyOikkoColorTheme(theme){
-      const map={green:['#2f6f57','#173b2d'],blue:['#2563eb','#172554'],purple:['#7c3aed','#2e1065'],orange:['#ea580c','#431407'],pink:['#db2777','#500724']};
-      const v=map[theme]||map.green; document.documentElement.style.setProperty('--oikko-accent',v[0]); document.documentElement.style.setProperty('--oikko-accent-dark',v[1]);
+    /* ===== Oikko global color-theme engine =====
+       The original app used many fixed green Tailwind/hex classes, so changing
+       only --oikko-accent could not recolor those rendered components. This
+       engine keeps the existing layout/features and remaps the app's accent
+       palette everywhere, including dynamically-rendered Messenger, Tube,
+       Friends, Profile, Settings, Admin and Home elements.
+    */
+    const OIKKO_THEME_PALETTES = {
+      green:  { accent:'#2f6f57', dark:'#173b2d', soft:'#e7f6ee', pale:'#f1f8f4', mid:'#176248', glow:'#bfe6d0' },
+      blue:   { accent:'#2563eb', dark:'#172554', soft:'#dbeafe', pale:'#eff6ff', mid:'#1d4ed8', glow:'#bfdbfe' },
+      purple: { accent:'#7c3aed', dark:'#2e1065', soft:'#ede9fe', pale:'#f5f3ff', mid:'#6d28d9', glow:'#ddd6fe' },
+      orange: { accent:'#ea580c', dark:'#431407', soft:'#ffedd5', pale:'#fff7ed', mid:'#c2410c', glow:'#fed7aa' },
+      pink:   { accent:'#db2777', dark:'#500724', soft:'#fce7f3', pale:'#fdf2f8', mid:'#be185d', glow:'#fbcfe8' }
+    };
+
+    const OIKKO_ACCENT_REMAP = {
+      '#2f6f57':'accent','#245544':'dark','#173b2d':'dark','#123f30':'dark','#176248':'mid','#238463':'accent',
+      '#31b886':'accent','#2d6650':'accent','#2b5242':'accent','#24483a':'dark','#143b2d':'soft','#143b2d':'soft',
+      '#e7fbef':'soft','#8ed9b0':'glow','#d8f3e4':'soft','#b9ead1':'glow','#b8ecd4':'glow','#bfe6d3':'glow',
+      '#d8eee2':'glow','#eef8f2':'pale','#e2f4ea':'soft','#edf2ef':'pale','#dce7e0':'glow','#d7e4dc':'glow',
+      '#d8e9df':'glow','#e8eee9':'glow','#f7faf8':'pale'
+    };
+
+    function oikkoThemeHex(theme, key){
+      const p=OIKKO_THEME_PALETTES[theme]||OIKKO_THEME_PALETTES.green;
+      return p[key]||p.accent;
     }
+
+    function remapOikkoAccentClasses(root=document){
+      const theme=state?.settings?.colorTheme||'green';
+      const p=OIKKO_THEME_PALETTES[theme]||OIKKO_THEME_PALETTES.green;
+      const nodes=[];
+      try {
+        if(root.nodeType===1) nodes.push(root);
+        if(root.querySelectorAll) nodes.push(...root.querySelectorAll('[class]'));
+      } catch(_) {}
+      nodes.forEach(el=>{
+        if(!el.classList) return;
+        [...el.classList].forEach(cls=>{
+          const m=cls.match(/^(bg|text|border|ring|decoration|from|via|to)-\[#([0-9a-fA-F]{6})\]$/);
+          if(!m) return;
+          const hex='#'+m[2].toLowerCase();
+          const key=OIKKO_ACCENT_REMAP[hex];
+          if(!key) return;
+          const replacement=p[key]||p.accent;
+          const next=`${m[1]}-[#${replacement.slice(1)}]`;
+          if(next!==cls) el.classList.replace(cls,next);
+        });
+      });
+    }
+
+    function applyOikkoColorTheme(theme){
+      theme=OIKKO_THEME_PALETTES[theme]?theme:'green';
+      const p=OIKKO_THEME_PALETTES[theme];
+      const root=document.documentElement;
+      root.dataset.oikkoTheme=theme;
+      root.style.setProperty('--oikko-accent',p.accent);
+      root.style.setProperty('--oikko-accent-dark',p.dark);
+      root.style.setProperty('--oikko-accent-soft',p.soft);
+      root.style.setProperty('--oikko-accent-pale',p.pale);
+      root.style.setProperty('--oikko-accent-mid',p.mid);
+      root.style.setProperty('--oikko-accent-glow',p.glow);
+      root.style.setProperty('--primary-olive',p.accent);
+      root.style.setProperty('--primary-dark',p.dark);
+      root.style.setProperty('--brand-mint',p.soft);
+      root.style.setProperty('--theme-selection',p.glow);
+      remapOikkoAccentClasses(document);
+      try {
+        if(window.lucide) lucide.createIcons();
+      } catch(_) {}
+    }
+
+    // Newly-rendered views are observed so theme changes do not disappear when
+    // renderApp() replaces the page DOM.
+    let oikkoThemeObserverStarted=false;
+    function startOikkoThemeObserver(){
+      if(oikkoThemeObserverStarted || !window.MutationObserver) return;
+      oikkoThemeObserverStarted=true;
+      const appRoot=document.getElementById('app')||document.body;
+      new MutationObserver(mutations=>{
+        mutations.forEach(m=>m.addedNodes.forEach(n=>{
+          if(n.nodeType===1) remapOikkoAccentClasses(n);
+        }));
+      }).observe(appRoot,{childList:true,subtree:true});
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{startOikkoThemeObserver(); applyOikkoColorTheme(state.settings?.colorTheme||'green');});
+    else { startOikkoThemeObserver(); applyOikkoColorTheme(state.settings?.colorTheme||'green'); }
     function changeOikkoPlan(plan){ state.settings.plan=plan; saveOikkoSettings(); renderApp(); showToast(plan==='pro'?'Pro প্ল্যান নির্বাচিত হয়েছে':'Free প্ল্যান নির্বাচিত হয়েছে','info'); }
     window.changeOikkoPlan=changeOikkoPlan;
     function openAccountPasswordModal(){
@@ -7928,6 +8076,7 @@ function renderSettingsView(){
         ensureOikkoTubeReady();
         loadOikkoTubeAgeVerification();
       }
+      if (v === 'friends') loadFriendsData();
       renderApp();
     }
 
