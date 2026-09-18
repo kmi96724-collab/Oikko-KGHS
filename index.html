@@ -4252,7 +4252,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
         receiverId: data.receiverId || '',
         senderName: data.senderName || '',
         time: data.time || new Date(createdAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-        createdAt
+        createdAt,
+        deletedAt: data.deletedAt || null,
+        deletedBy: data.deletedBy || ''
       };
     }
 
@@ -4291,6 +4293,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
           const targetId = String(targetUserId);
           const rawCloudMessages = snapshot.docs
             .map(d => normalizeCloudMessage({id: d.id, ...d.data()}))
+            // A delete is first broadcast as a tombstone, then the document is
+            // physically removed. Filtering tombstones here makes both mobile
+            // and desktop hide the message immediately even if the hard-delete
+            // event is delivered a moment later.
+            .filter(m => !m.deletedAt)
             .filter(m => {
               const senderId = String(m.senderId || '');
               const receiverId = String(m.receiverId || '');
@@ -4316,15 +4323,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
           const localMessages = Array.isArray(state.messages[targetUserId]) ? state.messages[targetUserId] : [];
           const cloudIds = new Set(cloudMessages.map(m => m.id));
           const cloudClientIds = new Set(cloudMessages.map(m => String(m.clientMessageId || '')).filter(Boolean));
+          // IMPORTANT: Firestore is the source of truth for an existing chat.
+          // Only genuinely pending optimistic messages are kept locally.
+          // Older code kept every local message that was absent from the
+          // snapshot, which could resurrect a message on another device after
+          // it had been deleted and make the delete appear only after reload.
           const pendingLocal = localMessages.filter(m => {
-            if (!m) return false;
+            if (!m || m.pending !== true) return false;
             const senderId = String(m.senderId || '');
             const receiverId = String(m.receiverId || '');
             const belongsToPair = (senderId === meId && receiverId === targetId) ||
-                                  (senderId === targetId && receiverId === meId) ||
-                                  // Keep legacy local messages only when they are
-                                  // explicitly marked as belonging to this user/chat.
-                                  (!senderId && !receiverId && m.sender === 'me');
+                                  (senderId === targetId && receiverId === meId);
             if (!belongsToPair) return false;
             if (m.firebaseId && cloudIds.has(m.firebaseId)) return false;
             if (m.id && cloudIds.has(m.id)) return false;
@@ -4539,7 +4548,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       const localMessage = {
         id: localId,
         ...messageData,
-        sender: 'me'
+        sender: 'me',
+        // Local-only optimistic message. It is merged with the realtime
+        // Firestore snapshot only until the same cloud document appears.
+        pending: true
       };
       if (!state.messages[targetUserId]) state.messages[targetUserId] = [];
       state.messages[targetUserId].push(localMessage);
@@ -4561,6 +4573,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
         localMessage.firebaseId = clientMessageId;
         localMessage.id = clientMessageId;
+        localMessage.pending = false;
         window.firestoreStatus = 'connected';
         saveMessages(state.messages);
 
@@ -4623,7 +4636,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       try {
         await (window.firebaseAuthReady || Promise.resolve());
         const chatId = makeChatId(me.id, targetId);
-        await fb.deleteDoc(fb.doc(db, 'oikko_chats', chatId, 'messages', firestoreId));
+        const messageRef = fb.doc(db, 'oikko_chats', chatId, 'messages', firestoreId);
+
+        // Broadcast a realtime tombstone first. This gives every connected
+        // device a deterministic state change, then remove the document from
+        // Firestore as the final step. It prevents the old message from being
+        // briefly resurrected by a stale realtime/local snapshot.
+        if (typeof fb.updateDoc === 'function') {
+          await fb.updateDoc(messageRef, {
+            deletedAt: Date.now(),
+            deletedBy: String(me.id)
+          });
+        }
+        await fb.deleteDoc(messageRef);
         window.firestoreStatus = 'connected';
       } catch (err) {
         console.error('FIRESTORE MESSAGE DELETE FAILED:', err);
