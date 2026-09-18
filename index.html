@@ -77,7 +77,7 @@
       -webkit-tap-highlight-color: transparent;
     }
     button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
-      outline: 3px solid rgba(242, 125, 97, .38);
+      outline: 2px solid rgba(47, 111, 87, .24);
       outline-offset: 2px;
     }
     .app-topbar {
@@ -493,6 +493,70 @@
 
 </style>
 
+<style id="oikko-fixed-desktop-sidebar-all-tabs">
+/* Oikko Campus: fixed desktop sidebar on EVERY authenticated tab, including Messenger + Tube.
+   Mobile/tablet intentionally do not render the sidebar. */
+@media (min-width: 769px) {
+  #app.oikko-sidebar-app {
+    padding-left: 252px !important;
+    box-sizing: border-box;
+    min-height: 100vh;
+  }
+  #app.oikko-sidebar-app > .oikko-sidebar {
+    display: flex !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 252px !important;
+    z-index: 1000 !important;
+    transform: none !important;
+  }
+  #app.oikko-sidebar-app > .oikko-sidebar-overlay {
+    display: none !important;
+  }
+  #app.oikko-sidebar-app > .app-topbar {
+    width: calc(100% - 252px) !important;
+    margin-left: 0 !important;
+  }
+  #app.oikko-sidebar-app > main {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  /* Never let the old fullscreen rules hide the fixed sidebar. */
+  #app.oikko-sidebar-app.oikko-fullscreen-view > .oikko-sidebar {
+    display: flex !important;
+  }
+  #app.oikko-sidebar-app.oikko-fullscreen-view > main {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  #app.oikko-sidebar-app.oikko-fullscreen-view .oikko-fullscreen-shell {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+  .oikko-sidebar-close { display: none !important; }
+  .oikko-sidebar-toggle { display: none !important; }
+}
+
+@media (max-width: 768px) {
+  #app.oikko-sidebar-app {
+    padding-left: 0 !important;
+  }
+  #app.oikko-sidebar-app > .oikko-sidebar,
+  #app.oikko-sidebar-app > .oikko-sidebar-overlay {
+    display: none !important;
+  }
+}
+</style>
+
 <style id="oikko-tube-dark-redesign">
   .oikko-tube-page{
     background:#f4f7f5;
@@ -597,8 +661,15 @@
 .oikko-tube-video-card{background:rgba(8,29,23,.82)!important;border:1px solid rgba(154,219,194,.14)!important;box-shadow:0 16px 42px rgba(0,0,0,.16)!important}
 </style>
 
+<style id="oikko-social-profile-style">
+.oikko-social-profile-page{max-width:1380px!important}.oikko-fb-profile-hero{overflow:hidden;background:#fff;border:1px solid #e1e9e4;border-radius:24px;box-shadow:0 12px 35px rgba(25,60,45,.06)}
+.oikko-profile-cover{height:150px;background:radial-gradient(circle at 12% 20%,rgba(124,218,172,.45),transparent 32%),radial-gradient(circle at 86% 18%,rgba(47,111,87,.28),transparent 30%),linear-gradient(120deg,#dff5e7 0%,#eef7f1 48%,#d8eee2 100%);position:relative}.oikko-profile-cover:after{content:"";position:absolute;inset:0;background-image:linear-gradient(120deg,transparent 0 47%,rgba(255,255,255,.3) 48% 49%,transparent 50% 100%);opacity:.35}
+.oikko-profile-identity{display:flex;align-items:center;gap:18px;padding:0 28px 22px;margin-top:-48px;position:relative}.oikko-profile-avatar{width:118px;height:118px;border-radius:26px;object-fit:cover;border:5px solid #fff;box-shadow:0 10px 28px rgba(0,0,0,.13);background:#eaf4ee}.oikko-profile-identity h1{font-size:28px;font-weight:900;color:#26352d;margin:48px 0 5px;display:flex;align-items:center;gap:7px}.oikko-profile-identity p{font-size:13px;color:#6c7b73;margin:0}.oikko-profile-meta-row{display:flex;gap:8px;margin-top:7px;font-size:11px;color:#718178}.oikko-profile-actions{margin-top:48px;display:flex;gap:8px}.oikko-profile-tabs{display:flex;gap:28px;padding:0 28px;border-top:1px solid #edf1ee;height:54px;align-items:end}.oikko-profile-tabs span{padding:0 2px 15px;color:#69776f;font-size:13px;font-weight:800}.oikko-profile-tabs span.active{color:#247356;border-bottom:3px solid #247356}.oikko-profile-content-grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:18px;margin-top:18px}.oikko-profile-info-card{padding:20px;border:1px solid #e2e9e4}.oikko-profile-info-card h2{font-size:16px;font-weight:900;color:#34433a;display:flex;align-items:center;gap:8px;margin-bottom:14px}.oikko-info-line{display:flex;justify-content:space-between;gap:15px;padding:10px 0;border-top:1px solid #eef2ef;font-size:12px}.oikko-info-line span{color:#849087}.oikko-info-line b{color:#3d4b43}.oikko-profile-mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.oikko-profile-mini-stats div{background:#f4f8f5;border:1px solid #e3ece6;border-radius:14px;padding:12px 7px;text-align:center}.oikko-profile-mini-stats b{display:block;font-size:18px;color:#2d5f4a}.oikko-profile-mini-stats span{font-size:10px;color:#7d8a83}.oikko-profile-post-heading{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 2px}.oikko-profile-post-heading h2{font-size:20px;font-weight:900;color:#304038}.oikko-profile-post-heading span{font-size:11px;color:#849087}.dark .oikko-fb-profile-hero,.dark .oikko-profile-info-card{background:#10251d;border-color:#254238}.dark .oikko-profile-identity h1,.dark .oikko-profile-post-heading h2,.dark .oikko-profile-info-card h2,.dark .oikko-info-line b{color:#e7f1eb}.dark .oikko-profile-identity p,.dark .oikko-profile-meta-row,.dark .oikko-info-line span,.dark .oikko-profile-post-heading span{color:#9eb1a7}.dark .oikko-profile-tabs{border-color:#254238}.dark .oikko-profile-tabs span{color:#9eb1a7}.dark .oikko-profile-mini-stats div{background:#143126;border-color:#27483a}.dark .oikko-profile-mini-stats b{color:#9be0bb}
+@media(max-width:900px){.oikko-profile-content-grid{grid-template-columns:1fr}.oikko-profile-identity{align-items:flex-start;flex-wrap:wrap;padding:0 18px 18px}.oikko-profile-identity h1{margin-top:45px;font-size:22px}.oikko-profile-actions{margin-top:45px}.oikko-profile-tabs{padding:0 18px;gap:18px}.oikko-profile-cover{height:125px}}
+@media(max-width:600px){.oikko-profile-avatar{width:92px;height:92px;border-radius:22px}.oikko-profile-identity{margin-top:-35px}.oikko-profile-actions{width:100%;margin-top:0}.oikko-profile-actions button{flex:1}.oikko-profile-tabs{overflow:auto;white-space:nowrap}.oikko-social-profile-page{padding-left:10px!important;padding-right:10px!important}}
+</style>
 <style id="oikko-settings-style">
-  .oikko-settings-page{max-width:1100px;margin:0 auto;padding:18px 24px 100px}
+  .oikko-settings-page{max-width:1480px;margin:0 auto;padding:18px 28px 100px}.oikko-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}.oikko-settings-grid .oikko-settings-card{margin-top:0}.oikko-settings-card-wide{grid-column:1/-1}
   .oikko-settings-hero{background:linear-gradient(135deg,#173f30,#2f6f57);color:#fff;border-radius:22px;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 12px 30px rgba(18,61,46,.16)}
   .oikko-settings-hero h1{font-size:25px;font-weight:900;margin:0}
   .oikko-settings-hero p{margin:5px 0 0;color:#d4e8dc;font-size:12px}
@@ -620,8 +691,9 @@
   .oikko-settings-link{border:1px solid #e5e9df;background:#fafbf8;border-radius:12px;padding:11px 12px;text-align:left;cursor:pointer;font:inherit;color:#4b554b;font-size:11px;font-weight:800}
   .oikko-settings-link:hover{background:#f0f6f2;color:#245844}
   html.dark .oikko-settings-card{background:#0d2119;border-color:#20382d}.dark .oikko-settings-title,.dark .oikko-setting-label{color:#e6f0ea}.dark .oikko-setting-desc{color:#91a39a}.dark .oikko-setting-row{border-color:#20382d}.dark .oikko-setting-icon{background:#143126;color:#78c69f}.dark .oikko-setting-select,.dark .oikko-settings-link{background:#10271e;border-color:#294338;color:#d4e2da}
+  @media(max-width:900px){.oikko-settings-grid{grid-template-columns:1fr}.oikko-settings-card-wide{grid-column:auto}}
   @media(max-width:768px){.oikko-settings-page{padding:12px 12px 90px}.oikko-settings-hero{padding:18px;border-radius:18px}.oikko-settings-hero h1{font-size:21px}.oikko-setting-row{padding:11px 13px}.oikko-settings-links{grid-template-columns:1fr;padding:0 13px 13px}}
-</style>
+  :root{--oikko-accent:#2f6f57;--oikko-accent-dark:#173b2d}\n  html{font-size:calc(100% * var(--oikko-user-font-scale,1))}\n  .oikko-settings-icon{width:58px;height:58px;border-radius:18px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center}\n  .oikko-setting-action,.oikko-setting-theme{border:1px solid #dce6df;background:#f5f9f6;color:#286049;border-radius:10px;padding:8px 11px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}.oikko-setting-action:hover,.oikko-setting-theme:hover{background:#e8f3ed}\n  .oikko-setting-action.warning{color:#9a6818;background:#fff8e8;border-color:#f1dfb5}.oikko-setting-action.danger{color:#b43e38;background:#fff1ef;border-color:#f1cbc6}\n  .oikko-theme-swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;padding:0 17px 17px}.oikko-color-choice{border:1px solid #e2e8e3;background:#fafcfb;border-radius:13px;padding:10px 7px;font-size:10px;font-weight:800;color:#4c5b52;cursor:pointer}.oikko-color-choice span{display:block;width:25px;height:25px;border-radius:50%;margin:0 auto 6px}.oikko-color-choice.green span{background:#2f6f57}.oikko-color-choice.blue span{background:#2563eb}.oikko-color-choice.purple span{background:#7c3aed}.oikko-color-choice.orange span{background:#ea580c}.oikko-color-choice.pink span{background:#db2777}.oikko-color-choice.selected{outline:2px solid var(--oikko-accent);outline-offset:1px}\n  .oikko-plan-badge{padding:7px 11px;border-radius:10px;background:#e8f5ed;color:#286049;font-size:10px;font-weight:900}.oikko-billing-actions{display:flex;flex-wrap:wrap;gap:9px;padding:0 17px 13px}.oikko-billing-note{padding:0 17px 17px;font-size:10px;color:#8a948d;line-height:1.5}.oikko-mini-modal{width:min(460px,100%);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,.25)}.oikko-modal-backdrop{background:rgba(13,29,22,.58);backdrop-filter:blur(6px)}.oikko-mini-head{padding:16px 18px;background:linear-gradient(135deg,#173f30,#2f6f57);color:#fff;display:flex;justify-content:space-between;align-items:center}.oikko-mini-head button{border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:9px;width:30px;height:30px;font-size:20px;cursor:pointer}.oikko-mini-body{padding:18px;display:grid;gap:10px}.oikko-mini-body input{width:100%;padding:11px 12px;border:1px solid #dfe7e1;border-radius:11px;outline:none}.oikko-setting-primary{border:0;border-radius:11px;padding:11px;background:#2f6f57;color:#fff;font-weight:800;cursor:pointer}.oikko-blocked-row,.oikko-activity-row{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;border:1px solid #e4ebe6;border-radius:12px}.oikko-blocked-row button{border:0;background:#edf6f0;color:#2f6f57;border-radius:8px;padding:6px 9px;font-weight:800}.oikko-activity-row{justify-content:flex-start;gap:10px}.oikko-activity-row small{display:block;color:#8a948d;margin-top:2px}\n  html.dark .oikko-setting-action,html.dark .oikko-setting-theme,html.dark .oikko-color-choice{background:#10271e;border-color:#294338;color:#d4e2da}html.dark .oikko-plan-badge{background:#143126;color:#8dd2ae}html.dark .oikko-mini-modal{background:#0d2119;color:#e6f0ea}html.dark .oikko-mini-body input{background:#10271e;border-color:#294338;color:#e6f0ea}html.dark .oikko-blocked-row,html.dark .oikko-activity-row{border-color:#294338}\n  @media(max-width:700px){.oikko-theme-swatches{grid-template-columns:repeat(2,1fr)}.oikko-setting-row{align-items:flex-start}.oikko-setting-control{padding-top:2px}.oikko-billing-actions{display:grid;grid-template-columns:1fr 1fr}.oikko-setting-action{white-space:normal}}\n</style>
 <style id="oikko-sidebar-style">
   #app.oikko-sidebar-app{padding-left:0}
   .oikko-sidebar{position:fixed;left:0;top:0;bottom:0;width:252px;z-index:60;background:rgba(255,255,255,.96);border-right:1px solid #e3ebe6;box-shadow:12px 0 36px rgba(18,35,28,.07);backdrop-filter:blur(20px);display:flex;flex-direction:column;color:#24332b}
@@ -746,6 +818,71 @@
     position:relative;
     z-index:3;
   }
+  /* OIKKO APP PROFILE EDIT CARD REDESIGN */
+  #modal-container .oikko-edit-backdrop{
+    background:rgba(7,35,27,.58)!important;
+    backdrop-filter:blur(10px)!important;
+  }
+  #modal-container .oikko-edit-card{
+    width:min(760px,calc(100vw - 32px))!important;
+    max-height:min(90vh,860px)!important;
+    background:#f7fbf8!important;
+    border:1px solid rgba(24,118,91,.16)!important;
+    border-radius:26px!important;
+    overflow:hidden!important;
+    box-shadow:0 28px 80px rgba(7,49,37,.28)!important;
+  }
+  #modal-container .oikko-edit-header{
+    position:relative; overflow:hidden;
+    background:linear-gradient(135deg,#0f7258 0%,#159a74 58%,#1eaf83 100%)!important;
+    color:#fff!important; padding:22px 24px!important;
+  }
+  #modal-container .oikko-edit-header:after{
+    content:""; position:absolute; width:180px;height:180px;right:-65px;top:-95px;
+    border-radius:50%; background:rgba(218,250,235,.13); box-shadow:-70px 95px 0 -35px rgba(218,250,235,.08);
+  }
+  #modal-container .oikko-edit-icon{
+    background:rgba(220,250,237,.18)!important; border:1px solid rgba(255,255,255,.18)!important;
+    color:#e6fff3!important; border-radius:15px!important; padding:10px!important;
+  }
+  #modal-container .oikko-edit-subtitle{color:#d8f4e7!important}
+  #modal-container .oikko-edit-body{
+    background:linear-gradient(180deg,#f7fbf8 0%,#eef7f2 100%)!important;
+    padding:22px!important;
+  }
+  #modal-container .oikko-edit-section{
+    background:#fff!important; border:1px solid #dcebe3!important; border-radius:18px!important;
+    padding:15px!important; box-shadow:0 7px 22px rgba(19,93,70,.06)!important;
+  }
+  #modal-container .oikko-edit-label{color:#275e4c!important;font-weight:800!important}
+  #modal-container .oikko-edit-field,
+  #modal-container .oikko-edit-input{
+    background:#f8fcfa!important; border:1px solid #cfe4d9!important; color:#263a33!important;
+    border-radius:12px!important; min-height:42px; transition:.18s ease;
+  }
+  #modal-container .oikko-edit-field:focus,
+  #modal-container .oikko-edit-input:focus{
+    background:#fff!important; border-color:#159a74!important; box-shadow:0 0 0 3px rgba(21,154,116,.12)!important; outline:none!important;
+  }
+  #modal-container .oikko-edit-upload{
+    background:#e8f7f0!important; border:1px solid #c6e6d8!important; color:#087354!important;
+  }
+  #modal-container .oikko-edit-upload:hover{background:#d9f1e6!important}
+  #modal-container .oikko-edit-save{
+    background:linear-gradient(135deg,#0f805f,#16a477)!important; color:#fff!important;
+    border:0!important; border-radius:13px!important; padding:10px 18px!important;
+    box-shadow:0 8px 20px rgba(15,128,95,.22)!important;
+  }
+  #modal-container .oikko-edit-cancel{
+    background:#fff!important; color:#426052!important; border:1px solid #d5e4dd!important; border-radius:13px!important;
+  }
+  #modal-container .oikko-edit-danger{color:#e65e50!important}
+  @media(max-width:768px){
+    #modal-container .oikko-edit-card{width:100%!important;max-height:100dvh!important;height:100dvh!important;border-radius:0!important}
+    #modal-container .oikko-edit-body{padding:15px!important}
+    #modal-container .oikko-edit-header{padding:18px!important}
+  }
+
   #modal-container .oikko-profile-edit-btn{
     background:#5a5d3f!important;color:#fff!important;border:0!important;
     border-radius:12px!important;padding:9px 13px!important;
@@ -954,6 +1091,217 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
   .oikko-messenger-view button, .oikko-tube-view button { min-height:40px; }
 }
 </style>
+<style id="oikko-fixed-sidebar-final-patch">
+/* FINAL: one fixed desktop sidebar shared by every authenticated tab. */
+@media (min-width: 769px) {
+  html, body { margin:0 !important; }
+  #app.oikko-sidebar-app {
+    position:relative !important;
+    display:flex !important;
+    flex-direction:column !important;
+    width:100% !important;
+    min-height:100vh !important;
+    padding-left:252px !important;
+    box-sizing:border-box !important;
+    overflow-x:visible !important;
+  }
+  #app.oikko-sidebar-app > .oikko-sidebar {
+    display:flex !important;
+    position:fixed !important;
+    left:0 !important; right:auto !important; top:0 !important; bottom:0 !important;
+    width:252px !important; height:100vh !important;
+    min-width:252px !important; max-width:252px !important;
+    z-index:99999 !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    transform:none !important;
+    margin:0 !important;
+  }
+  #app.oikko-sidebar-app > .oikko-sidebar-overlay { display:none !important; }
+  #app.oikko-sidebar-app > .oikko-fullscreen-shell,
+  #app.oikko-sidebar-app > .messenger-shell,
+  #app.oikko-sidebar-app > main {
+    width:100% !important;
+    max-width:none !important;
+    min-width:0 !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
+  /* Never allow old fullscreen rules to hide or bypass the sidebar. */
+  #app.oikko-sidebar-app.oikko-fullscreen-view > .oikko-sidebar {
+    display:flex !important; visibility:visible !important; transform:none !important;
+  }
+  #app.oikko-sidebar-app.oikko-fullscreen-view > .oikko-fullscreen-shell {
+    width:100% !important; max-width:none !important; margin:0 !important;
+  }
+}
+@media (max-width: 768px) {
+  #app.oikko-sidebar-app { padding-left:0 !important; }
+  #app.oikko-sidebar-app > .oikko-sidebar,
+  #app.oikko-sidebar-app > .oikko-sidebar-overlay { display:none !important; }
+}
+</style>
+
+<style id="oikko-v5-sidebar-toggle-fix">
+@media (max-width:768px){
+  #app.oikko-sidebar-app .oikko-sidebar-toggle{
+    display:flex!important;align-items:center;justify-content:center;
+    width:40px;height:40px;min-width:40px;
+    border:1px solid rgba(255,255,255,.16)!important;
+    background:rgba(255,255,255,.12)!important;
+    color:#fff!important;cursor:pointer!important;
+    z-index:1200!important;
+  }
+  #app.oikko-sidebar-app .oikko-sidebar{z-index:1300!important;}
+  #app.oikko-sidebar-app .oikko-sidebar-overlay{z-index:1250!important;}
+}
+/* The desktop sidebar remains fixed; mobile uses the same working drawer only when its menu button is present. */
+@media (min-width:769px){
+  #app.oikko-sidebar-app .oikko-sidebar-toggle{display:none!important;}
+}
+</style>
+
+<style id="oikko-v5-mobile-drawer">
+@media(max-width:768px){
+  #app.oikko-sidebar-app .oikko-sidebar{display:flex!important;position:fixed!important;left:0;top:0;bottom:0;transform:translateX(-102%);transition:transform .24s ease;width:min(84vw,310px);}
+  #app.oikko-sidebar-app .oikko-sidebar.open{transform:translateX(0)!important;}
+  #app.oikko-sidebar-app .oikko-sidebar-overlay{display:block!important;}
+}
+</style>
+
+<style id="oikko-feed-wide-css-background-v6">
+/* Wide desktop feed: remove the unused right column and let posts use the full content width. */
+@media (min-width: 1024px){
+  main.max-w-7xl > .grid.grid-cols-1.lg\:grid-cols-12{grid-template-columns:minmax(0,1fr)!important;}
+  main.max-w-7xl > .grid.grid-cols-1.lg\:grid-cols-12 > .lg\:col-span-12{grid-column:1 / -1!important;width:100%!important;max-width:none!important;}
+  main.max-w-7xl > .grid.grid-cols-1.lg\:grid-cols-12 .app-card{width:100%;}
+}
+
+/* Student Community Dashboard — CSS-only background, no image. */
+.app-hero{
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 8% 20%, rgba(216,243,228,.24) 0 2px, transparent 3px),
+    radial-gradient(circle at 18% 72%, rgba(216,243,228,.16) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 82% 18%, rgba(255,255,255,.14) 0 2px, transparent 3px),
+    radial-gradient(circle at 92% 76%, rgba(216,243,228,.20) 0 2px, transparent 3px),
+    linear-gradient(135deg,#0b382b 0%,#11523e 45%,#28765a 100%)!important;
+  box-shadow:0 22px 55px rgba(9,55,42,.18)!important;
+}
+.app-hero[style]{background-image:none!important;}
+.app-hero::before{
+  content:"";position:absolute;inset:-20%;z-index:0;pointer-events:none;
+  background:
+    repeating-linear-gradient(135deg,transparent 0 54px,rgba(216,243,228,.045) 55px,transparent 56px 108px),
+    radial-gradient(circle at 88% 50%,transparent 0 92px,rgba(216,243,228,.10) 93px 94px,transparent 95px 132px,rgba(216,243,228,.055) 133px 134px,transparent 135px);
+  transform:rotate(-3deg);
+}
+.app-hero::after{
+  content:"";position:absolute;width:330px;height:330px;right:-115px;top:-155px;z-index:0;
+  border-radius:50%;border:1px solid rgba(216,243,228,.16);
+  box-shadow:0 0 0 30px rgba(216,243,228,.035),0 0 0 62px rgba(216,243,228,.025),0 0 0 96px rgba(216,243,228,.018);
+  pointer-events:none;
+}
+.app-hero > .relative.z-10{position:relative;z-index:2!important;}
+.app-hero .app-hero-pattern{display:flex!important;opacity:.22!important;z-index:2!important;}
+.app-hero .app-hero-orb{display:block!important;z-index:1!important;}
+
+/* Extra decorative grid, drawn entirely with CSS. */
+.app-hero .app-hero-pattern::after{
+  content:"";position:absolute;right:-180px;top:80px;width:170px;height:100px;
+  background-image:radial-gradient(rgba(216,243,228,.55) 1px,transparent 1.5px);
+  background-size:14px 14px;opacity:.45;
+}
+
+/* Keep the hero readable in dark mode. */
+html.dark .app-hero{
+  background:
+    radial-gradient(circle at 10% 20%,rgba(86,184,143,.12) 0 80px,transparent 81px),
+    radial-gradient(circle at 88% 72%,rgba(242,125,97,.10) 0 100px,transparent 101px),
+    linear-gradient(135deg,#061f18 0%,#0b3a2b 50%,#15543f 100%)!important;
+  box-shadow:0 22px 55px rgba(0,0,0,.28)!important;
+}
+
+/* Feed cards stretch naturally instead of leaving a blank desktop column. */
+@media (min-width:769px){
+  .feed-post,.post-card,.app-card{max-width:none;}
+}
+</style>
+
+<style id="oikko-profile-edit-dark-v9">
+html.dark #modal-container .oikko-edit-card{
+  background:#0f241c!important;
+  border-color:rgba(143,220,181,.18)!important;
+  box-shadow:0 28px 90px rgba(0,0,0,.48)!important;
+}
+html.dark #modal-container .oikko-edit-header{
+  background:linear-gradient(135deg,#0a4f3c 0%,#0b7657 55%,#11916d 100%)!important;
+}
+html.dark #modal-container .oikko-edit-body{
+  background:linear-gradient(180deg,#0f241c 0%,#0b1d17 100%)!important;
+}
+html.dark #modal-container .oikko-edit-section{
+  background:#122c22!important;
+  border-color:#24483a!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.20)!important;
+}
+html.dark #modal-container .oikko-edit-label{
+  color:#b9ead1!important;
+}
+html.dark #modal-container .oikko-edit-field,
+html.dark #modal-container .oikko-edit-input{
+  background:#0d2119!important;
+  border-color:#2b5242!important;
+  color:#e8f6ef!important;
+}
+html.dark #modal-container .oikko-edit-field::placeholder,
+html.dark #modal-container .oikko-edit-input::placeholder{
+  color:#78998b!important;
+}
+html.dark #modal-container .oikko-edit-field:focus,
+html.dark #modal-container .oikko-edit-input:focus{
+  background:#10291f!important;
+  border-color:#31b886!important;
+  box-shadow:0 0 0 3px rgba(49,184,134,.15)!important;
+}
+html.dark #modal-container .oikko-edit-upload{
+  background:#143b2d!important;
+  border-color:#2d6650!important;
+  color:#b8ecd4!important;
+}
+html.dark #modal-container .oikko-edit-upload:hover{
+  background:#194936!important;
+}
+html.dark #modal-container .oikko-edit-cancel{
+  background:#132c22!important;
+  color:#bfe6d3!important;
+  border-color:#2b5041!important;
+}
+html.dark #modal-container .oikko-edit-footer{
+  background:#0d2119!important;
+  border-color:#24483a!important;
+}
+html.dark #modal-container .oikko-edit-danger{
+  color:#ff8f7c!important;
+}
+</style>
+
+
+<style id="oikko-friends-v10">
+.oikko-friends-page{width:100%}
+.oikko-friends-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:28px;background:linear-gradient(135deg,#123f30 0%,#176248 52%,#238463 100%);color:#fff;box-shadow:0 18px 48px rgba(22,85,62,.18)}
+.oikko-friends-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 20%,rgba(255,255,255,.16),transparent 30%),repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 1px,transparent 1px 12px);pointer-events:none}
+.oikko-friends-hero h1,.oikko-friends-hero p{position:relative}.oikko-friends-hero h1{font-size:clamp(28px,4vw,40px);font-weight:900;letter-spacing:-.04em}.oikko-friends-hero p{margin-top:6px;color:#d8eee2;font-size:14px;max-width:680px}
+.oikko-friends-hero-icon{position:relative;width:64px;height:64px;border-radius:20px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.16)}
+.oikko-friends-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}.oikko-friends-section{padding:20px}
+.oikko-friends-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.oikko-friends-section-title h2{font-size:17px;font-weight:900;color:#294238}.oikko-friends-section-title p{font-size:12px;color:#83958b;margin-top:3px}.oikko-friends-section-title>span{min-width:34px;height:30px;padding:0 9px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:#e2f4ea;color:#176248;font-weight:900;font-size:12px}
+.oikko-friend-card{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid #e8eee9}.oikko-friend-avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid #d8e9df;flex:none}.oikko-friend-name{font-weight:850;color:#294238;text-align:left;cursor:pointer}.oikko-friend-meta{font-size:11px;color:#87978e;margin-top:3px}.oikko-friends-empty{min-height:130px;border:1px dashed #d7e4dc;border-radius:16px;background:#f7faf8;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#83958b;gap:8px;padding:18px;font-size:13px}.oikko-request-pending{padding:7px 10px;border-radius:999px;background:#eef3f0;color:#61756b;font-size:11px;font-weight:800}
+@media(max-width:800px){.oikko-friends-grid{grid-template-columns:1fr}.oikko-friends-hero{padding:22px}.oikko-friends-hero-icon{display:none}}
+html.dark .oikko-friends-section-title h2{color:#dcece4}html.dark .oikko-friends-section-title p{color:#88a498}html.dark .oikko-friends-section-title>span{background:#143b2d;color:#b9ead1}html.dark .oikko-friend-card{border-color:#234137}html.dark .oikko-friend-avatar{border-color:#315546}html.dark .oikko-friend-name{color:#e0eee7}html.dark .oikko-friends-empty{background:#10251d;border-color:#2c4b3e;color:#88a498}html.dark .oikko-request-pending{background:#173127;color:#a9c9ba}
+</style>
+
 </head>
 <body class="min-h-screen flex flex-col">
 
@@ -977,6 +1325,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
     import { getDatabase, ref, push, set, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
     import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-storage.js";
         import { 
       getFirestore, initializeFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, getDoc 
@@ -1000,8 +1349,24 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
       // Firebase Authentication is intentionally not used.
       // Campus login remains local; Firebase services use database/storage rules directly.
-      window.firebaseAuth = null;
-      window.firebaseAuthApi = {};
+      let auth = null;
+      try {
+        auth = getAuth(app);
+        window.firebaseAuth = auth;
+        window.firebaseAuthApi = { signInAnonymously, onAuthStateChanged };
+        window.firebaseAuthReady = signInAnonymously(auth).then(cred => {
+          window.firebaseAnonymousUser = cred.user;
+          return cred.user;
+        }).catch(err => {
+          console.warn("Firebase anonymous auth unavailable. Firestore rules requiring auth will reject writes:", err);
+          return null;
+        });
+      } catch (authErr) {
+        console.warn("Firebase Auth initialization skipped:", authErr);
+        window.firebaseAuth = null;
+        window.firebaseAuthApi = {};
+        window.firebaseAuthReady = Promise.resolve(null);
+      }
 
       // Safe Analytics Initialization
       let analytics = null;
@@ -1054,12 +1419,19 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
       window.fb = {
         collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, getDocs, getDoc
       };
+      window.getFirebaseOwnerUid = () => String(window.firebaseAuth?.currentUser?.uid || window.firebaseAnonymousUser?.uid || "");
+      window.withFirebaseOwner = (data) => ({ ...data, ownerUid: window.getFirebaseOwnerUid() });
 
-      // Dispatch event so any waiting listeners know Firebase is ready
-      window.dispatchEvent(new CustomEvent("firebaseReady"));
-      setTimeout(() => {
-        try { if (typeof window.initFirebaseSync === 'function') window.initFirebaseSync(); } catch (syncErr) { console.warn('Firebase sync startup skipped:', syncErr); }
-      }, 0);
+      // Wait for anonymous Firebase Auth before starting Firestore listeners.
+      // This allows Firestore rules to require request.auth != null.
+      Promise.resolve(window.firebaseAuthReady || null).finally(() => {
+        window.dispatchEvent(new CustomEvent("firebaseReady"));
+        setTimeout(() => {
+          try {
+            if (typeof window.startFirebaseSyncIfReady === 'function') window.startFirebaseSyncIfReady();
+          } catch (syncErr) { console.warn('Firebase sync startup skipped:', syncErr); }
+        }, 0);
+      });
       if (db && window.fb && typeof window.fb.getDoc === 'function') {
         window.fb.getDoc(window.fb.doc(db, 'oikko_system', 'firestore_connection'))
           .then(() => { window.firestoreStatus = 'connected'; console.info('Oikko Firestore connected:', firebaseConfig.projectId); })
@@ -1623,6 +1995,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
     }
     window.toggleDarkMode = toggleDarkMode;
     try { document.documentElement.style.setProperty('--oikko-user-font-scale', state.settings.fontSize === 'small' ? '.92' : state.settings.fontSize === 'large' ? '1.08' : '1'); } catch(e) {}
+    try { applyOikkoColorTheme(state.settings.colorTheme || 'green'); } catch(e) {}
 
     // --- কমেন্ট ভিউ টগল (শুধু প্রথম কমেন্ট নাকি সকল কমেন্ট দেখানো হবে) ---
     function toggleAllComments(postId) {
@@ -2019,15 +2392,83 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
     }
     window.initFirebaseSync = initFirebaseSync;
 
-    // Multi-fallback listener and poller to guarantee Firebase connection startup
-    async function startFirebaseSyncIfReady() {
-      if (window.firebaseDb && window.fb && typeof window.initFirebaseSync === 'function') {
-        window.initFirebaseSync();
-      }
-      if (window.firebaseRealtimeDb && window.rtdb && typeof window.startMessengerNotificationListener === 'function') {
-        window.startMessengerNotificationListener();
+    // Firebase bootstrap + realtime startup.  Firestore listeners/writes start
+    // only after the Firebase Auth session is ready, so Rules using request.auth
+    // do not reject the very first connection attempt.
+    let firebaseBootstrapStarted = false;
+    async function bootstrapFirestoreDatabase() {
+      if (firebaseBootstrapStarted || !window.firebaseDb || !window.fb) return;
+      firebaseBootstrapStarted = true;
+      const db = window.firebaseDb;
+      const fb = window.fb;
+      try {
+        await (window.firebaseAuthReady || Promise.resolve());
+
+        // This document is a real connectivity/write test and also makes the
+        // oikko_system collection visible in Firestore Console.
+        const markerRef = fb.doc(db, 'oikko_system', 'firestore_connection');
+        await fb.setDoc(markerRef, {
+          app: 'Oikko Campus',
+          projectId: 'oikko-kghs',
+          firestore: true,
+          authUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '',
+          lastBootstrapAt: Date.now(),
+          version: 'firestore-bootstrap-v2'
+        }, { merge: true });
+
+        window.firestoreStatus = 'connected';
+        window.dispatchEvent(new CustomEvent('firestoreConnected'));
+
+        // Seed only the collections that already have legitimate built-in app
+        // data.  We do not create fake documents for empty user-created
+        // collections such as chats/friends/TUBE. Those appear automatically
+        // when the corresponding feature is first used.
+        const seedCollection = async (name, rows) => {
+          if (!Array.isArray(rows) || !rows.length) return;
+          const snap = await fb.getDocs(fb.collection(db, name));
+          if (!snap.empty) return;
+          await Promise.all(rows.map(row => {
+            const id = String(row.id || row.studentId || '').trim();
+            if (!id) return Promise.resolve();
+            return fb.setDoc(fb.doc(db, name, id), {
+              ...row,
+              ownerUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '',
+              firestoreSeededAt: Date.now()
+            }, { merge: true });
+          }));
+        };
+
+        await seedCollection('users', INITIAL_USERS);
+        await seedCollection('posts', INITIAL_POSTS);
+        await seedCollection('events', INITIAL_EVENTS);
+        await seedCollection('past_events_gallery', INITIAL_PAST_EVENT_PHOTOS);
+      } catch (err) {
+        window.firestoreStatus = 'error';
+        console.error('Oikko Firestore bootstrap failed:', err?.code, err?.message || err);
+        if (typeof window.showToast === 'function') {
+          window.showToast('Firestore সংযোগ ব্যর্থ: ' + (err?.code || 'unknown-error'), 'error');
+        }
       }
     }
+    window.bootstrapFirestoreDatabase = bootstrapFirestoreDatabase;
+
+    async function startFirebaseSyncIfReady() {
+      try {
+        if (window.firebaseDb && window.fb) {
+          await (window.firebaseAuthReady || Promise.resolve());
+          await bootstrapFirestoreDatabase();
+          if (typeof window.initFirebaseSync === 'function') {
+            window.initFirebaseSync();
+          }
+        }
+        if (window.firebaseRealtimeDb && window.rtdb && typeof window.startMessengerNotificationListener === 'function') {
+          window.startMessengerNotificationListener();
+        }
+      } catch (err) {
+        console.warn('Firebase startup skipped:', err);
+      }
+    }
+    window.startFirebaseSyncIfReady = startFirebaseSyncIfReady;
     window.addEventListener('firebaseReady', startFirebaseSyncIfReady);
     document.addEventListener('DOMContentLoaded', startFirebaseSyncIfReady);
     startFirebaseSyncIfReady();
@@ -3545,9 +3986,12 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
           createdAt: now,
           updatedAt: now,
           sourceType: 'external_url',
-          audience
+          audience,
+          ownerUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''
         };
 
+        await (window.firebaseAuthReady || Promise.resolve());
+        videoData.ownerUid = window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '';
         const docRef = await fb.addDoc(
           fb.collection(db, 'oikko_tube_videos'),
           videoData
@@ -3607,17 +4051,22 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
       const app = document.getElementById('app');
       app.classList.toggle('oikko-sidebar-app', !!state.currentUser);
-      app.classList.toggle('oikko-fullscreen-view', !!state.currentUser && (state.activeView === 'messenger' || state.activeView === 'youtube'));
+      /* Sidebar is fixed on desktop and belongs to the authenticated app shell.
+         Messenger and Tube must NOT become separate fullscreen pages. */
+      app.classList.remove('oikko-fullscreen-view');
       if (!state.currentUser) {
         app.innerHTML = renderAuthScreen();
       } else if (state.activeView === 'messenger') {
-        app.innerHTML = renderMessengerScreen();
+        app.innerHTML = renderMessengerScreen() + renderSidebar();
+        if (window.lucide) lucide.createIcons();
+        pendingAppRender = false;
+        return;
       } else {
         let viewHtml = '';
         if (state.activeView === 'youtube') {
           ensureOikkoTubeReady();
           viewHtml = renderOikkoTubeView();
-          app.innerHTML = viewHtml;
+          app.innerHTML = viewHtml + renderSidebar();
           if (window.lucide) { lucide.createIcons(); }
           setTimeout(() => {
             ensureOikkoTubeAgeGate();
@@ -3625,6 +4074,10 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
           }, 0);
           pendingAppRender = false;
           return;
+        } else if (state.activeView === 'profile') {
+          viewHtml = renderProfileView(state.profileUserId || (state.currentUser && state.currentUser.id));
+        } else if (state.activeView === 'friends') {
+          viewHtml = renderFriendsView();
         } else if (state.activeView === 'settings') {
           viewHtml = renderSettingsView();
         } else if (state.activeView === 'admin') {
@@ -3742,6 +4195,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
       return {
         id: data.id || ('cloud_' + createdAt + '_' + Math.random().toString(36).slice(2)),
+        clientMessageId: typeof data.clientMessageId === 'string' ? data.clientMessageId : '',
         text: typeof data.text === 'string' ? data.text : '',
         imageUrl: typeof data.imageUrl === 'string' ? data.imageUrl : '',
         videoUrl: typeof data.videoUrl === 'string' ? data.videoUrl : '',
@@ -3790,18 +4244,33 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
           // appearing for a newly created account.
           const meId = String(state.currentUser.id);
           const targetId = String(targetUserId);
-          const cloudMessages = snapshot.docs
+          const rawCloudMessages = snapshot.docs
             .map(d => normalizeCloudMessage({id: d.id, ...d.data()}))
             .filter(m => {
               const senderId = String(m.senderId || '');
               const receiverId = String(m.receiverId || '');
               return (senderId === meId && receiverId === targetId) ||
                      (senderId === targetId && receiverId === meId);
+            });
+
+          // Firestore is the source of truth. If an older client or a retry
+          // accidentally created the same message twice, collapse duplicates
+          // before rendering. Prefer clientMessageId, then document id.
+          const cloudSeen = new Set();
+          const cloudMessages = rawCloudMessages
+            .filter(m => {
+              const key = m.clientMessageId
+                ? `client:${m.clientMessageId}`
+                : `doc:${m.id}`;
+              if (cloudSeen.has(key)) return false;
+              cloudSeen.add(key);
+              return true;
             })
             .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
 
           const localMessages = Array.isArray(state.messages[targetUserId]) ? state.messages[targetUserId] : [];
           const cloudIds = new Set(cloudMessages.map(m => m.id));
+          const cloudClientIds = new Set(cloudMessages.map(m => String(m.clientMessageId || '')).filter(Boolean));
           const pendingLocal = localMessages.filter(m => {
             if (!m) return false;
             const senderId = String(m.senderId || '');
@@ -3814,6 +4283,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
             if (!belongsToPair) return false;
             if (m.firebaseId && cloudIds.has(m.firebaseId)) return false;
             if (m.id && cloudIds.has(m.id)) return false;
+            if (m.clientMessageId && cloudClientIds.has(String(m.clientMessageId))) return false;
             return true;
           });
 
@@ -3851,7 +4321,9 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
       const activeId = active && active.id ? active.id : '';
       const selectionStart = active && typeof active.selectionStart === 'number' ? active.selectionStart : null;
       const selectionEnd = active && typeof active.selectionEnd === 'number' ? active.selectionEnd : null;
-      app.innerHTML = renderMessengerScreen();
+      // Re-render ONLY the Messenger content while preserving the global desktop sidebar.
+      // The previous implementation replaced #app entirely with Messenger, which removed the fixed sidebar.
+      app.innerHTML = renderMessengerScreen() + renderSidebar();
       if (window.lucide) lucide.createIcons();
       if (activeId) requestAnimationFrame(() => {
         const restored = document.getElementById(activeId);
@@ -3863,6 +4335,32 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
         }
       });
     }
+
+    async function startMessengerWithUser(userId) {
+      if (!state.currentUser) {
+        showToast('মেসেজ করতে আগে Oikko Campus-এ লগইন করুন', 'error');
+        return;
+      }
+      const targetId = String(userId || '').trim();
+      if (!canMessageUser(targetId)) {
+        showToast('এই ব্যবহারকারীকে মেসেজ করা যাচ্ছে না', 'error');
+        return;
+      }
+      state.activeChatUserId = targetId;
+      state.activeView = 'messenger';
+      state.messengerMobileChat = true;
+      state.sidebarOpen = false;
+      document.body.classList.remove('oikko-sidebar-open');
+      renderApp();
+      try {
+        await subscribeToMessengerChat(targetId);
+      } catch (err) {
+        console.error('Direct messenger open failed:', err);
+        showToast('Messenger খুলতে সমস্যা হয়েছে', 'error');
+      }
+      requestAnimationFrame(() => scrollChatToBottom());
+    }
+    window.startMessengerWithUser = startMessengerWithUser;
 
     function openMessenger() {
       if (!state.currentUser) {
@@ -3960,8 +4458,12 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
       const now = Date.now();
       const timeStr = new Date(now).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-      const localId = 'local_' + now + '_' + Math.random().toString(36).slice(2,8);
+      // A deterministic client id lets the local optimistic message and the
+      // Firestore snapshot represent the exact same message.
+      const clientMessageId = 'msg_' + String(state.currentUser.id) + '_' + String(targetUserId) + '_' + now + '_' + Math.random().toString(36).slice(2,8);
+      const localId = 'local_' + clientMessageId;
       const messageData = {
+        clientMessageId,
         senderId: String(state.currentUser.id),
         receiverId: String(targetUserId),
         senderName: String(state.currentUser.fullName || ''),
@@ -3996,10 +4498,11 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
       try {
         const chatId = makeChatId(state.currentUser.id, targetUserId);
         const messagesCollection = fb.collection(db, 'oikko_chats', chatId, 'messages');
-        const cloudRef = await fb.addDoc(messagesCollection, messageData);
+        const cloudRef = fb.doc(db, 'oikko_chats', chatId, 'messages', clientMessageId);
+        await fb.setDoc(cloudRef, messageData);
 
-        localMessage.firebaseId = cloudRef.id;
-        localMessage.id = cloudRef.id;
+        localMessage.firebaseId = clientMessageId;
+        localMessage.id = clientMessageId;
         window.firestoreStatus = 'connected';
         saveMessages(state.messages);
 
@@ -4027,6 +4530,12 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
     async function handleSendMessengerMessage(e, targetUserId) {
       e.preventDefault();
 
+      // Prevent double-click / Enter+click / duplicate submit events from
+      // creating two Firestore documents for one user action.
+      state.messengerSending = state.messengerSending || {};
+      const sendKey = String(targetUserId);
+      if (state.messengerSending[sendKey]) return;
+
       if (!canMessageUser(targetUserId)) {
         showToast('শুধু Oikko Campus-এর users-কে মেসেজ করা যাবে', 'error');
         return;
@@ -4036,12 +4545,17 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
       const text = input ? input.value.trim() : '';
       if (!text) return;
 
+      state.messengerSending[sendKey] = true;
       if (input) input.value = '';
 
-      const sent = await persistMessengerMessage(targetUserId, {text});
-      if (sent) {
-        renderApp();
-        scrollChatToBottom();
+      try {
+        const sent = await persistMessengerMessage(targetUserId, {text});
+        if (sent) {
+          renderApp();
+          scrollChatToBottom();
+        }
+      } finally {
+        state.messengerSending[sendKey] = false;
       }
     }
     window.handleSendMessengerMessage = handleSendMessengerMessage;
@@ -5107,6 +5621,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
             <div class="oikko-sidebar-section">
               ${navItem('home', 'হোম', "switchView('feed')", state.activeView === 'feed')}
               ${navItem('message-circle', 'ঐক্য মেসেঞ্জার', 'openMessenger()', state.activeView === 'messenger')}
+              ${navItem('users-round', 'Friends', "switchView('friends')", state.activeView === 'friends')}
               ${navItem('play-square', 'ঐক্য টিউব', "switchView('youtube')", state.activeView === 'youtube')}
               ${navItem('calendar-days', 'ইভেন্ট', "switchView('events')", state.activeView === 'events')}
               ${navItem('bell', 'নোটিশ', "switchView('admin_posts')", state.activeView === 'admin_posts')}
@@ -5114,7 +5629,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
             <div class="oikko-sidebar-divider"></div>
             <div class="oikko-sidebar-section">
-              ${navItem('user-round', 'প্রোফাইল', `openProfileModal('${u.id}')`)}
+              ${navItem('user-round', 'প্রোফাইল', "switchView('profile')", state.activeView === 'profile')}
               ${navItem('settings', 'সেটিংস', "switchView('settings')", state.activeView === 'settings', 'oikko-sidebar-settings')}
               ${isAdmin ? navItem('shield-check', 'এডমিন প্যানেল', "switchView('admin')", state.activeView === 'admin', 'oikko-sidebar-admin') : ''}
             </div>
@@ -5341,112 +5856,11 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
             </div>
           </section>
 
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-            <div class="app-stat rounded-2xl p-3.5 sm:p-4">
-              <div class="flex items-center justify-between gap-2"><span class="text-[11px] font-bold text-[#8A8A6A]">মোট পোস্ট</span><span class="w-8 h-8 rounded-xl bg-[#FDE7E1] text-[#E06B52] flex items-center justify-center"><i data-lucide="file-text" class="w-4 h-4"></i></span></div>
-              <p class="text-xl sm:text-2xl font-black text-[#42422F] mt-2">${state.posts.length.toLocaleString('bn-BD')}</p>
-              <p class="text-[10px] text-[#8A8A6A] mt-0.5">কমিউনিটির শেয়ার</p>
-            </div>
-            <div class="app-stat rounded-2xl p-3.5 sm:p-4">
-              <div class="flex items-center justify-between gap-2"><span class="text-[11px] font-bold text-[#8A8A6A]">ক্যাম্পাস ইভেন্ট</span><span class="w-8 h-8 rounded-xl bg-[#E2F4E8] text-[#3C8B5A] flex items-center justify-center"><i data-lucide="calendar-days" class="w-4 h-4"></i></span></div>
-              <p class="text-xl sm:text-2xl font-black text-[#42422F] mt-2">${upcomingEvents.toLocaleString('bn-BD')}</p>
-              <p class="text-[10px] text-[#8A8A6A] mt-0.5">যোগ দিন, অংশ নিন</p>
-            </div>
-            <div class="app-stat rounded-2xl p-3.5 sm:p-4">
-              <div class="flex items-center justify-between gap-2"><span class="text-[11px] font-bold text-[#8A8A6A]">ভেরিফাইড সদস্য</span><span class="w-8 h-8 rounded-xl bg-[#E4EDFF] text-[#5279D9] flex items-center justify-center"><i data-lucide="badge-check" class="w-4 h-4"></i></span></div>
-              <p class="text-xl sm:text-2xl font-black text-[#42422F] mt-2">${verifiedStudents.length.toLocaleString('bn-BD')}</p>
-              <p class="text-[10px] text-[#8A8A6A] mt-0.5">বিশ্বস্ত কমিউনিটি</p>
-            </div>
-            <div class="app-stat rounded-2xl p-3.5 sm:p-4">
-              <div class="flex items-center justify-between gap-2"><span class="text-[11px] font-bold text-[#8A8A6A]">আপনার পোস্ট</span><span class="w-8 h-8 rounded-xl bg-[#FFF2D6] text-[#C38A22] flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4"></i></span></div>
-              <p class="text-xl sm:text-2xl font-black text-[#42422F] mt-2">${myPosts.toLocaleString('bn-BD')}</p>
-              <p class="text-[10px] text-[#8A8A6A] mt-0.5">আপনার অবদান</p>
-            </div>
-          </div>
-
           <div id="global-search-results-host">${renderGlobalSearchPanel()}</div>
 
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- Left Sidebar -->
-            <div class="hidden lg:block lg:col-span-4 space-y-5">
-              <!-- Current User Identity Card -->
-              <div class="app-card bg-white rounded-2xl p-5 shadow-xs border border-[#E2E2D5]">
-                <div class="text-center">
-                  <div class="relative inline-block mx-auto mb-3">
-                    <img src="${u.profilePicture}" class="w-20 h-20 rounded-2xl object-cover border-2 border-[#E2E2D5] shadow-xs" />
-                    ${u.isVerified ? `<div class="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-xs">${getVerifiedBadgeHTML('md')}</div>` : ''}
-                  </div>
-                  <h3 class="font-bold text-base text-[#42422F] flex items-center justify-center gap-1.5">
-                    <span>${u.fullName}</span>
-                    ${u.isVerified ? getVerifiedBadgeHTML('sm') : ''}
-                  </h3>
-                  <div class="mt-1 flex items-center justify-center gap-1.5 font-mono text-xs text-[#5A5A40]">
-                    <span class="bg-[#F5F5F0] px-2 py-0.5 rounded-lg border border-[#E2E2D5] font-semibold">ID: ${u.studentId}</span>
-                  </div>
-                  <p class="text-xs text-[#8A8A6A] mt-1">${u.studentClass} • রোল #${u.roll}</p>
-
-                  <div class="mt-4 pt-4 border-t border-[#F0F0E0] flex items-center justify-around text-xs">
-                    <div>
-                      <span class="text-[#8A8A6A] block text-[11px]">শাখা</span>
-                      <span class="font-semibold text-[#42422F]">${u.section}</span>
-                    </div>
-                    <div class="border-r border-[#E2E2D5] h-6"></div>
-                    <div>
-                      <span class="text-[#8A8A6A] block text-[11px]">শিফট</span>
-                      <span class="font-semibold text-[#42422F]">${u.shift}</span>
-                    </div>
-                    <div class="border-r border-[#E2E2D5] h-6"></div>
-                    <div>
-                      <span class="text-[#8A8A6A] block text-[11px]">রক্তের গ্রুপ</span>
-                      <span class="font-semibold text-rose-600">${u.bloodGroup || 'O+'}</span>
-                    </div>
-                  </div>
-
-                  <div class="mt-4 flex gap-2">
-                    <button onclick="openProfileModal('${u.id}')" class="flex-1 py-2 px-2 bg-[#F5F5F0] hover:bg-[#E2E2D5] text-[#5A5A40] text-xs font-bold rounded-xl transition-colors border border-[#E2E2D5] flex items-center justify-center gap-1.5">
-                      <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                      <span>প্রোফাইল</span>
-                    </button>
-                    <button onclick="openEditProfileModal('${u.id}')" class="flex-1 py-2 px-2 bg-[#5A5A40] hover:bg-[#4A4A33] text-white text-xs font-bold rounded-xl transition-colors shadow-xs flex items-center justify-center gap-1.5">
-                      <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                      <span>তথ্য পরিবর্তন</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Verified Students Widget -->
-              <div class="app-card bg-white rounded-2xl p-5 shadow-xs border border-[#E2E2D5]">
-                <div class="flex items-center gap-2 mb-3">
-                  <div class="p-1.5 rounded-lg bg-[#F5F5F0] text-[#5A5A40]">
-                    <i data-lucide="award" class="w-4 h-4"></i>
-                  </div>
-                  <h4 class="font-bold text-xs sm:text-sm text-[#42422F]">ভেরিফাইড শিক্ষার্থী</h4>
-                </div>
-                <div class="space-y-2.5">
-                  ${verifiedStudents.length === 0 ? '<p class="text-xs text-[#8A8A6A]">কোনো শিক্ষার্থী এখনো ভেরিফাইড হয়নি।</p>' : 
-                    verifiedStudents.slice(0, 4).map(stu => `
-                      <div onclick="openProfileModal('${stu.id}')" class="flex items-center justify-between p-2 rounded-xl hover:bg-[#F9F9F4] cursor-pointer transition-colors">
-                        <div class="flex items-center gap-2">
-                          <img src="${stu.profilePicture}" class="w-8 h-8 rounded-full object-cover border border-[#E2E2D5]" />
-                          <div>
-                            <div class="font-semibold text-xs text-[#42422F] flex items-center gap-1">
-                              <span>${stu.fullName}</span>
-                              ${getVerifiedBadgeHTML('sm')}
-                            </div>
-                            <span class="text-[10px] font-mono text-[#8A8A6A]">ID: ${stu.studentId}</span>
-                          </div>
-                        </div>
-                        <span class="text-[10px] font-semibold text-[#5A5A40] bg-[#F5F5F0] px-2 py-0.5 rounded">${stu.studentClass}</span>
-                      </div>
-                    `).join('')}
-                </div>
-              </div>
-            </div>
-
-            <!-- Right Feed Content -->
-            <div class="lg:col-span-8 space-y-5">
+          <div class="lg:col-span-12 space-y-5">
               
               <!-- Post Creator Box -->
               <div class="app-card bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-[#E2E2D5]">
@@ -5585,7 +5999,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
           <div class="p-4 sm:p-5">
             <!-- Header -->
             <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-3 cursor-pointer group" onclick="openProfileModal('${authorIdentifier}')" title="${post.authorName}-এর সম্পূর্ণ প্রোফাইল দেখুন">
+              <div class="flex items-center gap-3 cursor-pointer group" onclick="openSocialProfile('${authorIdentifier}')" title="${post.authorName}-এর সম্পূর্ণ প্রোফাইল দেখুন">
                 <img src="${post.authorAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200'}" class="w-10 h-10 rounded-full object-cover border border-[#E2E2D5] group-hover:ring-2 group-hover:ring-[#5A5A40] transition-all" />
                 <div>
                   <div class="flex items-center gap-1.5">
@@ -5679,10 +6093,10 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
                   return `
                   <div class="bg-[#F9F9F4] p-3 rounded-xl border border-[#F0F0E0]">
                     <div class="flex items-start gap-2.5">
-                      <img onclick="openProfileModal('${commentAuthorId}')" src="${c.authorAvatar}" class="w-7 h-7 rounded-full object-cover border border-[#E2E2D5] mt-0.5 cursor-pointer hover:ring-2 hover:ring-[#5A5A40] transition-all shrink-0" title="${c.authorName}-এর প্রোফাইল দেখুন" />
+                      <img onclick="openSocialProfile('${commentAuthorId}')" src="${c.authorAvatar}" class="w-7 h-7 rounded-full object-cover border border-[#E2E2D5] mt-0.5 cursor-pointer hover:ring-2 hover:ring-[#5A5A40] transition-all shrink-0" title="${c.authorName}-এর প্রোফাইল দেখুন" />
                       <div class="flex-1 text-xs min-w-0">
                         <div class="flex items-center justify-between gap-1">
-                          <span onclick="openProfileModal('${commentAuthorId}')" class="font-bold text-[#42422F] cursor-pointer hover:underline hover:text-[#5A5A40] flex items-center gap-1 truncate">
+                          <span onclick="openSocialProfile('${commentAuthorId}')" class="font-bold text-[#42422F] cursor-pointer hover:underline hover:text-[#5A5A40] flex items-center gap-1 truncate">
                             <span>${c.authorName}</span>
                             ${isCommentVerified ? getVerifiedBadgeHTML('sm') : ''}
                           </span>
@@ -6465,17 +6879,17 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
       const modalContainer = document.getElementById('modal-container');
       modalContainer.innerHTML = `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div class="bg-white w-full max-w-xl rounded-2xl shadow-xl border border-[#E2E2D5] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 oikko-edit-backdrop">
+          <div class="oikko-edit-card animate-in fade-in zoom-in-95 duration-200">
             <!-- Header -->
-            <div class="bg-[#5A5A40] text-white p-4 sm:p-5 flex items-center justify-between">
+            <div class="oikko-edit-header flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="p-2 bg-white/15 rounded-xl">
+                <div class="oikko-edit-icon">
                   <i data-lucide="edit-3" class="w-5 h-5"></i>
                 </div>
                 <div>
                   <h3 class="font-bold text-base">তথ্য পরিবর্তন ও হালনাগাদ</h3>
-                  <p class="text-xs text-[#D1D1C2]">${userToEdit.fullName} (${userToEdit.studentId})</p>
+                  <p class="oikko-edit-subtitle text-xs">${userToEdit.fullName} (${userToEdit.studentId})</p>
                 </div>
               </div>
               <button onclick="closeProfileModal()" class="p-1 rounded-lg hover:bg-white/20 text-white transition-colors">
@@ -6484,22 +6898,22 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
             </div>
 
             <!-- Form Body -->
-            <form onsubmit="handleUpdateProfile(event, '${userToEdit.id}')" class="p-5 max-h-[75vh] overflow-y-auto space-y-4 text-xs text-[#42422F]">
+            <form onsubmit="handleUpdateProfile(event, '${userToEdit.id}')" class="oikko-edit-body max-h-[75vh] overflow-y-auto space-y-4 text-xs">
               
               <!-- Avatar with Device Upload or URL -->
               <div>
-                <label class="block font-bold text-[#42422F] mb-1">প্রোফাইল ছবি (ডিভাইস থেকে বা লিংক)</label>
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-[#F9F9F4] p-3 rounded-xl border border-[#E2E2D5]">
+                <label class="oikko-edit-label block mb-1">প্রোফাইল ছবি (ডিভাইস থেকে বা লিংক)</label>
+                <div class="oikko-edit-section flex flex-col sm:flex-row items-start sm:items-center gap-3">
                   <img id="edit-avatar-preview" src="${userToEdit.profilePicture}" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'" class="w-12 h-12 rounded-full object-cover border-2 border-[#E2E2D5] shrink-0 shadow-xs" />
                   <div class="flex-1 space-y-1.5 w-full">
                     <input type="file" id="edit-avatar-file" accept="image/*" onchange="handleProfileAvatarFileSelect(event, 'edit')" class="hidden" />
                     <div class="flex items-center gap-2 flex-wrap">
-                      <button type="button" onclick="document.getElementById('edit-avatar-file').click()" class="px-3 py-1.5 bg-[#5A5A40] hover:bg-[#4A4A33] text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5">
+                      <button type="button" onclick="document.getElementById('edit-avatar-file').click()" class="oikko-edit-upload px-3 py-1.5 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5">
                         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                         <span>ডিভাইস থেকে ছবি আপলোড</span>
                       </button>
                     </div>
-                    <input id="edit-profile-picture" type="text" value="${userToEdit.profilePicture || ''}" oninput="updateEditAvatarPreview(this.value)" placeholder="অথবা ছবির URL দিন" class="w-full px-3 py-1.5 bg-white border border-[#E2E2D5] rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                    <input id="edit-profile-picture" type="text" value="${userToEdit.profilePicture || ''}" oninput="updateEditAvatarPreview(this.value)" placeholder="অথবা ছবির URL দিন" class="oikko-edit-input w-full px-3 py-1.5 text-xs" />
                   </div>
                 </div>
               </div>
@@ -6507,31 +6921,37 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
               <!-- Basic Info -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">সম্পূর্ণ নাম *</label>
-                  <input id="edit-name" required value="${userToEdit.fullName || ''}" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                  <label class="oikko-edit-label block mb-1">সম্পূর্ণ নাম *</label>
+                  <input id="edit-name" required value="${userToEdit.fullName || ''}" class="oikko-edit-input w-full px-3 py-2 text-xs" />
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">স্টুডেন্ট আইডি</label>
+                  <label class="oikko-edit-label block mb-1">স্টুডেন্ট আইডি</label>
                   <input value="${userToEdit.studentId}" disabled class="w-full px-3 py-2 bg-[#EAEAE0] border border-[#E2E2D5] rounded-xl text-xs font-mono text-[#8A8A6A] cursor-not-allowed uppercase font-bold" />
                 </div>
+              </div>
+
+              <!-- Bio -->
+              <div>
+                <label class="oikko-edit-label block mb-1">বায়ো</label>
+                <textarea id="edit-bio" maxlength="180" rows="3" placeholder="আপনার সম্পর্কে সংক্ষেপে লিখুন..." class="oikko-edit-input w-full px-3 py-2 text-xs">${userToEdit.bio || ''}</textarea>
               </div>
 
               <!-- Parents Info -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">পিতার নাম *</label>
-                  <input id="edit-father" required value="${userToEdit.fatherName || ''}" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                  <label class="oikko-edit-label block mb-1">পিতার নাম *</label>
+                  <input id="edit-father" required value="${userToEdit.fatherName || ''}" class="oikko-edit-input w-full px-3 py-2 text-xs" />
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">মাতার নাম *</label>
-                  <input id="edit-mother" required value="${userToEdit.motherName || ''}" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                  <label class="oikko-edit-label block mb-1">মাতার নাম *</label>
+                  <input id="edit-mother" required value="${userToEdit.motherName || ''}" class="oikko-edit-input w-full px-3 py-2 text-xs" />
                 </div>
               </div>
 
               <!-- Academic Info -->
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">শ্রেণি *</label>
+                  <label class="oikko-edit-label block mb-1">শ্রেণি *</label>
                   <select id="edit-class" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
                     ${['৬ষ্ঠ শ্রেনি', '৭ম শ্রেনি', '৮ম শ্রেনি', '৯ম শ্রেনি', '১০ম শ্রেনি', 'একাদশ শ্রেনি', 'দ্বাদশ শ্রেনি', 'এডমিন'].map(c => `
                       <option value="${c}" ${userToEdit.studentClass === c ? 'selected' : ''}>${c}</option>
@@ -6539,15 +6959,15 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
                   </select>
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">রোল *</label>
+                  <label class="oikko-edit-label block mb-1">রোল *</label>
                   <input id="edit-roll" required value="${userToEdit.roll || ''}" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">শাখা *</label>
+                  <label class="oikko-edit-label block mb-1">শাখা *</label>
                   <input id="edit-section" required value="${userToEdit.section || ''}" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">শিফট *</label>
+                  <label class="oikko-edit-label block mb-1">শিফট *</label>
                   <select id="edit-shift" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
                     ${['প্রভাতী', 'দিবা', 'Morning', 'Day', 'নৈশ'].map(s => `
                       <option value="${s}" ${userToEdit.shift === s ? 'selected' : ''}>${s}</option>
@@ -6559,11 +6979,11 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
               <!-- Personal Info -->
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">জন্ম তারিখ *</label>
+                  <label class="oikko-edit-label block mb-1">জন্ম তারিখ *</label>
                   <input id="edit-dob" type="date" required value="${userToEdit.dateOfBirth || '2008-01-01'}" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">রক্তের গ্রুপ *</label>
+                  <label class="oikko-edit-label block mb-1">রক্তের গ্রুপ *</label>
                   <select id="edit-blood" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
                     ${['A+', 'B+', 'O+', 'AB+', 'A-', 'B-', 'O-', 'AB-'].map(b => `
                       <option value="${b}" ${userToEdit.bloodGroup === b ? 'selected' : ''}>${b}</option>
@@ -6571,7 +6991,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
                   </select>
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">ধর্ম *</label>
+                  <label class="oikko-edit-label block mb-1">ধর্ম *</label>
                   <select id="edit-religion" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
                     ${['ইসলাম', 'Islam', 'সনাতন', 'Hinduism', 'খ্রিস্টান', 'বৌদ্ধ', 'অন্যান্য'].map(r => `
                       <option value="${r}" ${userToEdit.religion === r ? 'selected' : ''}>${r}</option>
@@ -6581,42 +7001,42 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
               </div>
 
               <div>
-                <label class="block font-bold text-[#42422F] mb-1">জন্ম নিবন্ধন নম্বর *</label>
+                <label class="oikko-edit-label block mb-1">জন্ম নিবন্ধন নম্বর *</label>
                 <input id="edit-birth-reg" required value="${userToEdit.birthRegistrationNumber || ''}" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs font-mono focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
               </div>
 
               <!-- Addresses -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">বর্তমান ঠিকানা *</label>
-                  <input id="edit-present" required value="${userToEdit.presentAddress || ''}" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                  <label class="oikko-edit-label block mb-1">বর্তমান ঠিকানা *</label>
+                  <input id="edit-present" required value="${userToEdit.presentAddress || ''}" class="oikko-edit-input w-full px-3 py-2 text-xs" />
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">স্থায়ী ঠিকানা *</label>
-                  <input id="edit-permanent" required value="${userToEdit.permanentAddress || ''}" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                  <label class="oikko-edit-label block mb-1">স্থায়ী ঠিকানা *</label>
+                  <input id="edit-permanent" required value="${userToEdit.permanentAddress || ''}" class="oikko-edit-input w-full px-3 py-2 text-xs" />
                 </div>
               </div>
 
               <!-- Contact & Social -->
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">মোবাইল নম্বর *</label>
+                  <label class="oikko-edit-label block mb-1">মোবাইল নম্বর *</label>
                   <input id="edit-mobile" type="tel" required value="${userToEdit.mobileNumber || ''}" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs font-mono focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">ইমেইল *</label>
+                  <label class="oikko-edit-label block mb-1">ইমেইল *</label>
                   <input id="edit-email" type="email" required value="${userToEdit.email || ''}" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
                 </div>
                 <div>
-                  <label class="block font-bold text-[#42422F] mb-1">ফেসবুক লিঙ্ক</label>
+                  <label class="oikko-edit-label block mb-1">ফেসবুক লিঙ্ক</label>
                   <input id="edit-fb" value="${userToEdit.facebookLink || ''}" class="w-full px-2 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
                 </div>
               </div>
 
               <!-- Password (Optional) -->
               <div class="pt-2 border-t border-[#E2E2D5]">
-                <label class="block font-bold text-[#42422F] mb-1">নতুন পাসওয়ার্ড (পরিবর্তন করতে চাইলে লিখুন)</label>
-                <input id="edit-password" type="password" placeholder="পরিবর্তন না করতে চাইলে ফাঁকা রাখুন" class="w-full px-3 py-2 bg-[#F5F5F0] border border-[#E2E2D5] rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]" />
+                <label class="oikko-edit-label block mb-1">নতুন পাসওয়ার্ড (পরিবর্তন করতে চাইলে লিখুন)</label>
+                <input id="edit-password" type="password" placeholder="পরিবর্তন না করতে চাইলে ফাঁকা রাখুন" class="oikko-edit-input w-full px-3 py-2 text-xs" />
               </div>
 
               <!-- Footer Buttons -->
@@ -6650,6 +7070,8 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
       const newPic = document.getElementById('edit-profile-picture').value.trim();
       const newName = document.getElementById('edit-name').value.trim();
+      const newBioEl = document.getElementById('edit-bio');
+      const newBio = newBioEl ? newBioEl.value.trim() : (user.bio || '');
       const newFather = document.getElementById('edit-father').value.trim();
       const newMother = document.getElementById('edit-mother').value.trim();
       const newClass = document.getElementById('edit-class').value;
@@ -6669,6 +7091,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
       const isEditingAdmin = isAdminUserRecord(user);
       user.fullName = newName;
+      user.bio = newBio;
       if (newPic) {
         user.profilePicture = newPic;
         if (isEditingAdmin) {
@@ -6782,6 +7205,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
       state.currentUser = user;
       saveCurrentUser(user);
+      loadOikkoSettingsFromFirestore();
       state.activeView = user.role === 'admin' ? 'admin' : 'feed';
       showToast(user.role === 'admin' ? 'এডমিন হিসেবে স্বাগতম!' : `${user.fullName}, শিক্ষার্থী পোর্টালে স্বাগতম!`, 'success');
       renderApp();
@@ -6831,6 +7255,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
       state.currentUser = admin;
       saveCurrentUser(admin);
+      loadOikkoSettingsFromFirestore();
       state.activeView = 'admin';
       showToast('প্রধান এডমিন হিসেবে স্বাগতম!', 'success');
       renderApp();
@@ -6937,13 +7362,15 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
         profilePicture: profilePicUrl,
         isVerified: false,
         role: isStudent ? 'student' : 'user',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        ownerUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''
       };
 
       state.users.push(newUser);
       saveUsers(state.users);
       state.currentUser = newUser;
       saveCurrentUser(newUser);
+      loadOikkoSettingsFromFirestore();
       state.activeView = 'feed';
       state.authError = '';
       showToast('রেজিস্ট্রেশন সফল হয়েছে!', 'success');
@@ -6952,6 +7379,8 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
       // Save user to Cloud Firestore in Realtime
       if (window.firebaseDb && window.fb) {
         try {
+          await (window.firebaseAuthReady || Promise.resolve());
+          newUser.ownerUid = window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '';
           await window.fb.setDoc(window.fb.doc(window.firebaseDb, 'users', newUser.id), newUser);
           showToast('একাউন্ট ক্লাউডে সফলভাবে যুক্ত হয়েছে!', 'success');
         } catch (err) {
@@ -7117,9 +7546,49 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
       renderApp();
     }
 
+    let oikkoSettingsSaveTimer = null;
     function saveOikkoSettings(){
       try { localStorage.setItem('oikko_settings', JSON.stringify(state.settings)); } catch(e) {}
+      if (oikkoSettingsSaveTimer) clearTimeout(oikkoSettingsSaveTimer);
+      oikkoSettingsSaveTimer = setTimeout(async () => {
+        const db = window.firebaseDb, fb = window.fb, me = state.currentUser;
+        if (!db || !fb || !me?.id) return;
+        try {
+          await (window.firebaseAuthReady || Promise.resolve());
+          const ownerUid = window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '';
+          await fb.setDoc(fb.doc(db, 'oikko_settings', me.id), {
+            userId: me.id,
+            ownerUid,
+            settings: state.settings,
+            updatedAt: Date.now()
+          }, { merge: true });
+        } catch (e) { console.warn('Oikko settings Firestore sync failed:', e); }
+      }, 150);
     }
+
+    async function loadOikkoSettingsFromFirestore(){
+      const db=window.firebaseDb, fb=window.fb, me=state.currentUser;
+      if(!db || !fb || !me?.id) return;
+      try {
+        await (window.firebaseAuthReady || Promise.resolve());
+        const snap=await fb.getDoc(fb.doc(db,'oikko_settings',me.id));
+        if(snap.exists()){
+          const cloud=snap.data()?.settings;
+          if(cloud && typeof cloud==='object'){
+            state.settings={...(state.settings||{}),...cloud};
+            try{localStorage.setItem('oikko_settings',JSON.stringify(state.settings));}catch(_){}
+            if(state.settings.colorTheme) applyOikkoColorTheme(state.settings.colorTheme);
+            if(state.settings.fontSize){
+              const scale=state.settings.fontSize==='small'?'.92':state.settings.fontSize==='large'?'1.08':'1';
+              document.documentElement.style.setProperty('--oikko-user-font-scale',scale);
+            }
+          }
+        } else {
+          saveOikkoSettings();
+        }
+      } catch(e){ console.warn('Oikko settings Firestore load failed:',e); }
+    }
+    window.loadOikkoSettingsFromFirestore=loadOikkoSettingsFromFirestore;
     function toggleOikkoSetting(key){
       state.settings[key] = !state.settings[key];
       saveOikkoSettings();
@@ -7130,85 +7599,329 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
       state.settings[key] = value;
       saveOikkoSettings();
       if(key === 'fontSize'){
-        document.documentElement.style.setProperty('--oikko-user-font-scale', value === 'small' ? '.92' : value === 'large' ? '1.08' : '1');
+        const scale = value === 'small' ? '.92' : value === 'large' ? '1.08' : '1';
+        document.documentElement.style.setProperty('--oikko-user-font-scale', scale);
       }
+      if(key === 'colorTheme') applyOikkoColorTheme(value);
       renderApp();
     }
     window.updateOikkoSetting = updateOikkoSetting;
 
-    function renderSettingsView(){
-      const u=state.currentUser || {}; const st=state.settings;
-      const row=(icon,label,desc,control,extra='')=>`<div class="oikko-setting-row ${extra}"><div class="oikko-setting-main"><span class="oikko-setting-icon"><i data-lucide="${icon}" class="w-4 h-4"></i></span><div><div class="oikko-setting-label">${label}</div>${desc?`<div class="oikko-setting-desc">${desc}</div>`:''}</div></div><div class="oikko-setting-control">${control}</div></div>`;
-      const sw=(key)=>`<button type="button" class="oikko-switch ${st[key]?'on':''}" aria-label="টগল" onclick="toggleOikkoSetting('${key}')"></button>`;
-      const select=(key,opts)=>`<select class="oikko-setting-select" onchange="updateOikkoSetting('${key}',this.value)">${opts.map(([v,t])=>`<option value="${v}" ${st[key]===v?'selected':''}>${t}</option>`).join('')}</select>`;
-      return `<main class="oikko-settings-page">
-        <section class="oikko-settings-hero"><div><h1>সেটিংস</h1><p>আপনার Oikko Campus অ্যাপের অ্যাকাউন্ট, প্রাইভেসি ও অভিজ্ঞতা নিয়ন্ত্রণ করুন</p></div><div class="oikko-settings-icon"><i data-lucide="settings-2" class="w-9 h-9"></i></div></section>
-        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="user-round" class="w-5 h-5"></i> অ্যাকাউন্ট ও প্রোফাইল</div>
-          ${row('pencil','প্রোফাইল এডিট','নাম, প্রোফাইল ছবি ও অন্যান্য তথ্য পরিবর্তন',`<button class="oikko-settings-link" onclick="openProfileModal('${escapeHtml(u.id||'')}')">প্রোফাইল এডিট করুন</button>`)}
-          ${row('mail','ইমেইল / ফোন নম্বর','যোগাযোগের তথ্য পরিবর্তন',`<button class="oikko-settings-link" onclick="showToast('ইমেইল/ফোন পরিবর্তন ফর্ম শীঘ্রই যুক্ত হবে','info')">পরিবর্তন</button>`)}
-          ${row('key-round','পাসওয়ার্ড পরিবর্তন','আপনার লগইন পাসওয়ার্ড আপডেট করুন',`<button class="oikko-settings-link" onclick="showToast('পাসওয়ার্ড পরিবর্তন অপশন শীঘ্রই যুক্ত হবে','info')">পরিবর্তন</button>`)}
-          ${row('user-x','অ্যাকাউন্ট ডিঅ্যাক্টিভেট / ডিলিট','অ্যাকাউন্ট বন্ধ বা মুছে ফেলার অপশন',`<button class="oikko-settings-link oikko-settings-danger" onclick="showToast('অ্যাকাউন্ট ডিলিট করার আগে নিশ্চিতকরণ ধাপ প্রয়োজন','info')">অ্যাকাউন্ট ম্যানেজ</button>`,'oikko-settings-danger')}
+    function getProfileUserById(identifier){
+      const cleanId = String(identifier || '').trim().toLowerCase();
+      if (!cleanId) return state.currentUser || null;
+      return (state.users || []).find(u =>
+        (u.id && String(u.id).toLowerCase() === cleanId) ||
+        (u.studentId && String(u.studentId).toLowerCase() === cleanId)
+      ) || ((state.currentUser && ((state.currentUser.id||'').toLowerCase()===cleanId || (state.currentUser.studentId||'').toLowerCase()===cleanId)) ? state.currentUser : null);
+    }
+
+
+    /* ===================== FRIENDS / FRIEND REQUESTS ===================== */
+    state.friendRequests = state.friendRequests || [];
+    state.friendships = state.friendships || [];
+    state._friendsDataRequested = state._friendsDataRequested || false;
+
+    function friendPairId(a, b) {
+      return [String(a), String(b)].sort().join('__');
+    }
+
+    function friendStatusFor(targetId) {
+      const me = state.currentUser?.id;
+      if (!me || !targetId || me === targetId) return 'self';
+      if ((state.friendships || []).some(f => f.id === friendPairId(me, targetId) && f.status === 'accepted')) return 'friends';
+      if ((state.friendRequests || []).some(r => r.status === 'pending' && r.fromId === targetId && r.toId === me)) return 'incoming';
+      if ((state.friendRequests || []).some(r => r.status === 'pending' && r.fromId === me && r.toId === targetId)) return 'outgoing';
+      return 'none';
+    }
+
+    async function loadFriendsData() {
+      const db = window.firebaseDb, fb = window.fb, me = state.currentUser;
+      if (!db || !fb || !me) return;
+      try {
+        const [reqSnap, friendSnap] = await Promise.all([
+          fb.getDocs(fb.collection(db, 'oikko_friend_requests')),
+          fb.getDocs(fb.collection(db, 'oikko_friends'))
+        ]);
+        state.friendRequests = [];
+        reqSnap.forEach(d => state.friendRequests.push({id:d.id, ...d.data()}));
+        state.friendships = [];
+        friendSnap.forEach(d => state.friendships.push({id:d.id, ...d.data()}));
+        if (state.activeView === 'friends' || state.activeView === 'profile') renderApp();
+      } catch (err) {
+        console.warn('Friends data load failed:', err);
+        if (err?.code === 'permission-denied') {
+          showToast('Friends চালু করতে Firestore Rules-এ oikko_friend_requests ও oikko_friends অনুমতি দিন।', 'error');
+        }
+      }
+    }
+    window.loadFriendsData = loadFriendsData;
+
+    async function sendFriendRequest(targetId) {
+      const me = state.currentUser, db = window.firebaseDb, fb = window.fb;
+      if (!me || !targetId || me.id === targetId || !db || !fb || friendStatusFor(targetId) !== 'none') return;
+      const target = getProfileUserById(targetId);
+      const requestId = `${me.id}__${targetId}`;
+      try {
+        await fb.setDoc(fb.doc(db, 'oikko_friend_requests', requestId), {
+          fromId: me.id, fromName: me.fullName || '', fromAvatar: me.profilePicture || '',
+          toId: targetId, toName: target?.fullName || '', toAvatar: target?.profilePicture || '',
+          status: 'pending', createdAt: Date.now(), ownerUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '', fromUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''
+        });
+        state.friendRequests.push({id:requestId, fromId:me.id, toId:targetId, status:'pending',
+          fromName:me.fullName||'', fromAvatar:me.profilePicture||'', toName:target?.fullName||'', toAvatar:target?.profilePicture||''});
+        showToast('Friend request পাঠানো হয়েছে', 'success');
+        renderApp();
+      } catch (err) {
+        console.error(err);
+        showToast(err?.code === 'permission-denied' ? 'Firestore Rules Friend request অনুমোদন করছে না।' : 'Friend request পাঠানো যায়নি।', 'error');
+      }
+    }
+
+    async function acceptFriendRequest(requestId) {
+      const me = state.currentUser, req = (state.friendRequests||[]).find(r => r.id === requestId);
+      const db = window.firebaseDb, fb = window.fb;
+      if (!me || !req || req.toId !== me.id || req.status !== 'pending' || !db || !fb) return;
+      try {
+        const pairId = friendPairId(req.fromId, req.toId);
+        await fb.setDoc(fb.doc(db, 'oikko_friends', pairId), {userIds:[req.fromId, req.toId], status:'accepted', createdAt:Date.now(), ownerUid:window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '', fromUid:req.fromId, toId:req.toId});
+        await fb.updateDoc(fb.doc(db, 'oikko_friend_requests', requestId), {status:'accepted', respondedAt:Date.now()});
+        req.status = 'accepted';
+        state.friendships.push({id:pairId, userIds:[req.fromId,req.toId], status:'accepted'});
+        showToast('Friend request গ্রহণ করা হয়েছে', 'success');
+        renderApp();
+      } catch (err) {
+        console.error(err);
+        showToast(err?.code === 'permission-denied' ? 'Firestore Rules Friends write অনুমোদন করছে না।' : 'Request গ্রহণ করা যায়নি।', 'error');
+      }
+    }
+    window.acceptFriendRequest = acceptFriendRequest;
+
+    async function rejectFriendRequest(requestId) {
+      const me = state.currentUser, req = (state.friendRequests||[]).find(r => r.id === requestId);
+      const db = window.firebaseDb, fb = window.fb;
+      if (!me || !req || req.toId !== me.id || req.status !== 'pending' || !db || !fb) return;
+      try {
+        await fb.updateDoc(fb.doc(db, 'oikko_friend_requests', requestId), {status:'rejected', respondedAt:Date.now()});
+        req.status = 'rejected';
+        showToast('Friend request প্রত্যাখ্যান করা হয়েছে', 'success');
+        renderApp();
+      } catch (err) {
+        console.error(err);
+        showToast('Request প্রত্যাখ্যান করা যায়নি।', 'error');
+      }
+    }
+    window.rejectFriendRequest = rejectFriendRequest;
+
+    async function handleFriendAction(targetId) {
+      const status = friendStatusFor(targetId);
+      if (status === 'none') return sendFriendRequest(targetId);
+      if (status === 'incoming') return switchView('friends');
+      if (status === 'outgoing') showToast('Friend request এখনো pending আছে', 'info');
+      if (status === 'friends') showToast('আপনারা ইতোমধ্যে Friends', 'info');
+    }
+    window.handleFriendAction = handleFriendAction;
+
+    function renderFriendUserCard(user, actions='') {
+      if (!user) return '';
+      return `<div class="oikko-friend-card">
+        <img src="${escapeHtml(user.profilePicture||'')}" class="oikko-friend-avatar" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200'">
+        <div class="min-w-0 flex-1">
+          <button class="oikko-friend-name" onclick="openSocialProfile('${escapeHtml(user.id)}')">${escapeHtml(user.fullName||'Oikko user')} ${user.isVerified?getVerifiedBadgeHTML('xs'):''}</button>
+          <div class="oikko-friend-meta">${escapeHtml(user.studentClass||'শিক্ষার্থী')}${user.studentId?` • ID: ${escapeHtml(user.studentId)}`:''}</div>
+        </div>
+        <div class="shrink-0 flex flex-wrap gap-2 justify-end">${actions}</div>
+      </div>`;
+    }
+
+    function renderFriendsView() {
+      const me = state.currentUser;
+      if (!me) return '';
+      const incoming = (state.friendRequests||[]).filter(r=>r.toId===me.id && r.status==='pending');
+      const outgoing = (state.friendRequests||[]).filter(r=>r.fromId===me.id && r.status==='pending');
+      const friendIds = (state.friendships||[])
+        .filter(f=>f.status==='accepted' && Array.isArray(f.userIds) && f.userIds.includes(me.id))
+        .map(f=>f.userIds.find(id=>id!==me.id)).filter(Boolean);
+      const friends = friendIds.map(id=>getProfileUserById(id)).filter(Boolean);
+
+      return `<main class="oikko-friends-page max-w-6xl mx-auto px-4 sm:px-6 py-6 pb-28">
+        <section class="oikko-friends-hero app-card"><div><div class="text-xs font-black uppercase tracking-[.18em] text-[#B9D7C3] mb-2">Oikko Community</div><h1>Friends</h1><p>Friend request দেখুন এবং আপনার Friends তালিকা পরিচালনা করুন।</p></div><div class="oikko-friends-hero-icon"><i data-lucide="users-round" class="w-9 h-9"></i></div></section>
+        <div class="oikko-friends-grid">
+          <section class="app-card oikko-friends-section"><div class="oikko-friends-section-title"><div><h2>Friend Requests</h2><p>কে আপনাকে Friend request পাঠিয়েছে</p></div><span>${incoming.length}</span></div>
+            ${incoming.length?incoming.map(r=>{const u=getProfileUserById(r.fromId)||{id:r.fromId,fullName:r.fromName,profilePicture:r.fromAvatar};return renderFriendUserCard(u,`<button class="app-action app-action-primary" onclick="acceptFriendRequest('${escapeHtml(r.id)}')"><i data-lucide="check" class="w-4 h-4"></i> গ্রহণ</button><button class="app-action app-action-soft" onclick="rejectFriendRequest('${escapeHtml(r.id)}')">বাদ</button>`)}).join(''):`<div class="oikko-friends-empty"><i data-lucide="inbox" class="w-7 h-7"></i><p>এখন কোনো Friend request নেই।</p></div>`}
+          </section>
+          <section class="app-card oikko-friends-section"><div class="oikko-friends-section-title"><div><h2>My Friends</h2><p>আপনার Friends এখানে দেখা যাবে</p></div><span>${friends.length}</span></div>
+            ${friends.length?friends.map(u=>renderFriendUserCard(u,`<button class="app-action app-action-soft" onclick="startMessengerWithUser('${escapeHtml(u.id)}')"><i data-lucide="message-circle" class="w-4 h-4"></i> মেসেজ</button>`)).join(''):`<div class="oikko-friends-empty"><i data-lucide="users" class="w-7 h-7"></i><p>এখনো কোনো Friend নেই। অন্যদের Profile থেকে Add friend চাপুন।</p></div>`}
+          </section>
+          <section class="app-card oikko-friends-section oikko-friends-outgoing"><div class="oikko-friends-section-title"><div><h2>Sent Requests</h2><p>আপনার পাঠানো pending request</p></div><span>${outgoing.length}</span></div>
+            ${outgoing.length?outgoing.map(r=>{const u=getProfileUserById(r.toId)||{id:r.toId,fullName:r.toName,profilePicture:r.toAvatar};return renderFriendUserCard(u,`<span class="oikko-request-pending">Pending</span>`)}).join(''):`<div class="oikko-friends-empty"><p>কোনো pending sent request নেই।</p></div>`}
+          </section>
+        </div>
+      </main>`;
+    }
+    window.renderFriendsView = renderFriendsView;
+
+    function renderProfileView(identifier){
+      const u = getProfileUserById(identifier) || state.currentUser;
+      if (!u) return '<main class="max-w-5xl mx-auto p-8">প্রোফাইল পাওয়া যায়নি</main>';
+      const isOwn = state.currentUser && ((u.id && u.id===state.currentUser.id) || (u.studentId && u.studentId===state.currentUser.studentId));
+      const posts = (state.posts || []).filter(p => (p.authorId && p.authorId===u.id) || (p.authorStudentId && p.authorStudentId===u.studentId)).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+      const verifiedStudents=(state.users||[]).filter(x=>x.isVerified && x.role!=='admin');
+      const events=(state.events||[]).length;
+      return `<main class="oikko-social-profile-page max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-28">
+        <section class="oikko-fb-profile-hero app-card">
+          <div class="oikko-profile-cover"></div>
+          <div class="oikko-profile-identity">
+            <div class="relative shrink-0"><img src="${escapeHtml(u.profilePicture||'')}" class="oikko-profile-avatar" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300'"></div>
+            <div class="min-w-0 flex-1"><h1>${escapeHtml(u.fullName||'শিক্ষার্থী')} ${u.isVerified?getVerifiedBadgeHTML('sm'):''}</h1><p>${escapeHtml(u.bio||'Oikko Campus-এর সদস্য')} </p><div class="oikko-profile-meta-row"><span>${escapeHtml(u.studentClass||'শিক্ষার্থী')}</span><span>•</span><span>ID: ${escapeHtml(u.studentId||'N/A')}</span></div></div>
+            <div class="oikko-profile-actions">${isOwn?`<button class="app-action app-action-soft" onclick="openProfileModal('${escapeHtml(u.id)}')"><i data-lucide="pencil" class="w-4 h-4"></i> তথ্য পরিবর্তন</button>`:`<div class="flex flex-wrap items-center gap-2 justify-end"><button id="profile-friend-btn-${escapeHtml(u.id)}" class="app-action app-action-primary" onclick="handleFriendAction('${escapeHtml(u.id)}')"><i data-lucide="user-plus" class="w-4 h-4"></i><span>Add friend</span></button><button class="app-action app-action-soft" onclick="startMessengerWithUser('${escapeHtml(u.id)}')"><i data-lucide="message-circle" class="w-4 h-4"></i> মেসেজ</button></div>`}</div>
+          </div>
+          <div class="oikko-profile-tabs"><span class="active">সব পোস্ট</span></div>
         </section>
-        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="shield-check" class="w-5 h-5"></i> প্রাইভেসি ও সিকিউরিটি</div>
-          ${row('lock-keyhole','টু-ফ্যাক্টর অথেন্টিকেশন (2FA)','অতিরিক্ত লগইন নিরাপত্তা',`<button class="oikko-settings-link" onclick="showToast('2FA সেটআপ শীঘ্রই যুক্ত হবে','info')">সেটআপ</button>`)}
-          ${row('eye','প্রোফাইল ও পোস্টের দৃশ্যমানতা','কে আপনার প্রোফাইল ও পোস্ট দেখতে পারবে',select('profileVisibility',[['public','Public'],['private','Private']]))}
-          ${row('user-round-x','ব্লক করা ব্যবহারকারী','ব্লক করা অ্যাকাউন্টের তালিকা',`<button class="oikko-settings-link" onclick="showToast('ব্লক তালিকা শীঘ্রই যুক্ত হবে','info')">দেখুন</button>`)}
-          ${row('monitor-smartphone','লগইন অ্যাক্টিভিটি','কোন ডিভাইস থেকে অ্যাকাউন্ট ব্যবহার হয়েছে',`<button class="oikko-settings-link" onclick="showToast('লগইন অ্যাক্টিভিটি শীঘ্রই যুক্ত হবে','info')">দেখুন</button>`)}
-          ${row('database','ডেটা শেয়ারিং পারমিশন','অ্যাপের ডেটা শেয়ারিং নিয়ন্ত্রণ',`<button class="oikko-settings-link" onclick="showToast('ডেটা শেয়ারিং অপশন শীঘ্রই যুক্ত হবে','info')">ম্যানেজ</button>`)}
-        </section>
-        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="bell" class="w-5 h-5"></i> নোটিফিকেশন</div>
-          ${row('bell-ring','পুশ নোটিফিকেশন','ডিভাইসে নোটিফিকেশন দেখান',sw('pushNotifications'))}
-          ${row('mail','ইমেইল নোটিফিকেশন','ইমেইলের মাধ্যমে আপডেট পান',sw('emailNotifications'))}
-          ${row('message-circle','মেসেজ নোটিফিকেশন','নতুন মেসেজের নোটিফিকেশন',sw('messageNotifications'))}
-          ${row('message-square-text','কমেন্ট নোটিফিকেশন','আপনার পোস্টে কমেন্ট হলে জানাবে',sw('commentNotifications'))}
-          ${row('heart','লাইক নোটিফিকেশন','আপনার পোস্টে লাইক হলে জানাবে',sw('likeNotifications'))}
-        </section>
-        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="palette" class="w-5 h-5"></i> ডিসপ্লে ও অ্যাপিয়ারেন্স</div>
-          ${row('moon','ডার্ক / লাইট মোড','অ্যাপের থিম পরিবর্তন',`<button class="oikko-settings-link" onclick="toggleDarkMode()">${state.isDarkMode?'লাইট মোড':'ডার্ক মোড'}</button>`)}
-          ${row('type','ফন্ট সাইজ','অ্যাপের লেখা ছোট বা বড় করুন',select('fontSize',[['small','ছোট'],['medium','মাঝারি'],['large','বড়']]))}
-          ${row('paintbrush','থিম / কালার স্কিম','অ্যাপের রঙের স্কিম',`<button class="oikko-settings-link" onclick="showToast('Oikko Green থিম বর্তমানে সক্রিয়','info')">Oikko Green</button>`)}
-        </section>
-        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="globe-2" class="w-5 h-5"></i> ভাষা ও অঞ্চল</div>
-          ${row('languages','অ্যাপের ভাষা','ইন্টারফেসের ভাষা নির্বাচন',select('language',[['বাংলা','বাংলা'],['English','English']]))}
-          ${row('clock-3','টাইম জোন','তারিখ ও সময়ের অঞ্চল',select('timezone',[['Asia/Dhaka','Asia/Dhaka'],['UTC','UTC']]))}
-          ${row('banknote','কারেন্সি','যদি বিলিং/পেমেন্ট চালু থাকে',`<span class="oikko-setting-desc">BDT (৳)</span>`)}
-        </section>
-        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="shield" class="w-5 h-5"></i> পারমিশন</div>
-          ${row('camera','ক্যামেরা অ্যাক্সেস','ছবি/ভিডিও তোলার অনুমতি',sw('camera'))}
-          ${row('mic','মাইক্রোফোন','ভয়েস/ভিডিও ফিচারের অনুমতি',sw('microphone'))}
-          ${row('map-pin','লোকেশন','লোকেশনভিত্তিক ফিচারের অনুমতি',sw('location'))}
-          ${row('contact','কন্টাক্টস','কন্টাক্ট অ্যাক্সেস',sw('contacts'))}
-        </section>
-        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="hard-drive" class="w-5 h-5"></i> স্টোরেজ ও ডেটা</div>
-          ${row('trash-2','ক্যাশে / ডেটা ক্লিয়ার','লোকাল ক্যাশে পরিষ্কার করুন',`<button class="oikko-settings-link" onclick="showToast('ক্যাশে ক্লিয়ার করার অপশন শীঘ্রই যুক্ত হবে','info')">ক্লিয়ার</button>`)}
-          ${row('download','ডাউনলোড কোয়ালিটি','ভিডিও/ইমেজ ডাউনলোডের মান',select('downloadQuality',[['সেরা মান','সেরা মান'],['উচ্চ','উচ্চ'],['মাঝারি','মাঝারি'],['ডেটা সেভার','ডেটা সেভার']]))}
-          ${row('download-cloud','অটো-ডাউনলোড','মিডিয়া স্বয়ংক্রিয়ভাবে ডাউনলোড',sw('autoDownload'))}
-        </section>
-        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="credit-card" class="w-5 h-5"></i> সাবস্ক্রিপশন ও বিলিং</div>
-          ${row('arrow-up-circle','প্ল্যান আপগ্রেড / ডাউনগ্রেড','বর্তমান ও ভবিষ্যৎ প্ল্যান ম্যানেজ করুন',`<button class="oikko-settings-link" onclick="showToast('সাবস্ক্রিপশন ফিচার বর্তমানে সক্রিয় নয়','info')">ম্যানেজ</button>`)}
-          ${row('credit-card','পেমেন্ট মেথড','পেমেন্ট মাধ্যম যোগ বা পরিবর্তন',`<button class="oikko-settings-link" onclick="showToast('পেমেন্ট মেথড শীঘ্রই যুক্ত হবে','info')">ম্যানেজ</button>`)}
-          ${row('receipt','বিলিং হিস্টোরি','আগের পেমেন্টের তথ্য',`<button class="oikko-settings-link" onclick="showToast('বিলিং হিস্টোরি শীঘ্রই যুক্ত হবে','info')">দেখুন</button>`)}
-        </section>
-        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="accessibility" class="w-5 h-5"></i> অ্যাক্সেসিবিলিটি</div>
-          ${row('screen-reader','স্ক্রিন রিডার সাপোর্ট','সহায়ক প্রযুক্তির জন্য অপশন',sw('screenReader'))}
-          ${row('contrast','হাই কনট্রাস্ট মোড','কনট্রাস্ট বাড়িয়ে দেখুন',sw('highContrast'))}
-          ${row('volume-2','টেক্সট-টু-স্পিচ','সমর্থিত টেক্সট উচ্চস্বরে পড়া',sw('textToSpeech'))}
-        </section>
-        <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="circle-help" class="w-5 h-5"></i> অন্যান্য</div>
-          <div class="oikko-settings-links">
-            <button class="oikko-settings-link" onclick="showToast('Help & Support শীঘ্রই যুক্ত হবে','info')">হেল্প / সাপোর্ট সেন্টার</button>
-            <button class="oikko-settings-link" onclick="showToast('Oikko Campus v1.0','info')">অ্যাপ ভার্সন: v1.0</button>
-            <button class="oikko-settings-link" onclick="showToast('Terms of Service শীঘ্রই যুক্ত হবে','info')">Terms of Service</button>
-            <button class="oikko-settings-link" onclick="showToast('Privacy Policy শীঘ্রই যুক্ত হবে','info')">Privacy Policy</button>
-            <button class="oikko-settings-link" onclick="showToast('Feedback ফর্ম শীঘ্রই যুক্ত হবে','info')">ফিডব্যাক পাঠান</button>
-            <button class="oikko-settings-link" onclick="showToast('অ্যাপ শেয়ার অপশন শীঘ্রই যুক্ত হবে','info')">অ্যাপ শেয়ার করুন</button>
+        <section class="oikko-profile-content-grid">
+          <aside class="space-y-4">
+            <div class="app-card oikko-profile-info-card"><h2><i data-lucide="user" class="w-4 h-4"></i> বেসিক ইনফো</h2>
+              <div class="oikko-info-line"><span>শ্রেণি</span><b>${escapeHtml(u.studentClass||'—')}</b></div>
+              <div class="oikko-info-line"><span>রোল</span><b>${escapeHtml(u.roll||'—')}</b></div>
+              <div class="oikko-info-line"><span>শাখা</span><b>${escapeHtml(u.section||'—')}</b></div>
+              <div class="oikko-info-line"><span>শিফট</span><b>${escapeHtml(u.shift||'—')}</b></div>
+              <div class="oikko-info-line"><span>রক্তের গ্রুপ</span><b class="text-rose-600">${escapeHtml(u.bloodGroup||'—')}</b></div>
+              <div class="oikko-info-line"><span>পোস্ট</span><b>${posts.length.toLocaleString('bn-BD')}</b></div>
+            </div>
+            <div class="app-card oikko-profile-info-card"><h2><i data-lucide="bar-chart-3" class="w-4 h-4"></i> কমিউনিটি</h2><div class="oikko-profile-mini-stats"><div><b>${posts.length}</b><span>পোস্ট</span></div><div><b>${events}</b><span>ইভেন্ট</span></div><div><b>${verifiedStudents.length}</b><span>ভেরিফাইড</span></div></div></div>
+          </aside>
+          <div class="space-y-4">
+            ${isOwn ? `
+              <div class="app-card bg-white rounded-2xl p-4 sm:p-5 border border-[#DCE7E0] shadow-sm">
+                <form onsubmit="handleCreatePost(event)">
+                  <div class="flex gap-3">
+                    <img src="${escapeHtml(u.profilePicture||'')}" class="w-11 h-11 rounded-full object-cover border border-[#DCE7E0] shrink-0" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200'">
+                    <div class="flex-1">
+                      <textarea id="new-post-content" rows="3"
+                        oninput="handleMentionInputEvent(this)"
+                        onkeydown="handleMentionKeyDown(event, this)"
+                        placeholder="আপনার প্রোফাইল থেকে কী শেয়ার করতে চান?"
+                        class="w-full p-3 rounded-xl bg-[#F4F8F5] border border-[#DCE7E0] text-[#304038] placeholder-[#8A9A91] text-sm focus:outline-none focus:border-[#2F6F57] focus:ring-2 focus:ring-[#D8F3E4] resize-none"></textarea>
+                    </div>
+                  </div>
+                  <div class="flex justify-end mt-3">
+                    <button type="submit" class="app-action app-action-primary">
+                      <i data-lucide="send" class="w-4 h-4"></i> পোস্ট করুন
+                    </button>
+                  </div>
+                </form>
+              </div>
+            ` : ''}
+            <div class="oikko-profile-post-heading"><h2>পোস্ট</h2><span>${posts.length.toLocaleString('bn-BD')} টি</span></div>
+            ${posts.length?posts.map(renderPostCard).join(''):`<div class="app-card p-10 text-center text-[#8A8A6A]">এই প্রোফাইলে এখনো কোনো পোস্ট নেই।</div>`}
           </div>
         </section>
       </main>`;
     }
+    window.renderProfileView=renderProfileView;
+
+    function openSocialProfile(identifier){
+      const user=getProfileUserById(identifier);
+      if(!user){ showToast('প্রোফাইল পাওয়া যায়নি','error'); return; }
+      state.profileUserId=user.id||user.studentId;
+      state.activeView='profile';
+      state.sidebarOpen=false;
+      document.body.classList.remove('oikko-sidebar-open');
+      renderApp();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    window.openSocialProfile=openSocialProfile;
+
+function renderSettingsView(){
+      const u=state.currentUser || {}; const st=state.settings || (state.settings={});
+      const defaults={profileVisibility:'public',pushNotifications:true,emailNotifications:false,commentNotifications:true,likeNotifications:true,messageNotifications:true,fontSize:'medium',colorTheme:'green',plan:'free',blockedUsers:[],loginActivity:[]};
+      Object.keys(defaults).forEach(k=>{if(st[k]===undefined) st[k]=defaults[k]});
+      const row=(icon,label,desc,control,extra='')=>`<div class="oikko-setting-row ${extra}"><div class="oikko-setting-main"><span class="oikko-setting-icon"><i data-lucide="${icon}" class="w-4 h-4"></i></span><div><div class="oikko-setting-label">${label}</div>${desc?`<div class="oikko-setting-desc">${desc}</div>`:''}</div></div><div class="oikko-setting-control">${control}</div></div>`;
+      const sw=(key)=>`<button type="button" class="oikko-switch ${st[key]?'on':''}" aria-label="টগল" onclick="toggleOikkoSetting('${key}')"></button>`;
+      const select=(key,opts)=>`<select class="oikko-setting-select" onchange="updateOikkoSetting('${key}',this.value)">${opts.map(([v,t])=>`<option value="${v}" ${st[key]===v?'selected':''}>${t}</option>`).join('')}</select>`;
+      const btn=(label,fn,cls='')=>`<button type="button" onclick="${fn}" class="oikko-setting-action ${cls}">${label}</button>`;
+      const blocked=(st.blockedUsers||[]).length;
+      return `<main class="oikko-settings-page">
+        <section class="oikko-settings-hero"><div><h1>সেটিংস</h1><p>অ্যাকাউন্ট, প্রাইভেসি, নোটিফিকেশন, অ্যাপিয়ারেন্স ও সাবস্ক্রিপশন এক জায়গা থেকে নিয়ন্ত্রণ করুন</p></div><div class="oikko-settings-icon"><i data-lucide="settings-2" class="w-9 h-9"></i></div></section>
+        <div class="oikko-settings-grid">
+          <section class="oikko-settings-card oikko-settings-card-wide"><div class="oikko-settings-title"><i data-lucide="user-round"></i> অ্যাকাউন্ট ও প্রোফাইল</div>
+            ${row('user-pen','নাম, প্রোফাইল ছবি ও বায়ো','আপনার প্রোফাইলের তথ্য পরিবর্তন করুন',btn('এডিট করুন',"openEditProfileModal()"))}
+            ${row('mail','ইমেইল / ফোন নম্বর','যোগাযোগের তথ্য আপডেট করতে প্রোফাইল এডিট ব্যবহার করুন',btn('পরিবর্তন করুন',"openEditProfileModal()"))}
+            ${row('key-round','পাসওয়ার্ড','বর্তমান অ্যাপে সংরক্ষিত অ্যাকাউন্ট পাসওয়ার্ড পরিবর্তন করুন',btn('পরিবর্তন করুন',"openAccountPasswordModal()"))}
+            ${row('user-round-cog','অ্যাকাউন্ট ডিঅ্যাক্টিভেট','অস্থায়ীভাবে আপনার অ্যাকাউন্ট নিষ্ক্রিয় করে লগআউট করুন',btn('ডিঅ্যাক্টিভেট',"deactivateOikkoAccount()",'warning'))}
+            ${row('trash-2','অ্যাকাউন্ট ডিলিট','আপনার এই অ্যাপের লোকাল ও Firestore প্রোফাইল রেকর্ড মুছে দেওয়ার চেষ্টা করবে',btn('ডিলিট',"deleteOikkoAccount()",'danger'))}
+          </section>
+
+          <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="shield-check"></i> প্রাইভেসি ও সিকিউরিটি</div>
+            ${row('eye','প্রোফাইল ও পোস্ট কে দেখতে পারবে','Public হলে সবাই, Private হলে সীমিত দৃশ্যমানতা',select('profileVisibility',[['public','Public'],['private','Private']]))}
+            ${row('user-round-x','ব্লক করা ব্যবহারকারী',`${blocked} জন ব্লক করা আছে`,btn('তালিকা দেখুন',"openBlockedUsersModal()"))}
+            ${row('monitor-smartphone','লগইন অ্যাক্টিভিটি','এই ব্রাউজার/ডিভাইসের সাম্প্রতিক সেশন',btn('দেখুন',"openLoginActivityModal()"))}
+          </section>
+
+          <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="bell-ring"></i> নোটিফিকেশন</div>
+            ${row('bell','পুশ নোটিফিকেশন','অ্যাপের নোটিফিকেশন',sw('pushNotifications'))}
+            ${row('mail','ইমেইল নোটিফিকেশন','ইমেইলে আপডেট পেতে চান কি না',sw('emailNotifications'))}
+            ${row('message-circle','মেসেজ নোটিফিকেশন','নতুন মেসেজের নোটিফিকেশন',sw('messageNotifications'))}
+            ${row('message-square','কমেন্ট নোটিফিকেশন','আপনার পোস্টের কমেন্ট',sw('commentNotifications'))}
+            ${row('heart','লাইক নোটিফিকেশন','আপনার পোস্ট/কমেন্টে লাইক',sw('likeNotifications'))}
+          </section>
+
+          <section class="oikko-settings-card"><div class="oikko-settings-title"><i data-lucide="palette"></i> ডিসপ্লে ও অ্যাপিয়ারেন্স</div>
+            ${row('moon-star','ডার্ক মোড / লাইট মোড','অ্যাপের সম্পূর্ণ থিম পরিবর্তন করুন',`<button type="button" class="oikko-setting-theme" onclick="toggleDarkMode()">${state.isDarkMode?'ডার্ক মোড':'লাইট মোড'}</button>`)}
+            ${row('type','ফন্ট সাইজ','পরিবর্তন করলেই পুরো অ্যাপের লেখা স্বয়ংক্রিয়ভাবে স্কেল হবে',select('fontSize',[['small','ছোট'],['medium','মাঝারি'],['large','বড়']]))}
+            ${row('paintbrush','কালার থিম','অ্যাপের প্রধান অ্যাকসেন্ট কালার বেছে নিন',select('colorTheme',[['green','Oikko Green'],['blue','Ocean Blue'],['purple','Royal Purple'],['orange','Sunset Orange'],['pink','Rose Pink']]))}
+            <div class="oikko-theme-swatches">${[['green','Oikko Green'],['blue','Ocean Blue'],['purple','Royal Purple'],['orange','Sunset Orange'],['pink','Rose Pink']].map(([v,t])=>`<button type="button" class="oikko-color-choice ${st.colorTheme===v?'selected':''} ${v}" onclick="updateOikkoSetting('colorTheme','${v}')"><span></span>${t}</button>`).join('')}</div>
+          </section>
+
+          <section class="oikko-settings-card oikko-settings-card-wide"><div class="oikko-settings-title"><i data-lucide="credit-card"></i> সাবস্ক্রিপশন ও বিলিং</div>
+            ${row('badge-dollar-sign','বর্তমান প্ল্যান',`বর্তমান প্ল্যান: ${st.plan==='free'?'Free':'Pro'}`,`<span class="oikko-plan-badge">${st.plan==='free'?'FREE':'PRO'}</span>`)}
+            <div class="oikko-billing-actions">
+              ${btn('প্ল্যান আপগ্রেড',"changeOikkoPlan('pro')")}${btn('প্ল্যান ডাউনগ্রেড',"changeOikkoPlan('free')")}${btn('পেমেন্ট মেথড যোগ / পরিবর্তন',"openPaymentMethodModal()")}${btn('বিলিং হিস্টোরি',"openBillingHistoryModal()")}
+            </div>
+            <div class="oikko-billing-note">পেমেন্ট গেটওয়ে এখনো এই HTML অ্যাপে সংযুক্ত না থাকলে পেমেন্ট নেওয়া হবে না; এই অংশের নির্বাচন শুধু UI/লোকাল সেটিং হিসেবে সংরক্ষিত হবে।</div>
+          </section>
+        </div>
+      </main>`;
+    }
+
+    function updateOikkoUserField(field,value){
+      if(!state.currentUser) return;
+      state.currentUser[field]=value;
+      const idx=(state.users||[]).findIndex(x=>x.id===state.currentUser.id);
+      if(idx>=0) state.users[idx][field]=value;
+      saveCurrentUser(state.currentUser); saveUsers(state.users||[]);
+      if(window.firebaseDb&&window.fb&&state.currentUser.id) (window.firebaseAuthReady || Promise.resolve()).then(() => window.fb.setDoc(window.fb.doc(window.firebaseDb,'users',state.currentUser.id),{[field]:value, ownerUid:window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''},{merge:true})).catch(console.warn);
+    }
+    function applyOikkoColorTheme(theme){
+      const map={green:['#2f6f57','#173b2d'],blue:['#2563eb','#172554'],purple:['#7c3aed','#2e1065'],orange:['#ea580c','#431407'],pink:['#db2777','#500724']};
+      const v=map[theme]||map.green; document.documentElement.style.setProperty('--oikko-accent',v[0]); document.documentElement.style.setProperty('--oikko-accent-dark',v[1]);
+    }
+    function changeOikkoPlan(plan){ state.settings.plan=plan; saveOikkoSettings(); renderApp(); showToast(plan==='pro'?'Pro প্ল্যান নির্বাচিত হয়েছে':'Free প্ল্যান নির্বাচিত হয়েছে','info'); }
+    window.changeOikkoPlan=changeOikkoPlan;
+    function openAccountPasswordModal(){
+      const m=document.getElementById('modal-container'); if(!m)return;
+      m.innerHTML=`<div class="fixed inset-0 z-50 flex items-center justify-center p-4 oikko-modal-backdrop"><div class="oikko-mini-modal"><div class="oikko-mini-head"><b>পাসওয়ার্ড পরিবর্তন</b><button onclick="closeProfileModal()">×</button></div><form onsubmit="changeOikkoPassword(event)" class="oikko-mini-body"><input id="old-pass" type="password" placeholder="বর্তমান পাসওয়ার্ড" required><input id="new-pass" type="password" placeholder="নতুন পাসওয়ার্ড" minlength="6" required><input id="new-pass2" type="password" placeholder="নতুন পাসওয়ার্ড আবার লিখুন" minlength="6" required><button class="oikko-setting-primary">সংরক্ষণ করুন</button></form></div></div>`;
+    }
+    window.openAccountPasswordModal=openAccountPasswordModal;
+    function changeOikkoPassword(e){e.preventDefault();const old=document.getElementById('old-pass').value,n=document.getElementById('new-pass').value,n2=document.getElementById('new-pass2').value;if(old!==String(state.currentUser.password||'')){showToast('বর্তমান পাসওয়ার্ড সঠিক নয়','error');return}if(n!==n2){showToast('নতুন পাসওয়ার্ড মিলছে না','error');return}updateOikkoUserField('password',n);closeProfileModal();showToast('পাসওয়ার্ড পরিবর্তন হয়েছে','success');}
+    window.changeOikkoPassword=changeOikkoPassword;
+    function deactivateOikkoAccount(){if(!confirm('অ্যাকাউন্ট ডিঅ্যাক্টিভেট করে লগআউট করতে চান?'))return;updateOikkoUserField('isDeactivated',true);logout();}
+    window.deactivateOikkoAccount=deactivateOikkoAccount;
+    async function deleteOikkoAccount(){if(!confirm('অ্যাকাউন্ট ডিলিট করতে চান? এই কাজটি স্থানীয়ভাবে স্থায়ীভাবে মুছে দেবে।'))return;const id=state.currentUser&&state.currentUser.id;state.users=(state.users||[]).filter(x=>x.id!==id);saveUsers(state.users);try{if(window.firebaseDb&&window.fb&&id)await (window.firebaseAuthReady || Promise.resolve());
+        await window.fb.deleteDoc(window.fb.doc(window.firebaseDb,'users',id));}catch(e){console.warn(e)}saveCurrentUser(null);state.currentUser=null;state.authMode='user_login';showToast('অ্যাকাউন্ট ডিলিটের প্রক্রিয়া সম্পন্ন হয়েছে','info');renderApp();}
+    window.deleteOikkoAccount=deleteOikkoAccount;
+    function openBlockedUsersModal(){const list=state.settings.blockedUsers||[];const m=document.getElementById('modal-container');m.innerHTML=`<div class="fixed inset-0 z-50 flex items-center justify-center p-4 oikko-modal-backdrop"><div class="oikko-mini-modal"><div class="oikko-mini-head"><b>ব্লক করা ব্যবহারকারী</b><button onclick="closeProfileModal()">×</button></div><div class="oikko-mini-body">${list.length?list.map((x,i)=>`<div class="oikko-blocked-row"><span>${String(x.name||x.id||'ব্যবহারকারী')}</span><button onclick="unblockOikkoUser(${i})">আনব্লক</button></div>`).join(''):'কোনো ব্যবহারকারী ব্লক করা নেই।'}</div></div></div>`}
+    function unblockOikkoUser(i){(state.settings.blockedUsers||[]).splice(i,1);saveOikkoSettings();openBlockedUsersModal();}
+    window.openBlockedUsersModal=openBlockedUsersModal;window.unblockOikkoUser=unblockOikkoUser;
+    function openLoginActivityModal(){const activity=state.settings.loginActivity||[];const current={device:navigator.userAgent.includes('Mobile')?'Mobile Browser':'Desktop Browser',time:new Date().toLocaleString('bn-BD')};if(!activity.length) activity.push(current);state.settings.loginActivity=activity.slice(0,10);saveOikkoSettings();const m=document.getElementById('modal-container');m.innerHTML=`<div class="fixed inset-0 z-50 flex items-center justify-center p-4 oikko-modal-backdrop"><div class="oikko-mini-modal"><div class="oikko-mini-head"><b>লগইন অ্যাক্টিভিটি</b><button onclick="closeProfileModal()">×</button></div><div class="oikko-mini-body">${state.settings.loginActivity.map(x=>`<div class="oikko-activity-row"><i data-lucide="monitor-smartphone"></i><div><b>${x.device||'Browser'}</b><small>${x.time||''}</small></div></div>`).join('')}</div></div></div>`;if(window.lucide)lucide.createIcons()}
+    window.openLoginActivityModal=openLoginActivityModal;
+    function openPaymentMethodModal(){showToast('পেমেন্ট মেথড সংযুক্ত করতে Stripe/SSLCommerz/bKash/Nagad backend প্রয়োজন','info')}
+    function openBillingHistoryModal(){showToast('এখনও কোনো বিলিং রেকর্ড নেই','info')}
+    window.openPaymentMethodModal=openPaymentMethodModal;window.openBillingHistoryModal=openBillingHistoryModal;
 
     function switchView(v) {
       state.activeView = v;
+      if (v === 'profile' && state.currentUser) state.profileUserId = state.currentUser.id;
       state.sidebarOpen = false;
       document.body.classList.remove('oikko-sidebar-open');
       if (v === 'youtube') {
@@ -7242,7 +7955,8 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
         likes: [],
         comments: [],
         createdAt: dateStr,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        ownerUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''
       };
 
       document.getElementById('new-post-content').value = '';
@@ -7263,6 +7977,8 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
       // Save directly to Firebase Firestore for all mobiles & devices
       if (window.firebaseDb && window.fb) {
         try {
+          await (window.firebaseAuthReady || Promise.resolve());
+          newPost.ownerUid = window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '';
           await window.fb.addDoc(window.fb.collection(window.firebaseDb, 'posts'), newPost);
           showToast('নতুন পোস্ট শেয়ার হয়েছে!', 'success');
         } catch (err) {
@@ -8076,7 +8792,8 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
         banner,
         description: desc,
         participants: [state.currentUser.studentId],
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        ownerUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''
       };
 
       state.events.unshift(newEvent);
@@ -8087,6 +8804,8 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
       if (window.firebaseDb && window.fb) {
         try {
+          await (window.firebaseAuthReady || Promise.resolve());
+          newEvent.ownerUid = window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '';
           await window.fb.setDoc(window.fb.doc(window.firebaseDb, 'events', newEvent.id), newEvent, { merge: true });
         } catch (err) {
           console.warn('Firebase setDoc event error:', err);
@@ -8322,7 +9041,8 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
         category,
         imageUrl: finalImageUrl,
         description: desc,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        ownerUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''
       };
 
       selectedPastPhotoDataUrl = '';
@@ -8335,6 +9055,8 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
       if (window.firebaseDb && window.fb) {
         try {
+          await (window.firebaseAuthReady || Promise.resolve());
+          newPhoto.ownerUid = window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '';
           await window.fb.setDoc(window.fb.doc(window.firebaseDb, 'past_events_gallery', newPhoto.id), newPhoto);
         } catch (err) {
           console.warn('Firebase save past event photo error:', err);
@@ -8602,17 +9324,18 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
       return `
         <main class="max-w-4xl mx-auto px-4 sm:px-6 py-6 pb-24 sm:pb-28 flex-1 w-full">
           <!-- Admin Posts Header Banner -->
-          <div class="bg-gradient-to-r from-[#5A5A40] to-[#42422F] text-white rounded-3xl p-6 sm:p-7 mb-6 shadow-md relative overflow-hidden">
-            <div class="relative z-10">
-              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold mb-3 shadow-xs">
-                <i data-lucide="megaphone" class="w-3.5 h-3.5"></i>
-                <span>অফিসিয়াল নোটিশ বোর্ড</span>
-              </div>
-              <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-2">প্রধান এডমিন ও অফিশিয়াল নোটিশ</h1>
-              <p class="text-xs sm:text-sm text-[#E2E2D5] leading-relaxed">প্রতিষ্ঠান প্রশাসন ও প্রধান এডমিনের সকল আনুষ্ঠানিক ঘোষণা, বিজ্ঞপ্তি ও গুরুত্বপূর্ণ নির্দেশনা এখানে পাওয়া যায়।</p>
+          <div class="app-hero rounded-3xl p-6 sm:p-7 mb-6 text-white relative overflow-hidden">
+            <div class="app-hero-pattern" aria-hidden="true">
+              <i data-lucide="megaphone"></i>
+              <i data-lucide="shield-check"></i>
+              <i data-lucide="bell"></i>
+              <i data-lucide="book-open"></i>
             </div>
-            <div class="absolute -right-8 -bottom-8 opacity-15 pointer-events-none">
-              <i data-lucide="shield-check" class="w-52 h-52 text-white"></i>
+            <div class="app-hero-orb absolute rounded-full pointer-events-none"></div>
+            <div class="relative z-10">
+              <p class="text-[11px] uppercase tracking-[.18em] font-black text-[#B9D7C3] mb-2">Official campus notice</p>
+              <h1 class="text-2xl sm:text-3xl font-black tracking-tight mb-2">প্রধান এডমিন ও অফিশিয়াল নোটিশ</h1>
+              <p class="text-xs sm:text-sm text-[#D7E7DC] leading-relaxed max-w-2xl">প্রতিষ্ঠান প্রশাসন ও প্রধান এডমিনের সকল আনুষ্ঠানিক ঘোষণা, বিজ্ঞপ্তি ও গুরুত্বপূর্ণ নির্দেশনা এখানে পাওয়া যায়।</p>
             </div>
           </div>
 
@@ -8692,8 +9415,11 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
 
     // --- 8. Initialize App ---
     renderApp();
-    if (window.firebaseDb) {
-      initFirebaseSync();
+    if (window.firebaseDb && window.firebaseAuthReady) {
+      window.firebaseAuthReady.finally(() => {
+        try { bootstrapFirestoreDatabase(); } catch(e) { console.warn(e); }
+        try { initFirebaseSync(); } catch(e) { console.warn(e); }
+      });
     }
   </script>
 
@@ -8798,7 +9524,7 @@ main.max-w-7xl .space-y-5 > * + *{margin-top:10px!important}
       box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.08);
       transition:all .22s ease;
     }
-    .app-search:focus-within{background:rgba(255,255,255,.14)!important;border-color:rgba(216,243,228,.35)!important;box-shadow:0 0 0 4px rgba(216,243,228,.10),0 10px 28px rgba(0,0,0,.12)}
+    .app-search:focus-within{background:rgba(255,255,255,.14)!important;border-color:rgba(216,243,228,.35)!important;box-shadow:0 0 0 2px rgba(216,243,228,.10),0 10px 28px rgba(0,0,0,.12)!important;outline:none!important}
 
     /* Modern Messenger launcher */
     body > #app > div > .w-full.px-3.sm\:px-6.py-1\.5{position:relative}
