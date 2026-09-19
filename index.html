@@ -2495,68 +2495,126 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
       }
     }
 
-    // --- ডিভাইস নোটিফিকেশন পারমিশন ও পুশ সেন্ডার ---
-    function requestNotificationPermission() {
-      if ('Notification' in window) {
-        if (Notification.permission === 'default') {
-          Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-              showToast('ডিভাইস নোটিফিকেশন সফলভাবে চালু করা হয়েছে!', 'success');
-              playNotificationSound();
-            }
-          });
-        } else if (Notification.permission === 'granted') {
-          showToast('ডিভাইস নোটিফিকেশন সক্রিয় আছে', 'info');
+    // --- ডিভাইস নোটিফিকেশন সিস্টেম: Mobile/PC system notification ---
+    // Browser/PWA supported notification. For fully closed-app push, a real Web Push/FCM backend is still required.
+    let oikkoNotificationSWRegistration = null;
+
+    async function registerOikkoNotificationServiceWorker() {
+      try {
+        if (!('serviceWorker' in navigator)) return null;
+        if (!window.isSecureContext && location.hostname !== 'localhost') return null;
+        const reg = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+        oikkoNotificationSWRegistration = reg;
+        return reg;
+      } catch (err) {
+        console.warn('Oikko notification service worker registration failed:', err);
+        return null;
+      }
+    }
+
+    // Register quietly at startup; permission is requested only after the user taps the bell.
+    try { registerOikkoNotificationServiceWorker(); } catch (_) {}
+
+    async function requestNotificationPermission() {
+      if (!('Notification' in window)) {
+        showToast('এই ব্রাউজারে ডিভাইস নোটিফিকেশন সমর্থিত নয়।', 'info');
+        return 'unsupported';
+      }
+
+      try { await registerOikkoNotificationServiceWorker(); } catch (_) {}
+
+      if (Notification.permission === 'granted') {
+        showToast('ডিভাইস নোটিফিকেশন ইতিমধ্যে চালু আছে।', 'success');
+        return 'granted';
+      }
+
+      if (Notification.permission === 'denied') {
+        showToast('নোটিফিকেশন বন্ধ আছে। Browser Settings থেকে Oikko-এর notification Allow করুন।', 'info');
+        return 'denied';
+      }
+
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          showToast('ডিভাইস নোটিফিকেশন চালু হয়েছে। নতুন মেসেজ এলে ফোনের উপর notification আসবে।', 'success');
+          try { playNotificationSound(); } catch (_) {}
         } else {
-          showToast('ব্রাউজারের সেটিংস থেকে নোটিফিকেশন অনুমোদন করুন', 'info');
+          showToast('ডিভাইস নোটিফিকেশন চালু করা হয়নি।', 'info');
         }
+        return permission;
+      } catch (err) {
+        console.warn('Notification permission request failed:', err);
+        showToast('নোটিফিকেশন permission নেওয়া যায়নি।', 'info');
+        return 'error';
       }
     }
     window.requestNotificationPermission = requestNotificationPermission;
 
-    function sendDeviceNotification(title, options = {}) {
-      // ১. মোবাইল ভাইব্রেশন
-      if ('vibrate' in navigator) {
-        try { navigator.vibrate([180, 80, 180]); } catch (e) {}
-      }
+    async function showOikkoSystemNotification(title, options = {}) {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+      if (state.settings && state.settings.pushNotifications === false) return false;
 
-      // ২. অডিও বেল সাউন্ড
-      playNotificationSound();
-
-      // ৩. ডিভাইসের আসল সিস্টেম নোটিফিকেশন (মোবাইল / ডেক্সটপ পপআপ)
-      if ('Notification' in window) {
-        if (Notification.permission === 'granted') {
-          try {
-            const notif = new Notification(title, {
-              body: options.body || '',
-              icon: options.icon || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
-              badge: options.icon || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
-              silent: false,
-              ...options
-            });
-            notif.onclick = function() {
-              window.focus();
-              this.close();
-            };
-          } catch (e) {
-            console.warn('Native notification trigger error:', e);
-          }
-        } else if (Notification.permission === 'default') {
-          Notification.requestPermission().then(p => {
-            if (p === 'granted') {
-              try {
-                new Notification(title, options);
-              } catch (e) {}
-            }
-          });
+      const payload = {
+        body: options.body || '',
+        icon: options.icon || './favicon.ico',
+        badge: options.badge || options.icon || './favicon.ico',
+        tag: options.tag || 'oikko-notification',
+        renotify: options.renotify !== false,
+        requireInteraction: false,
+        vibrate: options.vibrate || [180, 80, 180],
+        data: {
+          url: options.url || location.href,
+          ...(options.data || {})
         }
+      };
+
+      try {
+        const reg = oikkoNotificationSWRegistration || (await registerOikkoNotificationServiceWorker());
+        if (reg && typeof reg.showNotification === 'function') {
+          await reg.showNotification(title, payload);
+          return true;
+        }
+      } catch (err) {
+        console.warn('Service-worker notification failed; using browser fallback:', err);
       }
 
-      // ৪. ইন-অ্যাপ লাইভ টোস্ট অ্যালার্ট
-      showToast(`🔔 ${title}: ${options.body || ''}`, 'info');
+      try {
+        const notif = new Notification(title, payload);
+        notif.onclick = function () {
+          try { window.focus(); } catch (_) {}
+          try { this.close(); } catch (_) {}
+        };
+        return true;
+      } catch (err) {
+        console.warn('Native notification trigger error:', err);
+        return false;
+      }
+    }
+
+    async function sendDeviceNotification(title, options = {}) {
+      if (state.settings && state.settings.pushNotifications === false) return;
+
+      // Mobile vibration
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate(options.vibrate || [180, 80, 180]); } catch (_) {}
+      }
+
+      // In-app sound (when the browser allows it)
+      try { playNotificationSound(); } catch (_) {}
+
+      // OS/browser notification. Permission is intentionally NOT requested here because
+      // modern browsers generally require permission prompts to follow a user gesture.
+      if ('Notification' in window && Notification.permission === 'granted') {
+        await showOikkoSystemNotification(title, options);
+      } else if ('Notification' in window && Notification.permission === 'denied') {
+        // Keep the in-app alert visible instead of repeatedly prompting.
+        console.info('Oikko notifications are blocked by browser permission.');
+      }
+
+      // In-app live toast
+      showToast(`🔔 ${title}${options.body ? ': ' + options.body : ''}`, 'info');
     }
     window.sendDeviceNotification = sendDeviceNotification;
-
     // --- Oikko Messenger: Realtime Database notification sync ---
     let messengerNotificationUnsubscribe = null;
     let messengerNotificationUserId = '';
