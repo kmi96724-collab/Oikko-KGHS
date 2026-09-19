@@ -1418,6 +1418,220 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
   .om-info-profile-centered .om-info-quick{max-width:280px}
 }
 </style>
+
+<style id="oikko-universal-device-friendly-v1">
+/* =========================================================
+   OIKKO — UNIVERSAL DEVICE-FRIENDLY LAYOUT PATCH
+   Mobile-first protection against fixed/min-width/overflow bugs.
+   Does not change Firebase/data logic.
+   ========================================================= */
+*,*::before,*::after{box-sizing:border-box}
+html,body{width:100%;max-width:100%;min-width:0;overflow-x:hidden!important}
+body{margin:0;overscroll-behavior-x:none}
+#app{width:100%;max-width:100%;min-width:0;overflow-x:clip}
+#app>*{min-width:0;max-width:100%}
+img,video,iframe,canvas,svg{max-width:100%}
+button,input,textarea,select{max-width:100%;font:inherit}
+
+/* Never let a flex/grid child force the page wider than the viewport. */
+main,section,article,header,footer,aside,nav,form,.app-card,.app-hero{min-width:0;max-width:100%}
+.flex>*{min-width:0}
+.grid>*{min-width:0}
+
+/* Long Bangla names, IDs, URLs and post text must wrap instead of widening cards. */
+main :where(p,h1,h2,h3,h4,h5,h6,span,div,a,small){overflow-wrap:anywhere}
+main input,main textarea,main select{min-width:0}
+
+/* ---------- People: the exact overflow shown in the supplied mobile screenshot ---------- */
+.oikko-people-page{
+  width:100%!important;
+  max-width:1480px!important;
+  min-width:0!important;
+  margin:0 auto!important;
+}
+.oikko-people-hero{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+.oikko-people-hero h1,.oikko-people-hero p{max-width:100%;overflow-wrap:anywhere}
+.oikko-people-search{width:100%!important;max-width:100%!important;min-width:0!important}
+.oikko-people-grid{width:100%!important;max-width:100%!important;min-width:0!important}
+.oikko-person-card{width:100%!important;max-width:100%!important;min-width:0!important}
+.oikko-person-info{min-width:0!important;max-width:100%!important;overflow:hidden}
+.oikko-person-name,.oikko-person-meta{max-width:100%;overflow-wrap:anywhere}
+.oikko-person-action{max-width:100%;min-width:0;flex:0 1 auto}
+
+/* ---------- Header / launcher ---------- */
+.app-topbar{width:100%!important;max-width:100%!important;min-width:0!important}
+.app-topbar .app-header-inner{width:100%!important;max-width:100%!important;min-width:0!important}
+.app-topbar .app-header-inner>*{min-width:0}
+.app-topbar .app-search{min-width:0!important;max-width:100%!important}
+body > #app > div > .w-full.px-3.sm\:px-6.py-1\.5{width:100%!important;max-width:100%!important;min-width:0!important}
+body > #app > div > .w-full.px-3.sm\:px-6.py-1\.5 > .max-w-7xl{width:100%!important;max-width:100%!important;min-width:0!important}
+body > #app > div > .w-full.px-3.sm\:px-6.py-1\.5 .grid{min-width:0!important}
+body > #app > div > .w-full.px-3.sm\:px-6.py-1\.5 button{min-width:0!important;max-width:100%!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- Auth / feed / settings / events / album ---------- */
+.auth-panel,.auth-shell,.oikko-settings-page,.oikko-tube-page,.oikko-fullscreen-shell{min-width:0!important;max-width:100%!important}
+main.max-w-7xl{width:100%!important;max-width:100%!important;min-width:0!important}
+main.max-w-7xl>*{min-width:0;max-width:100%}
+main [class~="grid-cols-2"],
+main [class~="sm:grid-cols-2"]{min-width:0}
+main [class~="grid-cols-2"]>* ,main [class~="sm:grid-cols-2"]>*{min-width:0}
+
+/* Cards and horizontal toolbars should wrap rather than overflow. */
+main .flex{min-width:0}
+main .flex.flex-wrap{row-gap:8px}
+main .app-card{max-width:100%;min-width:0;overflow-wrap:anywhere}
+main table{max-width:100%;}
+main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
+
+/* ---------- Modals / drawers ---------- */
+#modal-container,#lightbox-container{max-width:100%;min-width:0}
+#modal-container .fixed,#lightbox-container .fixed{max-width:100vw}
+#modal-container [role="dialog"],#modal-container .oikko-mini-modal,#modal-container .oikko-group-modal{max-width:calc(100vw - 20px)!important;min-width:0!important}
+#modal-container img,#lightbox-container img{max-width:100%;height:auto}
+
+/* ---------- Safe-area bottom navigation / fixed controls ---------- */
+.app-nav{padding-bottom:env(safe-area-inset-bottom,0px)!important}
+#toast-container{max-width:calc(100vw - 24px)!important;right:12px!important}
+
+/* ---------- Mobile layout ---------- */
+@media (max-width:767px){
+  html,body,#app{width:100%!important;max-width:100vw!important;min-width:0!important}
+  body{font-size:14px}
+
+  /* Header never becomes wider than the phone. */
+  #app.oikko-sidebar-app .app-topbar .app-header-inner{
+    width:100%!important;
+    max-width:100%!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+    gap:6px!important;
+    overflow:hidden!important;
+  }
+  #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-1.sm\:gap-2.shrink-0{
+    gap:3px!important;
+    min-width:0!important;
+  }
+  #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-1.sm\:gap-2.shrink-0 > button,
+  #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-1.sm\:gap-2.shrink-0 > div{
+    flex:0 0 auto!important;
+    width:40px!important;
+    min-width:40px!important;
+    height:40px!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-1.sm\:gap-2.shrink-0 > div{
+    width:38px!important;min-width:38px!important;
+  }
+  #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-1.sm\:gap-2.shrink-0 > div span:not(.w-2){display:none!important}
+  #app.oikko-sidebar-app .app-topbar .app-brand-mark{width:40px!important;height:40px!important}
+  #app.oikko-sidebar-app .app-topbar .app-brand-name{font-size:20px!important}
+  #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-2\.5{gap:7px!important;min-width:0!important}
+  #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-2\.5 > div:last-child{min-width:0!important}
+  #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-2\.5 .text-\\[9px\\]{font-size:8px!important}
+
+  #app.oikko-sidebar-app .app-topbar > .md\:hidden{padding-left:12px!important;padding-right:12px!important;padding-bottom:10px!important}
+  #app.oikko-sidebar-app .app-topbar > .md\:hidden .app-search{width:100%!important;min-width:0!important}
+
+  /* People cards become two-row cards: avatar + details on row 1, action on row 2. */
+  .oikko-people-page{padding:12px 12px calc(86px + env(safe-area-inset-bottom,0px))!important}
+  .oikko-people-hero{padding:18px!important;border-radius:20px!important}
+  .oikko-people-hero h1{font-size:27px!important;line-height:1.1!important}
+  .oikko-people-hero p{font-size:13px!important;line-height:1.55!important;margin-top:7px!important}
+  .oikko-people-search{margin-top:12px!important;padding:10px 12px!important;border-radius:15px!important}
+  .oikko-people-search input{font-size:14px!important}
+  .oikko-people-grid{grid-template-columns:minmax(0,1fr)!important;gap:10px!important;margin-top:12px!important}
+  .oikko-person-card{
+    display:grid!important;
+    grid-template-columns:50px minmax(0,1fr)!important;
+    grid-template-rows:auto auto!important;
+    column-gap:11px!important;
+    row-gap:8px!important;
+    align-items:center!important;
+    padding:12px!important;
+    border-radius:17px!important;
+    overflow:hidden!important;
+  }
+  .oikko-person-card > button:first-child{grid-column:1;grid-row:1;min-width:0!important;max-width:50px!important}
+  .oikko-person-info{grid-column:2;grid-row:1;min-width:0!important;width:100%!important}
+  .oikko-person-action{
+    grid-column:1 / -1!important;
+    grid-row:2!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    min-height:40px!important;
+    padding:9px 12px!important;
+    border-radius:12px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .oikko-person-action.secondary{display:flex!important}
+  .oikko-person-avatar{width:50px!important;height:50px!important}
+  .oikko-person-name{font-size:16px!important;line-height:1.25!important}
+  .oikko-person-meta{font-size:11px!important;line-height:1.3!important}
+  .oikko-presence-text{font-size:10px!important}
+
+  /* Make all common two-column content stacks safe on phones. */
+  main [class~="grid-cols-2"]{grid-template-columns:minmax(0,1fr)!important}
+  main [class~="sm:grid-cols-2"]{grid-template-columns:minmax(0,1fr)!important}
+  main [class*="lg:grid-cols-"]{grid-template-columns:minmax(0,1fr)!important}
+  main [class*="md:grid-cols-"]{grid-template-columns:minmax(0,1fr)!important}
+  main [class*="col-span-"]{grid-column:1 / -1!important}
+
+  /* Buttons/forms: fit the viewport and keep comfortable touch targets. */
+  main button,main a[role="button"]{max-width:100%;min-width:0}
+  main input,main textarea,main select{max-width:100%;min-width:0!important}
+  main textarea{overflow-wrap:anywhere}
+
+  /* Images/media cannot create a horizontal page. */
+  main img,main video,main iframe{max-width:100%!important}
+
+  /* Full-width pages should not inherit desktop padding. */
+  .oikko-settings-page{padding-left:12px!important;padding-right:12px!important}
+  .oikko-tube-page{width:100%!important;min-width:0!important}
+  .oikko-fullscreen-shell{width:100%!important;min-width:0!important}
+
+  /* Messenger/tube internal rows: allow text and controls to shrink. */
+  .oikko-messenger-view *, .oikko-tube-view *, .oikko-messenger-app *{min-width:0}
+  .oikko-messenger-view .flex,.oikko-tube-view .flex{min-width:0}
+  .oikko-messenger-view button,.oikko-tube-view button{max-width:100%}
+
+  /* Side drawers / info panels stay inside the physical phone. */
+  .oikko-chat-info-menu,.om-info-panel{max-width:100vw!important;width:min(100vw,420px)!important}
+}
+
+@media (max-width:380px){
+  #app.oikko-sidebar-app .app-topbar .app-header-inner{padding-left:9px!important;padding-right:9px!important}
+  #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-2\.5{gap:5px!important}
+  #app.oikko-sidebar-app .app-topbar .app-brand-mark{width:36px!important;height:36px!important}
+  #app.oikko-sidebar-app .app-topbar .app-brand-name{font-size:18px!important}
+  #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-1.sm\:gap-2.shrink-0 > button,
+  #app.oikko-sidebar-app .app-topbar .app-header-inner > .flex.items-center.gap-1.sm\:gap-2.shrink-0 > div{width:36px!important;min-width:36px!important;height:36px!important}
+  .oikko-people-page{padding-left:9px!important;padding-right:9px!important}
+  .oikko-person-card{grid-template-columns:44px minmax(0,1fr)!important}
+  .oikko-person-avatar{width:44px!important;height:44px!important}
+  .oikko-person-card > button:first-child{max-width:44px!important}
+}
+
+/* Tablets: use a comfortable single content column when space is tight. */
+@media (min-width:768px) and (max-width:1024px){
+  .oikko-people-page{padding-left:18px!important;padding-right:18px!important}
+  .oikko-people-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+</style>
 </head>
 <body class="min-h-screen flex flex-col">
 
@@ -3881,7 +4095,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       return `
         <main class="oikko-tube-page oikko-fullscreen-shell min-h-screen pb-24">
           <div class="oikko-tube-download-wrap max-w-5xl mx-auto px-3 sm:px-5 pt-3">
-            ${oikkoDownloadVisible()?`<div class="oikko-download-wrap"><button type="button" class="oikko-download-close" onclick="event.stopPropagation();dismissOikkoDownload()" aria-label="বন্ধ করুন">×</button><a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-tube-download w-full items-center justify-center rounded-2xl px-5 py-3.5 bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] font-black text-sm shadow-lg transition" aria-label="Download Oikko App">Download Oikko App</a></div>`:``}
+            ${oikkoDownloadVisible()?`<div class="oikko-download-wrap"><a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-tube-download w-full items-center justify-center rounded-2xl px-5 py-3.5 bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] font-black text-sm shadow-lg transition" aria-label="Download Oikko App">Download Oikko App</a></div>`:``}
           </div>
           <section class="max-w-5xl mx-auto px-3 sm:px-5 pt-4">
             <div class="oikko-tube-panel rounded-3xl p-4 sm:p-5">
@@ -5678,7 +5892,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
             </div>
             </div>
           </div>
-          ${oikkoDownloadVisible()?`<div class="oikko-download-wrap"><button type="button" class="oikko-download-close" onclick="event.stopPropagation();dismissOikkoDownload()" aria-label="বন্ধ করুন">×</button><a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-login-download w-full items-center justify-center mt-4 px-6 py-4 rounded-2xl bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] font-black text-base shadow-lg transition-all" aria-label="Download Oikko App">Download Oikko App</a></div>`:``}
+          ${oikkoDownloadVisible()?`<div class="oikko-download-wrap"><a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-login-download w-full items-center justify-center mt-4 px-6 py-4 rounded-2xl bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] font-black text-base shadow-lg transition-all" aria-label="Download Oikko App">Download Oikko App</a></div>`:``}
         </div>
       </div>
       `;
@@ -6131,7 +6345,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
               </button>
 
               <!-- Desktop Download Oikko App -->
-              ${oikkoDownloadVisible()?`<div class="oikko-download-wrap"><button type="button" class="oikko-download-close" onclick="event.stopPropagation();dismissOikkoDownload()" aria-label="বন্ধ করুন">×</button><a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-header-download hidden md:flex items-center justify-center whitespace-nowrap px-3 py-2.5 rounded-xl bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] text-xs font-black transition-colors cursor-pointer" aria-label="Download Oikko App">Download Oikko App</a></div>`:``}
+              ${oikkoDownloadVisible()?`<div class="oikko-download-wrap"><a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-header-download hidden md:flex items-center justify-center whitespace-nowrap px-3 py-2.5 rounded-xl bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] text-xs font-black transition-colors cursor-pointer" aria-label="Download Oikko App">Download Oikko App</a></div>`:``}
 
               <!-- Logout Button -->
               <button onclick="handleLogout()" title="লগআউট" class="p-2.5 rounded-xl bg-[#F27D61]/90 hover:bg-[#df674f] text-white transition-colors cursor-pointer">
@@ -6218,7 +6432,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
               ${isAdmin ? navItem('shield-check', 'এডমিন প্যানেল', "switchView('admin')", state.activeView === 'admin', 'oikko-sidebar-admin') : ''}
             </div>
 
-            ${oikkoDownloadVisible()?`<div class="oikko-sidebar-download oikko-download-wrap"><button type="button" class="oikko-download-close" onclick="event.stopPropagation();dismissOikkoDownload()" aria-label="বন্ধ করুন">×</button><div class="oikko-sidebar-download-mark"><i data-lucide="download" class="w-5 h-5"></i></div><div class="oikko-sidebar-download-title">ঐক্য অ্যাপ ডাউনলোড করুন</div><div class="oikko-sidebar-download-text">হোম, ঐক্য টিউব এবং আরও অনেক কিছু একসাথে!</div><a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="oikko-sidebar-download-btn">ডাউনলোড অ্যাপ <i data-lucide="download" class="w-3.5 h-3.5"></i></a></div>`:``}
+            ${oikkoDownloadVisible()?`<div class="oikko-sidebar-download oikko-download-wrap"><div class="oikko-sidebar-download-mark"><i data-lucide="download" class="w-5 h-5"></i></div><div class="oikko-sidebar-download-title">ঐক্য অ্যাপ ডাউনলোড করুন</div><div class="oikko-sidebar-download-text">হোম, ঐক্য টিউব এবং আরও অনেক কিছু একসাথে!</div><a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="oikko-sidebar-download-btn">ডাউনলোড অ্যাপ <i data-lucide="download" class="w-3.5 h-3.5"></i></a></div>`:``}
           </div>
         </aside>
       `;
