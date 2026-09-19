@@ -1359,6 +1359,65 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
 .messenger-theme-dark .oikko-chat-info-action:hover{background:#263a30!important;border-color:#3b5146!important;}
 @media(max-width:650px){.oikko-chat-info-menu{width:min(100vw,420px);border-radius:16px 0 0 16px}.oikko-chat-info-body{padding-bottom:calc(24px + env(safe-area-inset-bottom));}}
 </style>
+<style id="oikko-messenger-reference-ui-v3">
+.oikko-messenger-app{height:100dvh;width:100%;display:grid;grid-template-columns:330px minmax(0,1fr) 330px;background:#202020;color:#e9e9e9;overflow:hidden;font-family:Arial,Helvetica,sans-serif}
+.oikko-messenger-app *{box-sizing:border-box}.om-left-panel,.om-center-panel,.om-info-panel{min-width:0;min-height:0}.om-left-panel{background:#1f1f1f;border-right:1px solid #2e2e2e;display:flex;flex-direction:column}.om-left-head{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 14px}.om-left-head h1{font-size:18px;font-weight:800;margin:0;color:#f2f2f2}.om-left-head>div{display:flex;gap:7px}.om-left-head button,.om-chat-actions button,.om-mobile-back{width:30px;height:30px;border:0;border-radius:50%;background:#333;color:#ddd;display:flex;align-items:center;justify-content:center;cursor:pointer}.om-left-head button:hover,.om-chat-actions button:hover{background:#454545}.om-search{height:34px;margin:0 10px 8px;border-radius:18px;background:#373737;display:flex;align-items:center;padding:0 10px;gap:7px;color:#aaa}.om-search input{width:100%;border:0;outline:0;background:transparent;color:#eee;font-size:12px}.om-search input::placeholder{color:#aaa}.om-left-list{flex:1;overflow:auto;padding:0 6px 12px}.om-list-label{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;padding:7px 7px 4px}.om-chat-row{position:relative;width:100%;min-height:66px;border:0;border-radius:9px;background:transparent;color:#eee;display:flex;align-items:center;gap:10px;padding:7px 8px;text-align:left;cursor:pointer}.om-chat-row:hover{background:#2a2a2a}.om-chat-row.active{background:#343434}.om-chat-row-main{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px}.om-chat-row-main b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.om-chat-row-main small{font-size:10px;color:#a6a6a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.om-chat-row-meta{font-size:9px;color:#8e8e8e;align-self:flex-start;margin-top:4px}.om-muted-icon{color:#8c8c8c}.om-group-avatar{width:44px;height:44px;border-radius:50%;background:#383838;display:flex;align-items:center;justify-content:center;font-size:21px;flex:none}.om-no-results{padding:30px 12px;text-align:center;color:#888;font-size:12px}.om-center-panel{background:#202020;display:flex;flex-direction:column;overflow:hidden}.om-chat-topbar{height:54px;flex:none;border-bottom:1px solid #2e2e2e;display:flex;align-items:center;padding:0 12px;gap:10px;background:#202020}.om-chat-title{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}.om-chat-title b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.om-chat-title span{font-size:9px;color:#9a9a9a}.om-chat-actions{display:flex;gap:4px}.om-chat-actions button{background:transparent;color:#b300ff}.om-chat-actions button:hover{background:#2c2c2c}.om-chat-actions button b{font-size:16px}.om-mobile-back{display:none}.om-messages{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 14px 12px}.om-messages-inner{min-height:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:7px}.om-chat-empty{margin:auto;text-align:center;color:#888;padding:40px 20px}.om-chat-empty-avatar{width:54px;height:54px;border-radius:50%;margin:auto;background:#343434;display:flex;align-items:center;justify-content:center;font-size:25px}.om-chat-empty h3{color:#ddd;margin:10px 0 4px;font-size:14px}.om-chat-empty p{font-size:11px}.om-msg-line{display:flex;width:100%}.om-msg-line.mine{justify-content:flex-end}.om-msg-line.theirs{justify-content:flex-start}.om-bubble{position:relative;max-width:min(72%,560px);padding:8px 10px 6px;border-radius:15px;color:#fff;cursor:pointer;word-break:break-word}.om-bubble.in{background:#4a4a4a;border-bottom-left-radius:5px}.om-bubble.out{background:#8b18ff;border-bottom-right-radius:5px}.om-msg-text{font-size:12px;line-height:1.45;white-space:pre-wrap}.om-msg-time{display:block;text-align:right;font-size:8px;color:#d0d0d0;margin-top:3px}.om-sender{font-size:9px;font-weight:800;color:#ddd;margin-bottom:2px}.om-media-image,.om-media-video{max-width:100%;max-height:330px;border-radius:10px;display:block;margin-bottom:4px;object-fit:contain;background:#111}.om-msg-menu{position:absolute;right:5px;bottom:calc(100% + 4px);min-width:120px;background:#2b2b2b;border:1px solid #444;border-radius:9px;padding:4px;z-index:50;box-shadow:0 12px 30px rgba(0,0,0,.35)}.om-msg-menu button{width:100%;border:0;background:transparent;color:#eee;text-align:left;padding:7px 9px;border-radius:6px;font-size:11px;cursor:pointer}.om-msg-menu button:hover{background:#3b3b3b}.om-msg-menu button.danger{color:#ff7777}.om-composer{position:relative;flex:none;min-height:56px;border-top:1px solid #2e2e2e;background:#202020;display:flex;align-items:center;gap:4px;padding:8px 12px}.om-composer>button{width:30px;height:30px;border:0;background:transparent;color:#aaa;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}.om-composer>button:hover{background:#303030;color:#ddd}.om-compose-input{flex:1;min-width:0;height:34px;border-radius:17px;background:#383838;display:flex;align-items:center;padding:0 12px}.om-compose-input input{width:100%;border:0;outline:0;background:transparent;color:#fff;font-size:12px}.om-compose-input input::placeholder{color:#aaa}.om-send{color:#9a20ff!important}.om-like{font-size:16px!important}.om-emoji-pop{position:absolute;bottom:52px;left:42px;width:250px;max-height:190px;overflow:auto;background:#2b2b2b;border:1px solid #444;border-radius:12px;padding:8px;display:grid;grid-template-columns:repeat(8,1fr);gap:3px;box-shadow:0 15px 40px rgba(0,0,0,.4);z-index:100}.om-emoji-pop button{border:0;background:transparent;color:#fff;border-radius:7px;padding:6px;cursor:pointer;font-size:18px}.om-emoji-pop button:hover{background:#3b3b3b}.om-info-panel{background:#1f1f1f;border-left:1px solid #2e2e2e;display:flex;flex-direction:column;overflow:hidden}.om-info-profile{flex:none;text-align:center;padding:18px 14px 13px;border-bottom:1px solid #2d2d2d}.om-info-profile h3{margin:8px 0 2px;font-size:13px;color:#eee}.om-info-profile p{margin:0;color:#999;font-size:9px}.om-info-badge{display:inline-flex;align-items:center;gap:4px;background:#3a3a3a;color:#d4d4d4;border-radius:13px;padding:5px 8px;font-size:8px;margin-top:8px}.om-info-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.om-info-action{width:100%;border:0;background:transparent;color:#ddd;min-height:38px;border-radius:8px;display:flex;align-items:center;gap:10px;padding:6px 8px;text-align:left;cursor:pointer;font-size:10px}.om-info-action:hover{background:#2b2b2b}.om-info-action.is-active{background:#2e2e2e}.om-info-quick .om-info-action{display:flex;flex-direction:column;justify-content:center;gap:4px;text-align:center;padding:5px 2px;font-size:8px}.om-info-icon{width:23px;height:23px;border-radius:50%;background:#393939;display:flex;align-items:center;justify-content:center;color:#ddd;flex:none}.om-info-quick .om-info-icon{width:30px;height:30px}.om-info-scroll{flex:1;overflow:auto;padding:5px 9px 20px}.om-info-section{padding:2px 0 8px}.om-info-section-title{display:flex;align-items:center;justify-content:space-between;color:#aaa;font-size:10px;font-weight:800;padding:8px 5px 4px}.om-current-choice{font-size:9px;color:#888;padding:4px 8px 7px;display:flex;gap:10px;align-items:center}.om-current-choice b{font-size:16px}.om-current-choice span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.om-info-action.danger{color:#ff7474}.om-empty{display:flex;align-items:center;justify-content:center;background:#202020}.om-empty-card{width:min(420px,92vw);text-align:center;background:#292929;border:1px solid #3b3b3b;border-radius:16px;padding:35px;color:#ddd}.om-empty-icon{width:64px;height:64px;border-radius:50%;background:#8b18ff;color:#fff;margin:0 auto 15px;display:flex;align-items:center;justify-content:center}.om-empty-card h2{font-size:18px;font-weight:800}.om-empty-card p{font-size:12px;color:#999;margin:8px 0 18px}.om-primary-btn{border:0;background:#8b18ff;color:#fff;padding:10px 18px;border-radius:8px;font-weight:800;cursor:pointer}.om-dark .om-info-action:hover,.om-dark .om-chat-row:hover{background:#2a2a2a}
+@media(max-width:1100px){.oikko-messenger-app{grid-template-columns:300px minmax(0,1fr)}.om-info-panel{display:none}.om-chat-actions button:last-child{display:flex}}
+@media(max-width:767px){.oikko-messenger-app{display:block;position:relative}.om-left-panel,.om-center-panel{width:100%;height:100dvh}.om-center-panel{display:none}.om-mobile-chat .om-left-panel{display:none}.om-mobile-chat .om-center-panel{display:flex}.om-mobile-back{display:flex}.om-left-head{height:52px}.om-chat-topbar{height:58px}.om-bubble{max-width:84%}.om-composer{padding-bottom:calc(8px + env(safe-area-inset-bottom))}.om-info-panel{position:fixed;z-index:500;right:0;top:0;width:min(360px,92vw);height:100dvh;display:none;box-shadow:-20px 0 50px rgba(0,0,0,.45)}.om-info-panel.is-mobile-open{display:flex}}
+</style>
+<style id="oikko-messenger-clean-info-v2">
+/* Oikko Messenger: clean profile-only info panel */
+.om-info-profile{position:relative}.om-info-back-btn{position:absolute;left:10px;top:10px;width:34px;height:34px;border:0;border-radius:50%;background:#303030;color:#ddd;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5}.om-info-back-btn:hover{background:#3a3a3a;color:#fff}.om-info-profile-centered{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  text-align:center!important;
+  padding:22px 14px 18px!important;
+}
+.om-info-avatar-wrap{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 8px;
+}
+.om-info-profile-centered .om-info-avatar-wrap img{
+  width:96px!important;
+  height:96px!important;
+  min-width:96px!important;
+  min-height:96px!important;
+  display:block!important;
+  margin:0 auto!important;
+  object-position:center;
+}
+.om-info-profile-centered h3{
+  width:100%;
+  text-align:center!important;
+  margin:7px 0 2px!important;
+}
+.om-info-profile-centered p{
+  width:100%;
+  text-align:center!important;
+  margin:0!important;
+}
+.om-info-profile-centered .om-info-badge{
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+.om-info-profile-centered .om-info-quick{
+  width:100%;
+  max-width:250px;
+  margin:13px auto 0!important;
+}
+.om-info-group-members-section{
+  padding-top:10px!important;
+}
+@media(max-width:767px){
+  .om-info-profile-centered{padding-top:28px!important}
+  .om-info-profile-centered .om-info-quick{max-width:280px}
+}
+</style>
 </head>
 <body class="min-h-screen flex flex-col">
 
@@ -1413,10 +1472,16 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         window.firebaseAuthApi = { signInAnonymously, onAuthStateChanged };
         window.firebaseAuthReady = signInAnonymously(auth).then(cred => {
           window.firebaseAnonymousUser = cred.user;
+          window.firebaseAuthError = null;
           return cred.user;
         }).catch(err => {
-          console.warn("Firebase anonymous auth unavailable. Firestore rules requiring auth will reject writes:", err);
-          return null;
+          window.firebaseAnonymousUser = null;
+          window.firebaseAuthError = err;
+          console.error("Firebase Anonymous Authentication failed:", err);
+          // Do not silently continue. Firestore rules use request.auth != null,
+          // so continuing here would turn an Auth problem into confusing
+          // permission-denied errors throughout the app.
+          throw err;
         });
       } catch (authErr) {
         console.warn("Firebase Auth initialization skipped:", authErr);
@@ -1479,33 +1544,27 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       window.getFirebaseOwnerUid = () => String(window.firebaseAuth?.currentUser?.uid || window.firebaseAnonymousUser?.uid || "");
       window.withFirebaseOwner = (data) => ({ ...data, ownerUid: window.getFirebaseOwnerUid() });
 
-      // Wait for anonymous Firebase Auth before starting Firestore listeners.
-      // This allows Firestore rules to require request.auth != null.
-      Promise.resolve(window.firebaseAuthReady || null).finally(() => {
+      // Auth must finish before Firestore starts.  Otherwise every first
+      // Firestore request can race request.auth and appear as permission-denied.
+      Promise.resolve(window.firebaseAuthReady || null).then((user) => {
+        if (!user) throw Object.assign(new Error('Firebase Auth user was not created.'), {code:'auth-not-ready'});
+        window.firestoreStatus = db ? 'initialized' : 'error';
         window.dispatchEvent(new CustomEvent("firebaseReady"));
         setTimeout(() => {
           try {
             if (typeof window.startFirebaseSyncIfReady === 'function') window.startFirebaseSyncIfReady();
           } catch (syncErr) { console.warn('Firebase sync startup skipped:', syncErr); }
         }, 0);
+      }).catch(err => {
+        window.firestoreStatus = 'auth-error';
+        window.firebaseAuthError = err;
+        console.error('Firebase startup blocked because Authentication is unavailable:', err?.code, err?.message || err);
+        window.dispatchEvent(new CustomEvent('firebaseAuthError', {detail:{code:err?.code || 'auth-error', message:err?.message || String(err)}}));
       });
-      if (db && window.fb && typeof window.fb.getDoc === 'function') {
-        Promise.resolve(window.firebaseAuthReady || null).then(() =>
-          window.fb.getDoc(window.fb.doc(db, 'oikko_system', 'firestore_connection'))
-        ).then(() => {
-          window.firestoreStatus = 'connected';
-          console.info('Oikko Firestore connected:', firebaseConfig.projectId);
-          if (window.dispatchEvent) window.dispatchEvent(new CustomEvent('firestoreConnected'));
-        }).catch(err => {
-          window.firestoreStatus = 'error';
-          console.error('Oikko Firestore check failed:', err?.code, err?.message);
-        });
-      }
 
-      // Start Realtime Firestore Sync if application logic is loaded
-      if (typeof window.initFirebaseSync === "function") {
-        window.initFirebaseSync();
-      }
+      // Do not run an independent Firestore read here.  The application bootstrap
+      // performs one authenticated write/read test in a single controlled path.
+      // This avoids a false early "Firestore error" before Rules/Auth are ready.
     } catch (firebaseInitErr) {
       console.error("Firebase initialization error:", firebaseInitErr);
     }
@@ -2609,8 +2668,11 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       const fb = window.fb;
       try {
         const authUser = await (window.firebaseAuthReady || Promise.resolve());
-        if (!authUser && window.firebaseAuth) {
-          throw Object.assign(new Error('Firebase Anonymous Authentication failed or is disabled.'), { code: 'auth-not-ready' });
+        if (!authUser) {
+          throw Object.assign(new Error('Firebase Anonymous Authentication is not available. Enable Anonymous sign-in in Firebase Console.'), { code: 'auth-not-ready' });
+        }
+        if (!window.getFirebaseOwnerUid || !window.getFirebaseOwnerUid()) {
+          throw Object.assign(new Error('Firebase Auth UID is missing.'), { code: 'auth-uid-missing' });
         }
 
         // This document is a real connectivity/write test and also makes the
@@ -2652,7 +2714,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         await seedCollection('events', INITIAL_EVENTS);
         await seedCollection('past_events_gallery', INITIAL_PAST_EVENT_PHOTOS);
       } catch (err) {
-        window.firestoreStatus = 'error';
+        window.firestoreStatus = err?.code === 'permission-denied' ? 'permission-denied' : (String(err?.code || '').startsWith('auth-') ? 'auth-error' : 'error');
         console.error('Oikko Firestore bootstrap failed:', err?.code, err?.message || err);
         if (typeof window.showToast === 'function') {
           window.showToast('Firestore সংযোগ ব্যর্থ: ' + (err?.code || 'unknown-error'), 'error');
@@ -4633,13 +4695,9 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
 
     function canMessageUser(userId) {
       const me = state.currentUser;
-      return Boolean(
-        me &&
-        userId &&
-        String(userId) !== String(me.id) &&
-        state.users.some(u => u && String(u.id) === String(userId)) &&
-        isAcceptedFriend(userId)
-      );
+      const id=String(userId||'');
+      if(state.settings?.blockedUsers?.[id]) return false;
+      return Boolean(me && id && id !== String(me.id) && state.users.some(u => u && String(u.id) === id) && isAcceptedFriend(id));
     }
 
     function stopMessengerListener() {
@@ -5046,6 +5104,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
     function closeMessengerChatInfo(){
       document.querySelector('.oikko-chat-info-menu')?.remove();
       document.querySelector('.oikko-chat-info-backdrop')?.remove();
+      document.querySelector('.om-info-panel')?.classList.remove('is-mobile-open');
     }
 
     function showMessengerActionModal(title, bodyHtml, buttons=''){
@@ -5055,6 +5114,8 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
     }
 
     function toggleMessengerChatInfo(){
+      const persistent=document.querySelector('.om-info-panel');
+      if(persistent){ persistent.classList.toggle('is-mobile-open'); if(window.lucide)lucide.createIcons(); return; }
       const old=document.querySelector('.oikko-chat-info-menu');
       if(old){closeMessengerChatInfo();return;}
       const activeKey=String(state.activeChatUserId||'');
@@ -5393,399 +5454,163 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       return list.length ? list[list.length - 1] : null;
     }
 
+    function renderMessengerInfoPanel(target, activeGroup, messages) {
+      const isGroup = !!activeGroup;
+      const id = String(isGroup ? activeGroup.id : target.id);
+      const meId = String(state.currentUser?.id || '');
+      const muted = isGroup ? !!state.settings?.groupMutes?.[id] : !!state.settings?.chatMutes?.[id];
+      const blocked = !isGroup && !!state.settings?.blockedUsers?.[id];
+      const restricted = !isGroup && !!state.settings?.restrictedUsers?.[id];
+      const avatar = (u, size='w-24 h-24') => `<img src="${escapeHtml(safeProfilePicture(u?.profilePicture))}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160'" class="${size} rounded-full object-cover border-2 border-[#303030] shadow-xl" />`;
+      const title = isGroup ? (activeGroup?.name || 'Oikko Group') : (target?.fullName || 'User');
+      const subtitle = isGroup ? `${Array.isArray(activeGroup?.memberIds) ? activeGroup.memberIds.length : 0} members` : (target?.studentId || 'oikko user');
+      const action = (icon,label,fn,active=false,extra='') => `<button type="button" class="om-info-action ${active?'is-active':''} ${extra}" onclick="${fn}"><span class="om-info-icon"><i data-lucide="${icon}" class="w-4 h-4"></i></span><span>${label}</span></button>`;
+
+      /*
+       * Clean Messenger info panel:
+       * - Removed the old "Customise chat" section.
+       * - Removed the old "Media and files" section.
+       * - Removed the old "Privacy & support" section.
+       * - Kept the useful top-level profile actions and group-member access.
+       * - The profile image/name/ID stay centered.
+       */
+      let html=`<aside class="om-info-panel">
+        <div class="om-info-profile om-info-profile-centered">
+                    <button type="button" class="om-info-back-btn" onclick="closeMessengerChatInfo()" title="Back" aria-label="Back to chat"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+<div class="om-info-avatar-wrap">
+            ${avatar(isGroup ? {profilePicture:activeGroup.imageUrl || activeGroup.memberProfiles?.[0]?.profilePicture || ''} : target,'w-24 h-24')}
+          </div>
+          <h3>${escapeHtml(title)}</h3>
+          <p>${escapeHtml(subtitle)}</p>
+          <div class="om-info-badge"><i data-lucide="lock" class="w-3 h-3"></i> ${isGroup ? 'Group chat' : 'Secure access'}</div>
+          <div class="om-info-quick">
+            ${action('user-round','Profile',isGroup?`showMessengerGroupMembers('${escapeHtml(id)}')`:`openSocialProfile('${escapeHtml(id)}');closeMessengerChatInfo()`)}
+            ${action(muted?'bell':'bell-off',muted?'Unmute':'Mute',`toggleMessengerMuteFromInfo('${isGroup?'group:'+escapeHtml(id):escapeHtml(id)}')`,muted)}
+            ${action('search','Search',`searchMessengerChat('${escapeHtml(isGroup?'group:'+id:id)}')`)}
+          </div>
+        </div>
+        ${isGroup ? `<div class="om-info-scroll"><section class="om-info-section om-info-group-members-section"><div class="om-info-section-title">Group members <span>${Array.isArray(activeGroup.memberIds)?activeGroup.memberIds.length:0}</span></div>${action('users-round','View members',`showMessengerGroupMembers('${escapeHtml(id)}')`)}${String(activeGroup.ownerId)===meId?action('settings-2','Group settings',`toggleMessengerChatInfo()`):''}</section></div>` : `<div class="om-info-scroll"><section class="om-info-section"><div class="om-info-section-title">Chat actions</div>${action('trash-2','Clear chat',`clearMessengerChat('${escapeHtml(id)}')`)}${action(blocked?'user-round-check':'ban',blocked?'Unblock':'Block',`toggleDirectChatBlock('${escapeHtml(id)}')`,blocked,'om-info-danger')}</section></div>`}
+      </aside>`;
+      return html;
+    }
+
+    function showMessengerGroupMembers(groupId){
+      const g=getMessengerGroup(groupId); if(!g)return;
+      const members=(g.memberIds||[]).map(id=>state.users.find(u=>String(u.id)===String(id))).filter(Boolean);
+      showMessengerActionModal('Group members',members.length?members.map(u=>`<div class="flex items-center gap-3 p-2.5 rounded-xl mb-1 bg-black/5 dark:bg-white/5"><img src="${escapeHtml(safeProfilePicture(u.profilePicture))}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="w-9 h-9 rounded-full object-cover shrink-0"><div class="min-w-0"><b class="text-sm block truncate">${escapeHtml(u.fullName||'User')}</b><span class="text-[10px] opacity-60">${escapeHtml(u.studentId||'Campus user')}</span></div>${String(u.id)===String(g.ownerId)?'<span class="ml-auto text-[9px] font-black">Admin</span>':''}</div>`).join(''):'<div class="text-sm opacity-60 text-center py-6">কোনো member পাওয়া যায়নি।</div>');
+    }
+    window.showMessengerGroupMembers=showMessengerGroupMembers;
+
+    function cycleDirectChatEmoji(targetId){
+      state.settings.chatEmojis=state.settings.chatEmojis||{};
+      const emojis=['👍','❤️','😂','😮','😢','😡','🔥','🎓','✨','😊'];
+      const id=String(targetId), current=state.settings.chatEmojis[id]||'👍';
+      state.settings.chatEmojis[id]=emojis[(emojis.indexOf(current)+1)%emojis.length];
+      saveOikkoSettings(); showToast(`Chat emoji: ${state.settings.chatEmojis[id]}`,'success'); renderMessengerOnly();
+    }
+    function toggleMessengerMessagePermissions(targetId){
+      state.settings.messagePermissions=state.settings.messagePermissions||{};
+      const id=String(targetId); const current=state.settings.messagePermissions[id]||'friends';
+      const next=current==='friends'?'everyone':'friends'; state.settings.messagePermissions[id]=next; saveOikkoSettings();
+      showToast(next==='friends'?'শুধু Friends message করতে পারবে।':'Message permission: সবাই', 'success');
+    }
+    function toggleMessengerDisappearing(chatKey){
+      state.settings.disappearingMessages=state.settings.disappearingMessages||{};
+      const key=String(chatKey); const cur=Number(state.settings.disappearingMessages[key]||0);
+      state.settings.disappearingMessages[key]=cur?0:86400000; saveOikkoSettings();
+      showToast(cur?'Disappearing Messages বন্ধ।':'Disappearing Messages: 24 hours','success');
+      renderMessengerOnly();
+    }
+    function toggleMessengerReadReceipts(){
+      state.settings.readReceipts=state.settings.readReceipts===false; saveOikkoSettings();
+      showToast(state.settings.readReceipts===false?'Read receipts বন্ধ।':'Read receipts চালু।','success'); renderMessengerOnly();
+    }
+    function toggleMessengerRestrict(targetId){
+      state.settings.restrictedUsers=state.settings.restrictedUsers||{}; const id=String(targetId);
+      state.settings.restrictedUsers[id]=!state.settings.restrictedUsers[id]; saveOikkoSettings();
+      showToast(state.settings.restrictedUsers[id]?'User restrict করা হয়েছে।':'User unrestrict করা হয়েছে।','success'); renderMessengerOnly();
+    }
+    function showMessengerEncryptionInfo(){
+      showMessengerActionModal('Encryption status','<div class="text-sm leading-6"><b>Oikko Messenger-এর বর্তমান baseline-এ true end-to-end encryption চালু নেই।</b><br><br>Chat data Firestore access rules এবং authenticated application flow-এর মাধ্যমে সুরক্ষিত রাখার জন্য design করা হয়েছে। E2E encryption চালু করতে client-side key management ও encrypted message payload architecture আলাদাভাবে প্রয়োজন হবে।</div>');
+    }
+    function showMessengerMediaFiles(chatKey,type){
+      const list=Array.isArray(state.messages[chatKey])?state.messages[chatKey]:[];
+      let items=[];
+      if(type==='media') items=list.filter(m=>m.imageUrl||m.videoUrl).map(m=>m.imageUrl?`<img src="${escapeHtml(safeRemoteMediaUrl(m.imageUrl,''))}" class="w-full max-h-56 object-cover rounded-xl mb-2" loading="lazy"><div class="text-[10px] opacity-60 mb-2">${escapeHtml(m.time||'')}</div>`:`<video src="${escapeHtml(safeRemoteMediaUrl(m.videoUrl,''))}" controls class="w-full max-h-56 rounded-xl mb-2"></video><div class="text-[10px] opacity-60 mb-2">${escapeHtml(m.time||'')}</div>`);
+      else if(type==='files') items=list.filter(m=>m.fileName).map(m=>`<div class="flex items-center gap-3 p-3 rounded-xl bg-black/5 dark:bg-white/5 mb-2"><i data-lucide="file" class="w-5 h-5"></i><div class="min-w-0"><b class="block truncate text-sm">${escapeHtml(m.fileName)}</b><span class="text-[10px] opacity-60">${m.fileSize?`${Math.round(m.fileSize/1024)} KB`:'File'}</span></div></div>`);
+      else items=list.flatMap(m=>{const matches=String(m.text||'').match(/https?:\/\/[^\s]+/g)||[];return matches.map(url=>`<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="block p-3 rounded-xl bg-black/5 dark:bg-white/5 mb-2 text-sm break-all">${escapeHtml(url)}</a>`)});
+      showMessengerActionModal(type==='media'?'Media':type==='files'?'Files':'Links',items.length?items.join(''):'<div class="text-sm opacity-60 text-center py-8">এই chat-এ কিছু পাওয়া যায়নি।</div>');
+    }
+    async function reportMessengerGroup(groupId){
+      const report={type:'messenger_group',targetId:String(groupId),reporterId:String(state.currentUser?.id||''),createdAt:Date.now(),status:'pending',ownerUid:window.getFirebaseOwnerUid?window.getFirebaseOwnerUid():''};
+      try{if(!window.firebaseDb||!window.fb?.addDoc)throw Object.assign(new Error('Firebase unavailable'),{code:'unavailable'});await (window.firebaseAuthReady||Promise.resolve());await window.fb.addDoc(window.fb.collection(window.firebaseDb,'reports'),report);showToast('Group report জমা হয়েছে।','success');}catch(e){showToast(e?.code==='permission-denied'?'Report Rules অনুমতি দিচ্ছে না।':'Report জমা দেওয়া যায়নি।','error');}
+    }
+    async function clearMessengerChat(chatKey){
+      const key=String(chatKey||'');
+      if(!key)return;
+      if(!confirm('এই chat-এর সব message মুছে ফেলতে চান?'))return;
+      const localKey=key;
+      try{
+        if(key.startsWith('group:')){
+          const gid=key.slice(6); const ref=window.fb?.collection?.(window.firebaseDb,'oikko_groups',gid,'messages');
+          if(ref&&window.fb?.getDocs&&window.fb?.deleteDoc){const snap=await window.fb.getDocs(ref);await Promise.all(snap.docs.map(d=>window.fb.deleteDoc(d.ref)));}
+        }else{
+          const targetId=key; const chatId=makeChatId(state.currentUser.id,targetId); const ref=window.fb?.collection?.(window.firebaseDb,'oikko_chats',chatId,'messages');
+          if(ref&&window.fb?.getDocs&&window.fb?.deleteDoc){const snap=await window.fb.getDocs(ref);await Promise.all(snap.docs.map(d=>window.fb.deleteDoc(d.ref)));}
+        }
+        state.messages[localKey]=[]; saveMessages(state.messages); showToast('Chat clear করা হয়েছে।','success'); renderMessengerOnly();
+      }catch(e){console.error(e);showToast(e?.code==='permission-denied'?'Chat clear করার permission নেই।':'Chat clear করা যায়নি।','error');}
+    }
+    window.cycleDirectChatEmoji=cycleDirectChatEmoji; window.toggleMessengerMessagePermissions=toggleMessengerMessagePermissions; window.toggleMessengerDisappearing=toggleMessengerDisappearing; window.toggleMessengerReadReceipts=toggleMessengerReadReceipts; window.toggleMessengerRestrict=toggleMessengerRestrict; window.showMessengerEncryptionInfo=showMessengerEncryptionInfo; window.showMessengerMediaFiles=showMessengerMediaFiles; window.reportMessengerGroup=reportMessengerGroup; window.clearMessengerChat=clearMessengerChat;
+
     function renderMessengerScreen() {
       const me = state.currentUser;
       if (!me) return renderAuthScreen();
-
       startMessengerGroupsListener();
       const peers = getMessengerPeers();
       const groups = getMessengerGroups();
       if (!peers.length && !groups.length) {
-        return `
-          <div class="messenger-shell oikko-fullscreen-shell min-h-screen flex flex-col">
-            <style>
-              .messenger-shell{background:#F5F5F0;color:#42422F}
-              .dark .messenger-shell{background:#12231C;color:#E2E2D5}
-              .messenger-blue{background:#2F6F57}
-              .messenger-panel{background:#fff}
-              .dark .messenger-panel{background:#FFFFFF}
-            </style>
-            <header class="messenger-topbar h-16 shrink-0 bg-white dark:bg-[#FFFFFF] border-b border-[#E2E2D5] dark:border-[#2A2A20] flex items-center px-3 sm:px-5 gap-3">
-              <button onclick="backToCampus()" class="w-10 h-10 rounded-full bg-[#E2E2D5] dark:bg-[#2A2A20] flex items-center justify-center hover:bg-[#D9E6DD] transition" title="Oikko Campus">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-              </button>
-              <div class="w-10 h-10 rounded-full messenger-blue text-white flex items-center justify-center">
-                <i data-lucide="message-circle" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h1 class="font-extrabold text-base leading-tight messenger-top-title">Messenger</h1>
-                <p class="text-[11px] text-[#8A8A6A] dark:text-[#B9D7C3]">Oikko Campus</p>
-              </div>
-              <div class="ml-auto flex items-center gap-1">
-                <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] flex items-center justify-center" title="থিম পরিবর্তন">
-                  <i data-lucide="${state.isDarkMode ? 'sun' : 'moon'}" class="w-5 h-5"></i>
-                </button>
-              </div>
-            </header>
-            <main class="flex-1 flex items-center justify-center p-5">
-              <div class="messenger-panel rounded-2xl p-8 text-center shadow-sm max-w-md w-full">
-                <div class="w-16 h-16 rounded-full messenger-blue text-white mx-auto flex items-center justify-center mb-4">
-                  <i data-lucide="users-round" class="w-8 h-8"></i>
-                </div>
-                <h2 class="font-bold text-lg">কোনো Friend Chat পাওয়া যাচ্ছে না</h2>
-                <p class="text-sm text-[#8A8A6A] dark:text-[#B9D7C3] mt-2">প্রথমে অন্য user-কে Friend Request পাঠান। তারা Request Accept করার পরই তাদের profile Messenger-এ দেখা যাবে এবং মেসেজ/যোগাযোগ করা যাবে।</p>
-                <button onclick="switchView('friends')" class="mt-5 px-5 py-2.5 rounded-lg messenger-blue text-white text-sm font-bold hover:opacity-90">Friends খুলুন</button>
-              </div>
-            </main>
-          </div>
-        `;
+        return `<div class="oikko-messenger-app om-empty"><div class="om-empty-card"><div class="om-empty-icon"><i data-lucide="message-circle" class="w-8 h-8"></i></div><h2>No chats yet</h2><p>Accepted Friends বা Group তৈরি হলে আপনার Messenger এখানে দেখা যাবে।</p><button onclick="switchView('friends')" class="om-primary-btn">Open Friends</button></div></div>`;
       }
-
       const activeGroup = String(state.activeChatUserId||'').startsWith('group:') ? getMessengerGroup(String(state.activeChatUserId).slice(6)) : null;
       if (!activeGroup && !canMessageUser(state.activeChatUserId)) state.activeChatUserId = peers[0]?.id || (groups[0] ? getMessengerGroupKey(groups[0].id) : '');
-      const target = activeGroup ? {id:getMessengerGroupKey(activeGroup.id), fullName:activeGroup.name||'Oikko Group', profilePicture:(activeGroup.imageUrl||activeGroup.memberProfiles?.[0]?.profilePicture||''), studentId: activeGroup.emoji || 'Group chat'} : (state.users.find(u => u.id === state.activeChatUserId) || peers[0]);
-      const messages = activeGroup ? getChatMessages(getMessengerGroupKey(activeGroup.id)) : getChatMessages(target.id);
+      const target = activeGroup ? {id:getMessengerGroupKey(activeGroup.id),fullName:activeGroup.name||'Oikko Group',profilePicture:activeGroup.imageUrl||activeGroup.memberProfiles?.[0]?.profilePicture||'',studentId:activeGroup.emoji||'Group chat'} : (state.users.find(u=>String(u.id)===String(state.activeChatUserId))||peers[0]);
+      const chatKey=activeGroup?getMessengerGroupKey(activeGroup.id):String(target.id);
+      const messages=getChatMessages(chatKey);
       if(activeGroup) subscribeToMessengerGroup(activeGroup.id); else subscribeToMessengerChat(target.id);
-
-      const search = String(state.messengerSearch || '').trim().toLowerCase();
-      const visiblePeers = peers.filter(u => {
-        if (!search) return true;
-        return [u.fullName, u.studentId, u.mobileNumber, u.studentClass, u.roll]
-          .filter(Boolean).some(v => String(v).toLowerCase().includes(search));
-      });
-
-      const avatar = (u, size='w-10 h-10') =>
-        `<img src="${escapeHtml(safeProfilePicture(u.profilePicture))}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="${size} rounded-full object-cover shrink-0" />`;
-
-      return `
-        <div class="messenger-shell min-h-screen flex flex-col bg-[#F5F5F0] dark:bg-[#12231C] text-[#42422F] dark:text-[#E2E2D5] ${state.isDarkMode ? 'messenger-theme-dark' : 'messenger-theme-light'} ${state.messengerMobileChat ? 'messenger-mobile-chat' : ''}">
-          <style>
-            .messenger-shell{font-family:Outfit,'Hind Siliguri',sans-serif}
-            .messenger-shell *{scrollbar-width:thin}
-            .messenger-frame{isolation:isolate}
-            .messenger-list-head{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(250,252,249,.94));border-bottom:1px solid rgba(47,111,87,.07)}
-            .messenger-theme-dark .messenger-list-head{background:linear-gradient(180deg,#17251E,#142019);border-bottom-color:#2A2A20}
-            .messenger-chat-item{border:1px solid transparent}
-            .messenger-chat-item .messenger-list-avatar{box-shadow:0 2px 10px rgba(18,35,28,.10)}
-            .messenger-theme-dark .messenger-chat-item .messenger-list-avatar{box-shadow:0 2px 10px rgba(0,0,0,.24)}
-            .messenger-chat-header{background:rgba(255,255,255,.94)!important;backdrop-filter:blur(14px)}
-            .messenger-theme-dark .messenger-chat-header{background:rgba(18,35,28,.94)!important}
-            .messenger-input{transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}
-            /* Messenger inputs must stay clean and transparent inside their own containers.
-               This overrides the Campus-wide dark-mode input background rules. */
-            .messenger-shell input[type="text"],
-            .messenger-shell #messenger-search,
-            .messenger-shell #chat-input-field{
-              background:transparent!important;
-              border:0!important;
-              outline:none!important;
-              box-shadow:none!important;
-              -webkit-appearance:none!important;
-              appearance:none!important;
-              background-image:none!important;
-            }
-            .messenger-shell input[type="text"]:focus,
-            .messenger-shell #messenger-search:focus,
-            .messenger-shell #chat-input-field:focus{
-              background:transparent!important;
-              border:0!important;
-              outline:none!important;
-              box-shadow:none!important;
-            }
-            .messenger-shell input[type="text"]::selection{
-              background:rgba(242,125,97,.28);
-            }
-            .messenger-input:focus-within{border-color:#2F6F57!important;box-shadow:0 0 0 4px rgba(47,111,87,.10)}
-            .messenger-theme-dark .messenger-input:focus-within{border-color:#6DBA97!important;box-shadow:0 0 0 4px rgba(109,186,151,.12)}
-            .messenger-message-bubble{letter-spacing:.005em}
-            .messenger-shell .send-btn{box-shadow:0 7px 18px rgba(47,111,87,.22);transition:transform .15s ease,box-shadow .15s ease}
-            .messenger-shell .send-btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(47,111,87,.28)}
-            .messenger-shell .send-btn:active{transform:scale(.94)}
-            .messenger-shell .composer-extra{transition:background .15s ease,transform .15s ease}
-            .messenger-emoji-picker{overscroll-behavior:contain}
-            .messenger-media-limit{font-size:9px;color:#68766D}
-            .messenger-theme-dark .messenger-media-limit{color:#AEBDB4}
-            .messenger-shell .composer-extra:hover{transform:translateY(-1px)}
-            .messenger-main{background:radial-gradient(circle at 12% 0%,rgba(216,243,228,.45),transparent 28rem),radial-gradient(circle at 100% 100%,rgba(242,125,97,.07),transparent 24rem)}
-            .messenger-frame{box-shadow:0 18px 55px rgba(18,35,28,.10)!important;border-color:rgba(47,111,87,.18)!important}
-            .messenger-chat-item{position:relative}
-            .messenger-chat-item:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(18,35,28,.06)}
-            .messenger-chat-item:active{transform:scale(.99)}
-            .messenger-search{border:1px solid transparent;transition:box-shadow .18s ease,border-color .18s ease,background .18s ease}
-            .messenger-search:focus-within{border-color:rgba(47,111,87,.38);box-shadow:0 0 0 4px rgba(47,111,87,.10)}
-            .messenger-empty-icon{background:#E7F3EC;color:#2F6F57}
-            .messenger-theme-light .messenger-chat-item:not(.messenger-active):hover{background:#F4F8F5!important}
-            .messenger-theme-light .messenger-active{box-shadow:inset 3px 0 0 #F27D61,0 5px 18px rgba(47,111,87,.07)!important}
-            .messenger-theme-light .messenger-chat{background:linear-gradient(180deg,#FFFFFF 0%,#FBFCF9 100%)!important}
-            .messenger-theme-light .messenger-composer{background:rgba(255,255,255,.96)!important;backdrop-filter:blur(14px)}
-            .messenger-theme-dark .messenger-main{background:radial-gradient(circle at 20% 0%,rgba(47,111,87,.16),transparent 28rem),#0F1712}
-            .messenger-theme-dark .messenger-frame{box-shadow:0 20px 60px rgba(0,0,0,.28)!important;border-color:#304239!important}
-            .messenger-theme-dark .messenger-chat-item:not(.messenger-active):hover{background:#20332A!important}
-            .messenger-theme-dark .messenger-active{box-shadow:inset 3px 0 0 #F27D61,0 5px 18px rgba(0,0,0,.18)!important}
-            .messenger-theme-dark .messenger-chat{background:linear-gradient(180deg,#12231C 0%,#101A15 100%)!important}
-            .messenger-theme-dark .messenger-composer{background:rgba(23,37,30,.96)!important;backdrop-filter:blur(14px)}
-            .messenger-theme-dark .messenger-empty-icon{background:#244535;color:#9ED0B5}
-            .messenger-theme-dark .messenger-search{border-color:#3A4A41!important}
-            .messenger-theme-dark .messenger-search:focus-within{border-color:#6DBA97;box-shadow:0 0 0 4px rgba(109,186,151,.12)}
-            .messenger-theme-dark .messenger-incoming{box-shadow:0 4px 14px rgba(0,0,0,.10)}
-            .messenger-outgoing{box-shadow:0 5px 16px rgba(47,111,87,.20)!important}
-            .messenger-topbar{backdrop-filter:blur(16px);background:transparent!important}
-            /* Force clear, high-contrast text in each Messenger theme. */
-            .messenger-theme-light{color:#1F2A24!important}
-            .messenger-theme-light .messenger-list-title,
-            .messenger-theme-light .messenger-top-title,
-            .messenger-theme-light .messenger-list .font-bold,
-            .messenger-theme-light .messenger-chat-header h2,
-            .messenger-theme-light .messenger-chat h3,
-            .messenger-theme-light .messenger-search input,
-            .messenger-theme-light #chat-input-field{color:#1F2A24!important}
-            .messenger-theme-light .messenger-search input::placeholder,
-            .messenger-theme-light #chat-input-field::placeholder{color:#68766D!important;opacity:1!important}
-            .messenger-theme-light .messenger-secondary-text{color:#5F6E65!important}
-            .messenger-theme-light .messenger-incoming{color:#1F2A24!important}
-            .messenger-theme-dark{color:#EDF3EE!important}
-            .messenger-theme-dark .messenger-topbar{background:transparent!important;color:#EDF3EE!important;border-color:#2A2A20!important}
-            .messenger-theme-dark .messenger-list{background:#17251E!important;color:#EDF3EE!important;border-color:#2A2A20!important}
-            .messenger-theme-dark .messenger-chat{background:#12231C!important;color:#EDF3EE!important}
-            .messenger-theme-dark .messenger-composer{background:#17251E!important;color:#EDF3EE!important;border-color:#2A2A20!important}
-            .messenger-theme-dark .messenger-list-title,
-            .messenger-theme-dark .messenger-top-title,
-            .messenger-theme-dark .messenger-list .font-bold,
-            .messenger-theme-dark .messenger-chat-header h2,
-            .messenger-theme-dark .messenger-chat h3,
-            .messenger-theme-dark .messenger-search input,
-            .messenger-theme-dark #chat-input-field{color:#EDF3EE!important}
-            .messenger-theme-dark .messenger-search{background:#26352C!important;color:#EDF3EE!important}
-            .messenger-theme-dark .messenger-search input::placeholder,
-            .messenger-theme-dark #chat-input-field::placeholder{color:#AEBDB4!important;opacity:1!important}
-            .messenger-theme-dark .messenger-secondary-text{color:#B9D7C3!important}
-            .messenger-theme-dark .messenger-incoming{background:#2A2A20!important;color:#EDF3EE!important}
-            .messenger-theme-dark .messenger-active{background:#244535!important}
-            .messenger-theme-dark .messenger-input{background:#26352C!important;border-color:#3A4A41!important;color:#EDF3EE!important}
-            .messenger-theme-dark .messenger-hover:hover{background:#26352C!important}
-            .messenger-shell .messenger-accent{color:#F27D61}
-            .messenger-shell .messenger-brand{background:linear-gradient(135deg,#E7FBEF,#8ED9B0);color:#12231C}
-            .messenger-shell .messenger-coral{background:#F27D61;color:#fff}
-            .messenger-topbar{box-shadow:none!important}
-            /* Theme is controlled by Messenger's own theme class, so Light Mode never inherits the Campus dark selector. */
-            .messenger-theme-light{background:#F5F5F0!important;color:#1F2A24!important}
-            .messenger-theme-light .messenger-topbar{background:transparent!important;color:#1F2A24!important;border-color:#E2E2D5!important}
-            .messenger-theme-light .messenger-list{background:#FFFFFF!important;color:#1F2A24!important;border-color:#E2E2D5!important}
-            .messenger-theme-light .messenger-chat{background:#FFFFFF!important;color:#1F2A24!important}
-            .messenger-theme-light .messenger-composer{background:#FFFFFF!important;color:#1F2A24!important;border-color:#E2E2D5!important}
-            .messenger-theme-light .messenger-search{background:#F5F5F0!important;color:#1F2A24!important;border-color:#D9E6DD!important}
-            .messenger-theme-light .messenger-active{background:#E7F3EC!important;color:#1F2A24!important}
-            .messenger-theme-light .messenger-incoming{background:#E2E2D5!important;color:#1F2A24!important}
-            .messenger-theme-light .messenger-hover:hover{background:#F5F5F0!important}
-            .messenger-theme-light .messenger-search input,
-            .messenger-theme-light #chat-input-field{background:transparent!important;color:#1F2A24!important}
-            .messenger-theme-light .messenger-search input::placeholder,
-            .messenger-theme-light #chat-input-field::placeholder{color:#68766D!important;opacity:1!important}
-            .messenger-theme-light .messenger-chat-header{background:rgba(255,255,255,.96)!important;color:#1F2A24!important;border-color:#E2E2D5!important}
-            .messenger-theme-light .messenger-chat h3,
-            .messenger-theme-light .messenger-chat-header h2{color:#1F2A24!important}
-            .messenger-blue{background:#2F6F57}
-            .messenger-search{background:#F5F5F0;color:#42422F}
-            .dark .messenger-search{background:#2A2A20;color:#E2E2D5}
-            .messenger-list{background:#fff}
-            .dark .messenger-list{background:#FFFFFF}
-            .messenger-chat{background:#fff}
-            .dark .messenger-chat{background:#12231C}
-            .messenger-hover:hover{background:#F5F5F0}
-            .dark .messenger-hover:hover{background:#2A2A20}
-            .messenger-active{background:#E7F3EC}
-            .dark .messenger-active{background:#244535}
-            .messenger-incoming{background:#E2E2D5;color:#42422F}
-            .dark .messenger-incoming{background:#2A2A20;color:#E2E2D5}
-            .messenger-outgoing{background:linear-gradient(135deg,#2F6F57,#3B8065);color:#fff;box-shadow:0 4px 12px rgba(47,111,87,.14)}
-            .messenger-composer{background:#fff}
-            .dark .messenger-composer{background:#FFFFFF}
-            .messenger-input{background:#F5F5F0;border:1px solid #E2E2D5}
-            .dark .messenger-input{background:#2A2A20;color:#E2E2D5}
-            .messenger-scroll::-webkit-scrollbar{width:7px;height:7px}
-            .messenger-scroll::-webkit-scrollbar-thumb{background:#c5c7ca;border-radius:20px}
-            /* Responsive Messenger: phone, tablet and desktop */
-            .messenger-touch{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-            .messenger-conversation,.messenger-sidebar{min-height:0}
-            /* Keep Messenger itself locked to the viewport so the composer never scrolls away. */
-            .messenger-shell{height:100dvh;min-height:100dvh;overflow:hidden}
-            .messenger-main{height:calc(100dvh - 4rem);min-height:0;box-sizing:border-box;overflow:hidden}
-            .messenger-frame{height:100%;min-height:0;box-sizing:border-box}
-            .messenger-conversation{position:relative;min-height:0;overflow:hidden}
-            .messenger-composer{position:sticky;bottom:0;z-index:30;flex-shrink:0}
-            #messages-scroll-container{min-height:0;overscroll-behavior:contain}
-            @media (max-width: 767px){
-              .messenger-shell{height:100dvh;min-height:100dvh;overflow:hidden}
-              .messenger-topbar{height:60px!important;padding-left:10px!important;padding-right:10px!important}
-              .messenger-topbar .messenger-top-title{display:block}
-              .messenger-main{height:calc(100dvh - 60px)!important;min-height:0!important;box-sizing:border-box!important;overflow:hidden!important}
-              .messenger-frame{height:100%!important;min-height:0!important;border-radius:0!important;border-left:0!important;border-right:0!important;border-bottom:0!important;box-shadow:none!important}
-              .messenger-sidebar{width:100%!important;display:flex!important;border-right:0!important}
-              .messenger-conversation{display:none!important;width:100%;min-width:0}
-              .messenger-shell.messenger-mobile-chat .messenger-sidebar{display:none!important}
-              .messenger-shell.messenger-mobile-chat .messenger-conversation{display:flex!important}
-              .messenger-list-head{padding:12px 12px 8px!important}
-              .messenger-list-title{font-size:22px!important}
-              .messenger-search{height:44px!important;font-size:16px!important}
-              #messenger-search{font-size:16px!important}
-              .messenger-chat-header{height:60px!important;padding:0 8px!important}
-              #messages-scroll-container{padding:12px 10px 10px!important;overscroll-behavior:contain}
-              #messages-scroll-container .max-w-3xl{width:100%;max-width:100%}
-              .messenger-message-bubble{max-width:84%!important;font-size:15px!important;line-height:1.4!important}
-              .messenger-composer{padding:7px 8px calc(8px + env(safe-area-inset-bottom))!important}
-              .messenger-composer-inner{gap:4px!important}
-              .messenger-composer .composer-extra{display:flex!important}
-              .messenger-composer .messenger-input{min-height:42px!important}
-              .messenger-composer .messenger-emoji-picker{width:min(290px,calc(100vw - 24px));left:0;bottom:46px}
-              #chat-input-field{font-size:16px!important}
-              .messenger-composer .send-btn{width:42px!important;height:42px!important}
-              .messenger-mobile-note{display:none}
-            }
-            @media (min-width:768px){
-              .messenger-main{height:calc(100dvh - 4rem);min-height:0;box-sizing:border-box;overflow:hidden}
-              .messenger-frame{height:100%;min-height:0;box-sizing:border-box}
-            }
-            @media (max-width: 380px){
-              .messenger-topbar .messenger-subtitle{display:none}
-              .messenger-list-avatar{width:52px!important;height:52px!important}
-              .messenger-message-bubble{max-width:88%!important}
-            }
-            @media (min-width:768px) and (max-width:1024px){
-              .messenger-sidebar{width:290px!important}
-              .messenger-frame{border-radius:14px!important}
-            }
-          </style>
-
-          <!-- Messenger-style header -->
-          <header class="messenger-topbar h-16 shrink-0 border-b border-[#E2E2D5] dark:border-[#2A2A20] flex items-center px-3 sm:px-5 gap-3 z-20">
-            <button onclick="backToCampus()" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 transition" title="Oikko Campus-এ ফিরুন">
-              <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </button>
-            <div class="w-10 h-10 rounded-full messenger-blue text-white flex items-center justify-center shadow-sm">
-              <i data-lucide="message-circle" class="w-5 h-5"></i>
-            </div>
-            <div class="min-w-0">
-              <h1 class="font-extrabold text-base leading-tight">Messenger</h1>
-              <p class="text-[11px] text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text messenger-subtitle">Oikko Campus-এর বন্ধুদের সাথে চ্যাট</p>
-            </div>
-            <div class="ml-auto flex items-center gap-1">
-              <button onclick="requestNotificationPermission()" class="w-10 h-10 rounded-full hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] flex items-center justify-center transition" title="মেসেজ নোটিফিকেশন চালু করুন">
-                <i data-lucide="bell" class="w-5 h-5"></i>
-              </button>
-              <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] flex items-center justify-center transition" title="থিম পরিবর্তন">
-                <i data-lucide="${state.isDarkMode ? 'sun' : 'moon'}" class="w-5 h-5"></i>
-              </button>
-              ${oikkoDownloadVisible()?`<div class="oikko-download-wrap"><button type="button" class="oikko-download-close" onclick="event.stopPropagation();dismissOikkoDownload()" aria-label="বন্ধ করুন">×</button><a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-messenger-download hidden md:flex items-center justify-center whitespace-nowrap px-3 py-2 rounded-full bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] text-xs font-black transition" aria-label="Download Oikko App">Download Oikko App</a></div>`:``}
-            </div>
+      const q=String(state.messengerSearch||'').trim().toLowerCase();
+      const filteredPeers=peers.filter(u=>!q||[u.fullName,u.studentId,u.mobileNumber,u.studentClass,u.roll].filter(Boolean).some(v=>String(v).toLowerCase().includes(q)));
+      const avatar=(u,size='w-11 h-11')=>`<img src="${escapeHtml(safeProfilePicture(u?.profilePicture))}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120'" class="${size} rounded-full object-cover shrink-0" />`;
+      const item=(u)=>{const muted=!!state.settings?.chatMutes?.[String(u.id)];const active=!activeGroup&&String(target.id)===String(u.id);const last=getMessengerLastMessage(u.id);return `<button type="button" onclick="selectChatUser('${escapeHtml(String(u.id))}')" class="om-chat-row ${active?'active':''}">${avatar(u,'w-11 h-11')}<span class="om-chat-row-main"><b>${escapeHtml(u.fullName||'User')}</b><small>${escapeHtml(last?.text||'You are connected')}</small></span><span class="om-chat-row-meta">${escapeHtml(last?.time||'')}</span>${muted?'<i data-lucide="bell-off" class="om-muted-icon w-3.5 h-3.5"></i>':''}</button>`};
+      const groupItem=(g)=>{const active=activeGroup&&String(activeGroup.id)===String(g.id);return `<button type="button" onclick="selectMessengerGroup('${escapeHtml(g.id)}')" class="om-chat-row ${active?'active':''}"><div class="om-group-avatar">${escapeHtml(g.emoji||'👥')}</div><span class="om-chat-row-main"><b>${escapeHtml(g.name||'Oikko Group')}</b><small>${Array.isArray(g.memberIds)?g.memberIds.length:0} members</small></span><span class="om-chat-row-meta"></span></button>`};
+      const msgHtml=messages.length?messages.map(msg=>{const mine=msg.sender==='me';const mid=msg.id||msg.firebaseId||msg.clientMessageId||'';return `<div class="om-msg-line ${mine?'mine':'theirs'}"><div class="om-bubble ${mine?'out':'in'}" onclick="toggleMessengerMessageMenu('${escapeHtml(mid)}')">${!mine&&activeGroup&&msg.senderName?`<div class="om-sender">${escapeHtml(msg.senderName)}</div>`:''}${msg.mediaType==='video'&&msg.videoUrl?`<video src="${escapeHtml(safeRemoteMediaUrl(msg.videoUrl,''))}" controls playsinline preload="metadata" class="om-media-video"></video>`:''}${msg.mediaType!=='video'&&msg.imageUrl?`<img src="${escapeHtml(safeRemoteMediaUrl(msg.imageUrl,''))}" class="om-media-image" loading="lazy">`:''}${msg.text&&!(msg.mediaType==='video'&&msg.text==='ভিডিও পাঠিয়েছেন')&&!(msg.mediaType==='image'&&msg.text==='ছবি পাঠিয়েছেন')?`<div class="om-msg-text">${escapeHtml(msg.text)}</div>`:''}<span class="om-msg-time">${escapeHtml(msg.time||'')}</span>${mine?`<div class="messenger-message-menu hidden om-msg-menu" data-message-id="${escapeHtml(mid)}" onclick="event.stopPropagation()"><button onclick="pinMessengerMessage('${escapeHtml(chatKey)}','${escapeHtml(mid)}')">📌 Pin</button><button class="danger" onclick="deleteMessengerMessage('${escapeHtml(target.id)}','${escapeHtml(mid)}','${escapeHtml(msg.clientMessageId||'')}')">Delete</button></div>`:''}</div></div>`}).join(''):`<div class="om-chat-empty"><div class="om-chat-empty-avatar">${activeGroup?'👥':'💬'}</div><h3>${escapeHtml(target.fullName||'Chat')}</h3><p>এই কথোপকথন এখান থেকেই শুরু হবে</p></div>`;
+      return `<div class="oikko-messenger-app ${state.isDarkMode?'om-dark':'om-light'} ${state.messengerMobileChat?'om-mobile-chat':''}">
+        <aside class="om-left-panel">
+          <div class="om-left-head"><h1>Chats</h1><div><button onclick="backToCampus()" title="Oikko Campus"><i data-lucide="home" class="w-4 h-4"></i></button><button onclick="createMessengerGroup()" title="New group"><i data-lucide="square-pen" class="w-4 h-4"></i></button></div></div>
+          <div class="om-search"><i data-lucide="search" class="w-4 h-4"></i><input id="messenger-search" value="${escapeHtml(state.messengerSearch||'')}" oninput="handleMessengerSearch(this.value)" placeholder="Search Messenger" autocomplete="off"></div>
+          <div class="om-left-list messenger-scroll">${groups.length?`<div class="om-list-label">Groups</div>${groups.map(groupItem).join('')}`:''}<div class="om-list-label">Chats</div>${filteredPeers.length?filteredPeers.map(item).join(''):`<div class="om-no-results">No chats found</div>`}</div>
+        </aside>
+        <main class="om-center-panel">
+          <header class="om-chat-topbar">
+            <button class="om-mobile-back" onclick="backToMessengerList()"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+            ${avatar(target,'w-9 h-9')}
+            <div class="om-chat-title"><b>${escapeHtml(target.fullName||'Oikko Group')}</b><span>${activeGroup?'Group chat':(isMessengerUserActive(target.id)?'Active':'Offline')}</span></div>
+            <div class="om-chat-actions"><button title="Chat info" onclick="toggleMessengerChatInfo()"><b>i</b></button></div>
           </header>
-
-          <main class="messenger-main flex-1 min-h-0 w-full max-w-[1400px] mx-auto p-0 sm:p-3 md:p-4">
-            <div class="messenger-frame h-[calc(100vh-4rem)] sm:h-[calc(100vh-6rem)] min-h-[520px] overflow-hidden sm:rounded-2xl border border-[#D9E6DD] dark:border-[#2A2A20] shadow-sm flex bg-white dark:bg-[#12231C]">
-
-              <!-- Messenger conversation list -->
-              <aside class="messenger-sidebar w-[330px] lg:w-[360px] shrink-0 messenger-list border-r border-[#E2E2D5] dark:border-[#2A2A20] flex flex-col min-h-0">
-                <div class="messenger-list-head px-4 pt-4 pb-3">
-                  <div class="flex items-center justify-between mb-3">
-                    <h2 class="messenger-list-title text-2xl font-extrabold tracking-tight">Chats</h2>
-                    <div class="flex items-center gap-1">
-                      <button onclick="backToCampus()" class="w-9 h-9 rounded-full messenger-hover flex items-center justify-center" title="Campus">
-                        <i data-lucide="graduation-cap" class="w-4.5 h-4.5"></i>
-                      </button>
-                      <button onclick="createMessengerGroup()" class="w-9 h-9 rounded-full messenger-hover flex items-center justify-center" title="নতুন Group" aria-label="নতুন Group">
-                        <i data-lucide="users-round" class="w-4.5 h-4.5"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="messenger-search rounded-full h-10 px-3 flex items-center gap-2">
-                    <i data-lucide="search" class="w-4 h-4 text-[#8A8A6A] dark:text-[#B9D7C3] shrink-0"></i>
-                    <input id="messenger-search" type="text" value="${escapeHtml(state.messengerSearch || '')}" oninput="handleMessengerSearch(this.value)" class="min-w-0 flex-1 bg-transparent border-0 outline-none text-sm" placeholder="Messenger-এ খুঁজুন" autocomplete="off" autocapitalize="off" spellcheck="false" />
-                  </div>
-                </div>
-
-                <div id="messenger-peer-list" class="messenger-scroll flex-1 overflow-y-auto px-2 pb-3">
-                  ${groups.length ? `<div class="px-2 pt-1 pb-1 text-[10px] font-black uppercase tracking-wider opacity-50">Groups</div>${groups.map(g=>`<button type="button" onclick="selectMessengerGroup('${escapeHtml(g.id)}')" class="messenger-touch messenger-chat-item w-full text-left rounded-2xl px-2.5 py-2.5 flex items-center gap-3 transition-all ${activeGroup&&String(activeGroup.id)===String(g.id)?'messenger-active':''}"><div class="w-14 h-14 rounded-full messenger-blue text-white flex items-center justify-center shrink-0"><i data-lucide="users-round" class="w-6 h-6"></i></div><div class="min-w-0 flex-1"><div class="messenger-name font-bold text-[15px] truncate">${escapeHtml(g.name||'Oikko Group')}</div><div class="text-[12px] messenger-secondary-text truncate">${Array.isArray(g.memberIds)?g.memberIds.length:0} জন সদস্য</div></div></button>`).join('')}<div class="px-2 pt-3 pb-1 text-[10px] font-black uppercase tracking-wider opacity-50">Friends</div>` : ''}
-                  ${renderMessengerPeerList(peers, activeGroup ? '' : target.id, state.messengerSearch)}
-                </div>
-              </aside>
-
-              <!-- Messenger conversation -->
-              <section class="messenger-conversation flex-1 min-w-0 flex flex-col messenger-chat">
-                <div class="messenger-chat-header h-[68px] shrink-0 px-4 sm:px-5 border-b border-[#E2E2D5] dark:border-[#2A2A20] flex items-center gap-3">
-                  <button onclick="backToMessengerList()" class="md:hidden w-9 h-9 rounded-full messenger-hover flex items-center justify-center shrink-0" title="Chats">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                  </button>
-                  <div class="relative shrink-0">
-                    ${avatar(target,'w-10 h-10')}
-                    <span class="absolute right-0 bottom-0 w-3 h-3 rounded-full ${isMessengerUserActive(target.id)?'bg-[#2F6F57]':'bg-[#9AA59F]'} border-2 border-white dark:border-[#12231C]"></span>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <h2 class="font-bold text-[15px] truncate">${escapeHtml(target.fullName)}</h2>
-                    <div class="flex items-center gap-2 min-w-0">
-                      <p class="text-[11px] text-[#8A8A6A] dark:text-[#B9D7C3] truncate">${activeGroup ? 'Group chat' : (isMessengerUserActive(target.id)?'Active':'Inactive') + ' • ' + escapeHtml(target.studentId || 'Campus user')}</p>
-                    </div>
-                  </div>
-                  <button onclick="toggleMessengerChatInfo()" class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] border border-transparent hover:border-[#DCE8E1] dark:hover:border-[#385046] transition" title="Chat Info" aria-label="Chat Info"><span class="font-black text-base">i</span></button>
-                </div>
-
-                <div id="messages-scroll-container" class="messenger-scroll flex-1 overflow-y-auto px-3 sm:px-6 py-5 bg-white dark:bg-[#12231C]">
-                  <div class="max-w-3xl mx-auto min-h-full flex flex-col justify-end gap-1.5">
-                    <div class="text-center pb-5">
-                      ${avatar(target,'w-20 h-20 mx-auto')}
-                      <h3 class="font-bold text-base mt-2">${escapeHtml(target.fullName)}</h3>
-                      <p class="text-xs text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text mt-1">Oikko Campus user</p>
-                    </div>
-                    ${messages.length ? messages.map(msg => `
-                      <div class="group flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}">
-                        <div class="messenger-message-bubble relative max-w-[78%] sm:max-w-[65%] ${msg.sender === 'me' ? 'messenger-outgoing rounded-[20px] rounded-br-[6px]' : 'messenger-incoming rounded-[20px] rounded-bl-[6px]'} px-3.5 py-2 text-[14px] leading-5 cursor-pointer" onclick="toggleMessengerMessageMenu('${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}')">
-                          ${msg.sender === 'me' ? `<button type="button" class="messenger-message-menu-trigger absolute -top-2 -right-2 w-7 h-7 rounded-full bg-white dark:bg-[#20352B] border border-[#D9E6DD] dark:border-[#3A4A41] shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-100 hover:opacity-100 transition z-20" aria-label="মেসেজ অপশন" onclick="event.stopPropagation(); toggleMessengerMessageMenu('${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}')"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>` : ''}
-                          ${msg.mediaType === 'video' && msg.videoUrl ? `<video src="${escapeHtml(safeRemoteMediaUrl(msg.videoUrl, ''))}" controls playsinline preload="metadata" class="rounded-xl max-h-80 max-w-full object-contain bg-black/10 mb-1.5"></video>` : ''}
-                          ${msg.mediaType !== 'video' && msg.imageUrl ? `<img src="${escapeHtml(safeRemoteMediaUrl(msg.imageUrl, ''))}" alt="ছবি" loading="lazy" class="rounded-xl max-h-80 max-w-full object-cover mb-1.5" />` : ''}
-                          ${activeGroup && msg.sender !== 'me' && msg.senderName ? `<div class="text-[10px] font-black opacity-65 mb-0.5">${escapeHtml(msg.senderName)}</div>` : ''}${msg.text && !(msg.mediaType === 'video' && msg.text === 'ভিডিও পাঠিয়েছেন') && !(msg.mediaType === 'image' && msg.text === 'ছবি পাঠিয়েছেন') ? `<p class="break-words whitespace-pre-wrap">${escapeHtml(msg.text)}</p>` : ''}
-                          <div class="text-[9px] mt-0.5 opacity-60 ${msg.sender === 'me' ? 'text-right' : 'text-left'}">${escapeHtml(msg.time || '')}</div>
-                          ${msg.sender === 'me' ? `<div class="messenger-message-menu hidden absolute right-2 bottom-full mb-1 z-50 min-w-[135px] rounded-xl border border-[#E2E2D5] dark:border-[#3A4A41] bg-white dark:bg-[#17251E] shadow-xl p-1" data-message-id="${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}" onclick="event.stopPropagation()"><button type="button" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-sm font-semibold hover:bg-black/5 dark:hover:bg-white/5" onclick="pinMessengerMessage('${escapeHtml(target.id)}','${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}')"><i data-lucide="pin" class="w-4 h-4"></i><span>পিন</span></button><button type="button" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30" onclick="deleteMessengerMessage('${escapeHtml(target.id)}','${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}','${escapeHtml(msg.clientMessageId || '')}')"><i data-lucide="trash-2" class="w-4 h-4"></i><span>মেসেজ ডিলিট</span></button></div>` : ''}
-                        </div>
-                      </div>
-                    `).join('') : `
-                      <div class="text-center pb-4">
-                        <div class="w-12 h-12 mx-auto rounded-full messenger-blue text-white flex items-center justify-center">
-                          <i data-lucide="message-circle" class="w-6 h-6"></i>
-                        </div>
-                        <p class="text-xs text-[#5F6E65] dark:text-[#B9D7C3] messenger-secondary-text mt-2">আপনাদের কথোপকথন এখান থেকেই শুরু হবে</p>
-                      </div>
-                    `}
-                  </div>
-                </div>
-
-                <form onsubmit="${activeGroup ? `event.preventDefault(); sendMessengerGroupMessage('${escapeHtml(activeGroup.id)}', document.getElementById('chat-input-field')?.value).then(ok=>{if(ok){const i=document.getElementById('chat-input-field');if(i)i.value='';}})` : `handleSendMessengerMessage(event, '${target.id}')`}" class="messenger-composer shrink-0 px-3 sm:px-5 pt-2 pb-3 border-t border-[#E2E2D5] dark:border-[#2A2A20]">
-                  <div class="messenger-composer-inner max-w-3xl mx-auto flex items-end gap-1.5">
-                    <input id="messenger-media-picker" type="file" accept="image/*,video/*" class="hidden" onchange="handleMessengerMediaSelected(event, '${target.id}')" />
-                    <button type="button" onclick="openMessengerMediaPicker('${target.id}')" class="composer-extra w-9 h-9 rounded-full flex items-center justify-center hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] text-[#2F6F57] shrink-0 messenger-touch" title="ছবি বা ভিডিও পাঠান (সর্বোচ্চ ৫ GB)">
-                      <i data-lucide="image-plus" class="w-5 h-5"></i>
-                    </button>
-                    <div class="relative shrink-0">
-                      <button type="button" onclick="toggleMessengerEmojiPicker()" class="composer-extra w-9 h-9 rounded-full flex items-center justify-center hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20] text-[#2F6F57] shrink-0 messenger-touch" title="ইমোজি">
-                        <span class="text-xl leading-none">😊</span>
-                      </button>
-                      <div id="messenger-emoji-picker" class="hidden absolute bottom-11 left-0 z-50 w-72 sm:w-80 max-h-64 overflow-y-auto rounded-2xl border border-[#E2E2D5] dark:border-[#3A4A41] bg-white dark:bg-[#17251E] p-3 shadow-2xl">
-                        <div class="grid grid-cols-8 gap-1 text-xl">${['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🥳','🤩','😏','😢','😭','😤','😡','🤬','🤯','😱','😴','🤗','🤔','🫡','🤭','🫢','🫣','🤫','🫠','🙄','😬','😮','😲','🥹','😳','🤍','❤️','🧡','💛','💚','💙','💜','🖤','🤎','💖','💗','💓','💯','🔥','✨','⭐','🎉','🎊','👍','👎','👏','🙌','🙏','💪','🤝','👋','👌','✌️','🤞','🫶','💐','🌸','🌹','🍀','🌈','☀️','🌙','⚡','🎓','📚','💡','🚀','🏆','🎵'].map(e => `<button type="button" onclick="insertEmoji('${e}')" class="h-8 rounded-lg hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20]">${e}</button>`).join('')}</div>
-                      </div>
-                    </div>
-                    <div class="messenger-input flex-1 min-w-0 min-h-10 rounded-[20px] px-4 flex items-center">
-                      <input id="chat-input-field" type="text" autocomplete="off" class="w-full bg-transparent border-0 outline-none text-[14px]" placeholder="${escapeHtml(target.fullName)}-এ মেসেজ লিখুন..." />
-                    </div>
-                    <button type="submit" class="send-btn w-10 h-10 rounded-full messenger-blue text-white flex items-center justify-center hover:opacity-90 shrink-0 messenger-touch" title="পাঠান">
-                      <i data-lucide="send" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                  <p class="text-[9px] text-[#8a8d91] text-center mt-1.5">ছবি/ভিডিও সর্বোচ্চ ৫ GB • শুধুমাত্র Oikko Campus-এর ব্যবহারকারীদের সাথে চ্যাট করা যাবে</p>
-                </form>
-              </section>
-            </div>
-          </main>
-        </div>
-      `;
+          <div id="messages-scroll-container" class="om-messages messenger-scroll"><div class="om-messages-inner">${msgHtml}</div></div>
+          <form onsubmit="${activeGroup?`event.preventDefault();sendMessengerGroupMessage('${escapeHtml(activeGroup.id)}',document.getElementById('chat-input-field')?.value).then(ok=>{if(ok){const i=document.getElementById('chat-input-field');if(i)i.value='';}})`: `handleSendMessengerMessage(event,'${escapeHtml(target.id)}')`}" class="om-composer">
+            <input id="messenger-media-picker" type="file" accept="image/*,video/*" class="hidden" onchange="handleMessengerMediaSelected(event,'${escapeHtml(target.id)}')">
+            <button type="button" onclick="openMessengerMediaPicker('${escapeHtml(target.id)}')" title="Media"><i data-lucide="image" class="w-4.5 h-4.5"></i></button>
+            <button type="button" onclick="toggleMessengerEmojiPicker()" title="Emoji"><i data-lucide="smile" class="w-4.5 h-4.5"></i></button>
+            <div class="om-compose-input"><input id="chat-input-field" type="text" autocomplete="off" placeholder="Aa"></div>
+            <button type="submit" class="om-send" title="Send"><i data-lucide="send" class="w-4 h-4"></i></button>
+            <button type="button" class="om-like" onclick="insertEmoji('👍')" title="Like">👍</button>
+            <div id="messenger-emoji-picker" class="hidden om-emoji-pop">${['😀','😂','😍','🥰','😎','😢','😡','😮','👍','👎','❤️','🔥','✨','🎉','🙏','👏','🤝','🎓','💚','💯'].map(e=>`<button type="button" onclick="insertEmoji('${e}')">${e}</button>`).join('')}</div>
+          </form>
+        </main>
+        ${renderMessengerInfoPanel(target,activeGroup,messages)}
+      </div>`;
     }
-
     // --- AUTH SCREEN ---
     function renderAuthScreen() {
       const isUserLogin = state.authMode === 'user_login' || state.authMode === 'login';
@@ -8487,7 +8312,10 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         await fb.setDoc(fb.doc(db, 'oikko_friend_requests', requestId), {
           fromId: meId, fromStudentId: me.studentId || '', fromName: me.fullName || '', fromAvatar: me.profilePicture || '',
           toId: targetIdClean, toStudentId: target?.studentId || '', toName: target?.fullName || '', toAvatar: target?.profilePicture || '',
-          status: 'pending', createdAt: Date.now(), ownerUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '', fromUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''
+          status: 'pending',
+          createdAt: Date.now(),
+          ownerUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '',
+          fromUid: window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : ''
         });
         if (!state.friendRequests.some(r => r.id === requestId)) state.friendRequests.push({id:requestId, fromId:meId, fromStudentId:me.studentId||'', toId:targetIdClean, status:'pending',
           fromName:me.fullName||'', fromAvatar:me.profilePicture||'', toName:target?.fullName||'', toAvatar:target?.profilePicture||'', toStudentId:target?.studentId||''});
@@ -8505,7 +8333,17 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       if (!me || !req || String(req.toId) !== String(me.id) || req.status !== 'pending' || !db || !fb) return;
       try {
         const pairId = friendPairId(req.fromId, req.toId);
-        await fb.setDoc(fb.doc(db, 'oikko_friends', pairId), {userIds:[req.fromId, req.toId], status:'accepted', createdAt:Date.now(), ownerUid:window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '', fromUid:req.fromId, toId:req.toId});
+        const firebaseUid = window.getFirebaseOwnerUid ? window.getFirebaseOwnerUid() : '';
+        if (!firebaseUid) throw Object.assign(new Error('Firebase Auth UID missing.'), {code:'auth-uid-missing'});
+        await fb.setDoc(fb.doc(db, 'oikko_friends', pairId), {
+          userIds:[String(req.fromId), String(req.toId)],
+          status:'accepted',
+          createdAt:Date.now(),
+          ownerUid:firebaseUid,
+          acceptedByFirebaseUid:firebaseUid,
+          fromUid:String(req.fromId),
+          toId:String(req.toId)
+        });
         await fb.updateDoc(fb.doc(db, 'oikko_friend_requests', requestId), {status:'accepted', respondedAt:Date.now()});
         req.status = 'accepted';
         state.friendships = Array.from(new Map([...(state.friendships||[]), {id:pairId, userIds:[req.fromId,req.toId], status:'accepted'}].map(f => [friendPairId(f.userIds?.[0]||f.fromId||'', f.userIds?.[1]||f.toId||''), f])).values());
