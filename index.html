@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oikko - ক্যাম্পাস সোশ্যাল নেটওয়ার্ক</title>
   <meta name="theme-color" content="#12231c">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Oikko Campus">
-  <link rel="icon" href="icons/icon-192.png" type="image/png">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='''http://www.w3.org/2000/svg''' viewBox='''0 0 64 64'''%3E%3Crect width='''64''' height='''64''' rx='''18''' fill='''%232f6f57'''/%3E%3Cpath d='''M18 24h28v16c0 8-6 14-14 14S18 48 18 40V24Z''' fill='''white'''/%3E%3Cpath d='''M14 23h36v7H14z''' fill='''white'''/%3E%3C/svg%3E" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='''http://www.w3.org/2000/svg''' viewBox='''0 0 64 64'''%3E%3Crect width='''64''' height='''64''' rx='''18''' fill='''%232f6f57'''/%3E%3Cpath d='''M18 24h28v16c0 8-6 14-14 14S18 48 18 40V24Z''' fill='''white'''/%3E%3Cpath d='''M14 23h36v7H14z''' fill='''white'''/%3E%3C/svg%3E">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
@@ -1489,9 +1490,16 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         }, 0);
       });
       if (db && window.fb && typeof window.fb.getDoc === 'function') {
-        window.fb.getDoc(window.fb.doc(db, 'oikko_system', 'firestore_connection'))
-          .then(() => { window.firestoreStatus = 'connected'; console.info('Oikko Firestore connected:', firebaseConfig.projectId); })
-          .catch(err => { window.firestoreStatus = 'error'; console.error('Oikko Firestore check failed:', err?.code, err?.message); });
+        Promise.resolve(window.firebaseAuthReady || null).then(() =>
+          window.fb.getDoc(window.fb.doc(db, 'oikko_system', 'firestore_connection'))
+        ).then(() => {
+          window.firestoreStatus = 'connected';
+          console.info('Oikko Firestore connected:', firebaseConfig.projectId);
+          if (window.dispatchEvent) window.dispatchEvent(new CustomEvent('firestoreConnected'));
+        }).catch(err => {
+          window.firestoreStatus = 'error';
+          console.error('Oikko Firestore check failed:', err?.code, err?.message);
+        });
       }
 
       // Start Realtime Firestore Sync if application logic is loaded
@@ -1505,7 +1513,77 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
 
   <!-- Application Logic -->
   <script>
+    try {
+      const manifest = {name:'Oikko Campus',short_name:'Oikko',start_url:'.',display:'standalone',background_color:'#101612',theme_color:'#2f6f57',lang:'bn',icons:[{src:document.querySelector('link[rel=icon]')?.href||'',sizes:'64x64',type:'image/svg+xml'}]};
+      const blob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('link'); link.rel='manifest'; link.href=url; document.head.appendChild(link);
+    } catch (_) {}
+
+  </script>
+  <script>
     // --- 1. Initial Data (Matches React State) ---
+    // Safe local avatar fallback: avoids expired Facebook CDN URLs (403) and
+    // keeps the UI usable even when a remote profile image is unavailable.
+    const DEFAULT_AVATAR = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+        <rect width="200" height="200" rx="48" fill="#d8f3e4"/>
+        <circle cx="100" cy="78" r="34" fill="#2f6f57"/>
+        <path d="M42 172c8-38 30-56 58-56s50 18 58 56" fill="#2f6f57"/>
+      </svg>`);
+
+    function safeProfilePicture(value, fallback = DEFAULT_AVATAR) {
+      const raw = typeof value === 'string' ? value.trim() : '';
+      if (!raw) return fallback;
+      if (raw.startsWith('data:image/') || raw.startsWith('blob:')) return raw;
+      try {
+        const url = new URL(raw, window.location.href);
+        const host = url.hostname.toLowerCase();
+        if (host.endsWith('fbcdn.net') || host.includes('facebook.com') || host.includes('fb.com')) {
+          return fallback;
+        }
+      } catch (_) {
+        return fallback;
+      }
+      return raw;
+    }
+
+    function sanitizeProfilePictures(list) {
+      return Array.isArray(list) ? list.map(user => {
+        if (!user || typeof user !== 'object') return user;
+        return { ...user, profilePicture: safeProfilePicture(user.profilePicture) };
+      }) : list;
+    }
+
+    // Prevent expired/private Facebook CDN media from ever reaching <img>/<video>.
+    // A 403 from content.*.fbcdn.net cannot be fixed by an onerror fallback because
+    // the browser has already made the failed request. We therefore sanitize before render.
+    function safeRemoteMediaUrl(value, fallback = '') {
+      const raw = typeof value === 'string' ? value.trim() : '';
+      if (!raw) return fallback;
+      if (raw.startsWith('data:image/') || raw.startsWith('blob:')) return raw;
+      try {
+        const url = new URL(raw, window.location.href);
+        const host = url.hostname.toLowerCase();
+        if (host.endsWith('fbcdn.net') || host.includes('facebook.com') || host.includes('fb.com')) {
+          return fallback;
+        }
+      } catch (_) {
+        return fallback;
+      }
+      return raw;
+    }
+
+    function sanitizePostMedia(post) {
+      if (!post || typeof post !== 'object') return post;
+      return {
+        ...post,
+        authorAvatar: safeProfilePicture(post.authorAvatar),
+        imageUrl: safeRemoteMediaUrl(post.imageUrl, ''),
+        videoUrl: safeRemoteMediaUrl(post.videoUrl, '')
+      };
+    }
+
     const ADMIN_DATA = {
       id: 'user-admin-1',
       studentId: 'CREATOR@KMI',
@@ -1525,8 +1603,8 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       mobileNumber: '01716558530',
       email: 'kmi96724@gmail.com',
       facebookLink: 'https://www.facebook.com/kmismailkuro098',
-      password: 'kmi159357',
-      profilePicture: 'https://scontent.fdac27-2.fna.fbcdn.net/v/t39.30808-1/474930105_122188338908116488_2154235560278308086_n.jpg?stp=c420.0.1080.1080a_dst-jpg_tt6&cstp=mx1080x1080&ctp=s200x200&_nc_cat=100&ccb=1-7&_nc_sid=e99d92&_nc_ohc=RKRe2gQV4hIQ7kNvwGN4TU4&_nc_oc=AdppwQem8ElpD94Wht3A-F3e6HAPj_QBNOOz6_-hf5j9KODFSaI9h6nOOY7W3uRQ3f58vaDKwA-0zosyWJL62VnT&_nc_zt=24&_nc_ht=scontent.fdac27-2.fna&_nc_gid=sgkV_NQahonOeJBqzqGZpA&_nc_ss=7b2a8&oh=00_AQImuap57eeeEPgzZQpu9-kITukN80KbCtDEnjmcTaRUgw&oe=6AA3364F',
+      passwordHash: 'ff3155a12d07d050da9c913435e6de8d1b5483e6dc2450a98c753641a746f117',
+      profilePicture: DEFAULT_AVATAR,
       isVerified: true,
       role: 'admin',
       createdAt: '2024-01-01T08:00:00.000Z'
@@ -1553,7 +1631,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         mobileNumber: '01811223344',
         email: 'tanvir.ahmed@gmail.com',
         facebookLink: 'https://facebook.com/tanvir.student',
-        password: 'user123',
+        passwordHash: 'e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446',
         profilePicture: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400',
         isVerified: false,
         role: 'student',
@@ -1578,7 +1656,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         mobileNumber: '01799887766',
         email: 'sumaiya.jahan@gmail.com',
         facebookLink: 'https://facebook.com/sumaiya.connect',
-        password: 'user123',
+        passwordHash: 'e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446',
         profilePicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
         isVerified: false,
         role: 'student',
@@ -1614,7 +1692,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         authorId: 'user-admin-1',
         authorStudentId: 'ADMIN001',
         authorName: 'Khan Mohammad Ismail',
-        authorAvatar: ADMIN_DATA.profilePicture,
+        authorAvatar: safeProfilePicture(ADMIN_DATA.profilePicture),
         content: 'জরুরি নোটিশ: আগামী রবিবার থেকে অর্ধবার্ষিক পরীক্ষার রুটিন প্রকাশিত হবে। সকল শিক্ষার্থীকে নির্ধারিত সময়ের মধ্যে নিজেদের আইডি কার্ড ও তথ্য আপডেট করার নির্দেশ দেওয়া হচ্ছে। নিয়ম শৃঙ্খলা মেনে চলুন।',
         imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800',
         likes: ['STU202401'],
@@ -1652,7 +1730,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
     function normalizeAdminUser(user = {}) {
       const savedPicture = loadSavedAdminProfilePicture();
       const providedPicture = typeof user.profilePicture === 'string' ? user.profilePicture.trim() : '';
-      const defaultPicture = typeof ADMIN_DATA.profilePicture === 'string' ? ADMIN_DATA.profilePicture : '';
+      const defaultPicture = safeProfilePicture(ADMIN_DATA.profilePicture);
       const normalized = {
         ...ADMIN_DATA,
         ...user,
@@ -1661,8 +1739,8 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       };
 
       // Never replace a user-selected admin avatar with the static seed avatar.
-      normalized.profilePicture = providedPicture || savedPicture || defaultPicture;
-      if (normalized.profilePicture) saveAdminProfilePicture(normalized.profilePicture);
+      normalized.profilePicture = safeProfilePicture(providedPicture || savedPicture || defaultPicture);
+      if (normalized.profilePicture && !normalized.profilePicture.startsWith('data:image/')) saveAdminProfilePicture(normalized.profilePicture);
       return normalized;
     }
 
@@ -1673,7 +1751,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
           localStorage.setItem('student_portal_users', JSON.stringify(INITIAL_USERS));
           return INITIAL_USERS;
         }
-        const parsed = JSON.parse(d);
+        const parsed = sanitizeProfilePictures(JSON.parse(d));
         // Ensure admin exists without overwriting custom profile fields.
         const aIdx = parsed.findIndex(isAdminUserRecord);
         if (aIdx !== -1) parsed[aIdx] = normalizeAdminUser(parsed[aIdx]);
@@ -1727,7 +1805,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         ? u.map(user => isAdminUserRecord(user) ? normalizeAdminUser(user) : user)
         : u;
       const admin = Array.isArray(users) ? users.find(isAdminUserRecord) : null;
-      if (admin && admin.profilePicture) saveAdminProfilePicture(admin.profilePicture);
+      if (admin && admin.profilePicture && !String(admin.profilePicture).startsWith('data:image/')) saveAdminProfilePicture(admin.profilePicture);
       safeSaveStorage('student_portal_users', users);
     }
 
@@ -1754,6 +1832,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         if (!d) return null;
         const u = JSON.parse(d);
         if (isAdminUserRecord(u)) return normalizeAdminUser(u);
+        u.profilePicture = safeProfilePicture(u.profilePicture);
         return u;
       } catch (e) {
         return null;
@@ -2043,6 +2122,66 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       settings: JSON.parse(localStorage.getItem('oikko_settings') || '{\"profileVisibility\":\"public\",\"pushNotifications\":true,\"emailNotifications\":false,\"commentNotifications\":true,\"likeNotifications\":true,\"messageNotifications\":true,\"fontSize\":\"medium\",\"language\":\"বাংলা\",\"timezone\":\"Asia/Dhaka\",\"camera\":true,\"microphone\":true,\"location\":false,\"contacts\":false,\"autoDownload\":false,\"downloadQuality\":\"সেরা মান\",\"highContrast\":false,\"screenReader\":false,\"textToSpeech\":false}')
     };
 
+    // Password security: never keep plaintext passwords in the HTML or localStorage.
+    // Existing legacy records are migrated to SHA-256 hashes on first load/login.
+    async function hashOikkoPassword(value) {
+      const text = String(value || '');
+      if (window.crypto?.subtle) {
+        const data = new TextEncoder().encode(text);
+        const digest = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+      // Deterministic fallback for older/non-secure preview environments.
+      let h = 2166136261;
+      for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); }
+      return (h >>> 0).toString(16).padStart(8, '0');
+    }
+
+    async function verifyOikkoPassword(user, supplied) {
+      if (!user) return false;
+      const entered = String(supplied || '');
+      if (!entered) return false;
+      const hash = await hashOikkoPassword(entered);
+      if (user.passwordHash && user.passwordHash === hash) return true;
+      // One-time migration for old local records that still contain plaintext.
+      if (user.password && user.password === entered) {
+        user.passwordHash = hash;
+        try { delete user.password; } catch (_) { user.password = undefined; }
+        return true;
+      }
+      return false;
+    }
+
+    async function migrateLegacyOikkoPasswords() {
+      let changed = false;
+      for (const user of (state.users || [])) {
+        if (user && user.password && !user.passwordHash) {
+          user.passwordHash = await hashOikkoPassword(user.password);
+          try { delete user.password; } catch (_) { user.password = undefined; }
+          changed = true;
+        }
+      }
+      if (changed) {
+        saveUsers(state.users);
+        if (state.currentUser) {
+          const fresh = state.users.find(u => String(u.id) === String(state.currentUser.id));
+          if (fresh) { state.currentUser = fresh; saveCurrentUser(fresh); }
+        }
+      }
+    }
+    void migrateLegacyOikkoPasswords();
+
+    // Firebase diagnostics: keep the UI responsive while the backend initializes.
+    window.addEventListener('firestoreConnected', () => {
+      try {
+        state.cloudStatus = 'connected';
+        state.authError = '';
+        renderApp();
+      } catch (e) {
+        console.warn('Firestore connected UI update skipped:', e);
+      }
+    });
+
     function toggleDarkMode() {
       state.isDarkMode = !state.isDarkMode;
       localStorage.setItem('student_portal_theme', state.isDarkMode ? 'dark' : 'light');
@@ -2248,7 +2387,9 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
           if (!snapshot.empty) {
             const cloudPosts = [];
             snapshot.forEach(docSnap => {
-              const pData = { id: docSnap.id, ...docSnap.data() };
+              const pData = sanitizePostMedia({ id: docSnap.id, ...docSnap.data() });
+              pData.authorAvatar = safeProfilePicture(pData.authorAvatar);
+              if (Array.isArray(pData.comments)) pData.comments = pData.comments.map(c => ({ ...c, authorAvatar: safeProfilePicture(c?.authorAvatar) }));
               cloudPosts.push(pData);
 
               // রিয়েল-টাইমে অন্য ডিভাইস থেকে নতুন পোস্ট আসলে মেনশন নোটিফিকেশন পাঠানো
@@ -2305,8 +2446,8 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
 
             // লেটেস্ট পোস্ট সবার আগে সাজানো
             cloudPosts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            state.posts = cloudPosts;
-            savePosts(cloudPosts);
+            state.posts = cloudPosts.map(sanitizePostMedia);
+            savePosts(state.posts);
             state.cloudStatus = 'connected';
             renderApp();
           } else {
@@ -2318,9 +2459,17 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
             renderApp();
           }
         }, (error) => {
-          console.warn('Firebase posts onSnapshot note:', error);
-          state.cloudStatus = 'offline';
-          renderApp();
+          console.warn('Firebase posts onSnapshot error:', error?.code, error?.message || error);
+          // Keep the app usable while Firebase retries. Only show offline after
+          // the bootstrap/connection test has actually failed.
+          if (window.firestoreStatus === 'error') {
+            state.cloudStatus = 'offline';
+            state.authError = `Server connection error: ${error?.code || 'unknown'}`;
+            renderApp();
+          } else {
+            state.cloudStatus = 'connected';
+            renderApp();
+          }
         });
       } catch (err) {
         console.warn('Posts listener exception:', err);
@@ -2333,7 +2482,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
           if (!snapshot.empty) {
             const cloudUsers = [];
             snapshot.forEach(docSnap => {
-              cloudUsers.push({ id: docSnap.id, ...docSnap.data() });
+              cloudUsers.push({ id: docSnap.id, ...docSnap.data(), profilePicture: safeProfilePicture(docSnap.data()?.profilePicture) });
             });
             
             // এডমিন প্রোফাইল নিশ্চিত করা; cloud sync যেন custom avatar মুছে না দেয়।
@@ -2459,7 +2608,10 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       const db = window.firebaseDb;
       const fb = window.fb;
       try {
-        await (window.firebaseAuthReady || Promise.resolve());
+        const authUser = await (window.firebaseAuthReady || Promise.resolve());
+        if (!authUser && window.firebaseAuth) {
+          throw Object.assign(new Error('Firebase Anonymous Authentication failed or is disabled.'), { code: 'auth-not-ready' });
+        }
 
         // This document is a real connectivity/write test and also makes the
         // oikko_system collection visible in Firestore Console.
@@ -2741,7 +2893,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
                   onmousedown="selectMentionCandidate(${idx}, event)"
                   class="p-2 rounded-xl cursor-pointer transition-colors flex items-center gap-2.5 ${isSelected ? 'bg-[#F0F0E0] dark:bg-[#2A2A20] text-[#42422F] dark:text-white font-bold' : 'hover:bg-[#F5F5F0] dark:hover:bg-[#2A2A20]'}"
                 >
-                  <img src="${c.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" class="w-7 h-7 rounded-full object-cover border border-[#E2E2D5] shrink-0" />
+                  <img src="${safeProfilePicture(c.avatar)}" class="w-7 h-7 rounded-full object-cover border border-[#E2E2D5] shrink-0" />
                   <div class="min-w-0 flex-1">
                     <div class="flex items-center gap-1 text-xs text-[#42422F] dark:text-[#EDEDE4]">
                       <span class="truncate font-semibold">${c.name}</span>
@@ -3379,13 +3531,13 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       const profile = getCurrentUserVerificationRecord();
 
       modal.innerHTML = `
-        <div class="fixed inset-0 z-[120] bg-[#eef6fc] overflow-y-auto">
+        <div class="fixed inset-0 z-[120] bg-[var(--bg-canvas)] overflow-y-auto">
           <div class="min-h-full flex items-start justify-center p-3 sm:p-6">
-            <div class="w-full max-w-[720px] mt-3 sm:mt-8 bg-[#eef6fc] text-[#202124]">
-              <div class="bg-white border border-[#d5e0e8] shadow-sm rounded-sm overflow-hidden">
-                <div class="px-5 sm:px-7 pt-5 pb-4 border-b border-[#dfe7ed] bg-white">
+            <div class="w-full max-w-[720px] mt-3 sm:mt-8 bg-[var(--bg-canvas)] text-[var(--text-primary)]">
+              <div class="bg-white dark:bg-[#14231c] border border-[#d5e0e8] dark:border-[#2f493d] shadow-sm rounded-2xl overflow-hidden">
+                <div class="px-5 sm:px-7 pt-5 pb-4 border-b border-[#dfe7ed] dark:border-[#2f493d] bg-white dark:bg-[#14231c]">
                   <div class="text-[13px] text-[#2f6f57] font-medium mb-1">Oikko Tube</div>
-                  <h2 class="text-[21px] sm:text-[24px] font-semibold text-[#202124]">ইনস্ট্যান্ট বয়স যাচাই</h2>
+                  <h2 class="text-[21px] sm:text-[24px] font-semibold text-[#202124] dark:text-[#eef7f1]">ইনস্ট্যান্ট বয়স যাচাই</h2>
                   <p class="mt-2 text-[13px] leading-6 text-[#4f5b66]">আপনার Oikko Campus প্রোফাইলে সংরক্ষিত তথ্যের সঙ্গে মিলিয়ে বয়স যাচাই করা হবে। কোনো সরকারি ওয়েবসাইট খোলার প্রয়োজন নেই।</p>
                 </div>
 
@@ -4100,6 +4252,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
     setTimeout(ensureOikkoTubeReady, 1000);
 
     function renderApp() {
+      state.posts = (state.posts || []).map(sanitizePostMedia);
       const active = document.activeElement;
       const typingSearch = active && (active.id === 'global-search' || active.id === 'global-search-mobile');
       if (typingSearch) {
@@ -4173,7 +4326,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
     let messengerListenerChatId = '';
     let messengerPresenceUnsubscribe = null;
     let messengerPresenceHeartbeat = null;
-    let messengerPresenceStarted = false;
+    var messengerPresenceStarted = false;
     let messengerGroupsUnsubscribe = null;
     let messengerGroupsListenerStarted = false;
     let messengerGroupListenerUnsubscribe = null;
@@ -4220,7 +4373,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
           .filter(v=>v!==undefined&&v!==null).map(v=>String(v).toLocaleLowerCase()).join(' ');
         return hay.includes(q);
       });
-      const avatar=u=>`<img class="oikko-person-avatar" src="${escapeHtml(u.profilePicture||'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100')}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'">`;
+      const avatar=u=>`<img class="oikko-person-avatar" src="${escapeHtml(safeProfilePicture(u.profilePicture))}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'">`;
       return `<main class="oikko-people-page"><section class="oikko-people-hero"><h1 class="text-2xl sm:text-3xl font-black">People</h1><p class="mt-1 text-sm text-white/80">Oikko Campus-এ থাকা সকল ব্যবহারকারীকে এখানে দেখুন এবং Friend Request পাঠান।</p></section><div class="oikko-people-search"><i data-lucide="search" class="w-4 h-4 shrink-0 text-[#789086]"></i><input id="people-search" type="search" value="${escapeHtml(state.peopleSearchQuery||'')}" oninput="handlePeopleSearch(this.value)" placeholder="নাম বা User ID দিয়ে খুঁজুন..." autocomplete="off" spellcheck="false" aria-label="People search"><button type="button" class="oikko-people-search-clear ${q?'':'hidden'}" onclick="clearPeopleSearch()" title="সার্চ মুছুন" aria-label="সার্চ মুছুন"><i data-lucide="x" class="w-4 h-4"></i></button></div><div class="oikko-people-grid">${users.length?users.map(u=>{const st=friendStatusFor(u.id);let action='';if(st==='none') action=`<button class="oikko-person-action" onclick="sendFriendRequest('${escapeHtml(u.id)}');renderPeopleViewInstant()">Add friend</button>`;else if(st==='outgoing') action=`<span class="oikko-person-action secondary">Request sent</span>`;else if(st==='incoming') action=`<button class="oikko-person-action" onclick="acceptFriendRequest('${escapeHtml(u.id)}');renderPeopleViewInstant()">Accept</button>`;else action=`<button class="oikko-person-action secondary" onclick="startMessengerWithUser('${escapeHtml(u.id)}')">Message</button>`;const active=isMessengerUserActive(u.id);return `<article class="oikko-person-card"><button type="button" onclick="openSocialProfile('${escapeHtml(u.id)}')">${avatar(u)}</button><div class="oikko-person-info"><div class="oikko-person-name">${escapeHtml(u.fullName||'User')}</div><div class="oikko-person-meta">${escapeHtml(u.studentId||'Campus user')}</div><div class="oikko-presence-text ${active?'active':''}"><span class="oikko-presence-dot ${active?'active':''}"></span>${active?'Active':'Inactive'}</div></div>${action}</article>`}).join(''):`<div class="oikko-friends-empty" style="grid-column:1/-1">${q?'এই নাম বা ID-তে কোনো user পাওয়া যায়নি।':'কোনো অন্য user পাওয়া যায়নি।'}</div>`}</div></main>`;
     }
     function handlePeopleSearch(value){
@@ -4287,7 +4440,8 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         const ref=window.fb.collection(window.firebaseDb,'oikko_groups',String(groupId),'messages');
         messengerGroupListenerId=String(groupId);
         messengerGroupListenerUnsubscribe=window.fb.onSnapshot(ref,snap=>{
-          const list=snap.docs.map(d=>normalizeGroupMessage({id:d.id,...d.data()})).filter(m=>!m.deletedAt).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+          const seen=new Set();
+          const list=snap.docs.map(d=>normalizeGroupMessage({id:d.id,...d.data()})).filter(m=>!m.deletedAt).filter(m=>{const key=m.clientMessageId?`client:${m.clientMessageId}`:`doc:${m.id}`;if(seen.has(key))return false;seen.add(key);return true;}).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
           state.messages[key]=list; saveMessages(state.messages); window.firestoreStatus='connected';
           if(state.activeView==='messenger'&&state.activeChatUserId===key){renderMessengerOnly();scrollChatToBottom();}
         },err=>{console.error('Group messenger realtime sync error:',err);if(err?.code==='permission-denied')showToast('Group message-এর Firestore Rules অনুমতি দিচ্ছে না।','error');});
@@ -4339,7 +4493,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         }
 
         const m=document.getElementById('modal-container'); if(!m)return;
-        const avatarHtml=u=>`<img src="${escapeHtml(u.profilePicture||'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100')}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="w-11 h-11 rounded-full object-cover shrink-0 border border-[#DCE8E1] dark:border-[#385046]">`;
+        const avatarHtml=u=>`<img src="${escapeHtml(safeProfilePicture(u.profilePicture))}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="w-11 h-11 rounded-full object-cover shrink-0 border border-[#DCE8E1] dark:border-[#385046]">`;
         m.innerHTML=`<div class="fixed inset-0 z-[100] flex items-center justify-center p-3 bg-black/45" onclick="if(event.target===this)closeMessengerGroupModal()">
           <div class="oikko-group-modal max-h-[90vh] flex flex-col">
             <div class="p-5 border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0">
@@ -4418,7 +4572,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       });
 
       const avatar = (u, size='w-10 h-10') =>
-        `<img src="${escapeHtml(u.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100')}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="${size} rounded-full object-cover shrink-0" />`;
+        `<img src="${escapeHtml(safeProfilePicture(u.profilePicture))}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="${size} rounded-full object-cover shrink-0" />`;
 
       if (!visiblePeers.length) return `<div class="px-5 py-12 text-center messenger-secondary-text"><div class="w-12 h-12 mx-auto rounded-2xl messenger-empty-icon flex items-center justify-center mb-3"><i data-lucide="search-x" class="w-5 h-5"></i></div><p class="text-sm font-bold">কোনো user পাওয়া যায়নি</p><p class="text-xs mt-1">অন্য নাম বা Student ID দিয়ে চেষ্টা করুন।</p></div>`;
 
@@ -4621,8 +4775,10 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
           saveMessages(state.messages);
           window.firestoreStatus = 'connected';
           if (state.activeView === 'messenger' && state.activeChatUserId === targetUserId) {
+            const box = document.getElementById('messages-scroll-container');
+            const wasNearBottom = !box || (box.scrollHeight - box.scrollTop - box.clientHeight < 120);
             renderMessengerOnly();
-            scrollChatToBottom();
+            if (wasNearBottom) scrollChatToBottom();
           }
         },
         err => {
@@ -4834,8 +4990,10 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       const db = window.firebaseDb;
       const fb = window.fb;
       if (!db || !fb) {
+        state.messages[targetUserId] = (state.messages[targetUserId] || []).filter(m => m.id !== localId);
+        saveMessages(state.messages);
         showToast('Firestore এখনো প্রস্তুত হয়নি। একটু পরে আবার পাঠান।', 'error');
-        return true;
+        return false;
       }
 
       try {
@@ -4866,8 +5024,10 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         window.firestoreStatus = 'error';
         console.error('FIRESTORE MESSAGE WRITE FAILED:', err);
         console.error('code:', err?.code, 'message:', err?.message);
+        state.messages[targetUserId] = (state.messages[targetUserId] || []).filter(m => m.id !== localId && m.clientMessageId !== clientMessageId);
+        saveMessages(state.messages);
         showToast(`Firestore-এ পাঠানো যায়নি: ${err?.code || 'unknown'}`, 'error');
-        return true;
+        return false;
       }
     }
 
@@ -4906,7 +5066,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       const members=(group?.memberIds||[]).map(id=>state.users.find(u=>String(u.id).trim()===String(id).trim())||(group.memberProfiles||[]).find(u=>String(u.id).trim()===String(id).trim())).filter(Boolean);
       const isMuted=isGroup?Boolean(state.settings?.groupMutes?.[String(group.id)]):Boolean(state.settings?.chatMutes?.[String(target.id)]);
       const adminApproval=group?.adminApproval!==false;
-      const avatar=u=>`<img src="${escapeHtml(u.profilePicture||'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100')}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="w-9 h-9 rounded-full object-cover shrink-0">`;
+      const avatar=u=>`<img src="${escapeHtml(safeProfilePicture(u.profilePicture))}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="w-9 h-9 rounded-full object-cover shrink-0">`;
       const button=(icon,label,fn,extra='')=>`<button type="button" onclick="${fn}" class="oikko-chat-info-action ${extra}"><i data-lucide="${icon}" class="w-4 h-4 shrink-0"></i><span>${label}</span></button>`;
       let html=`<div class="oikko-chat-info-body">`;
       html+=`<div class="oikko-chat-info-topbar">
@@ -4962,8 +5122,18 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       const box=document.getElementById('oikko-chat-search-results');if(!box)return;const term=String(q||'').trim().toLocaleLowerCase();const list=(state.messages[chatKey]||[]).filter(m=>!term||String(m.text||'').toLocaleLowerCase().includes(term));box.innerHTML=list.length?list.slice(-50).reverse().map(m=>`<div class="p-2.5 rounded-xl mb-1 bg-black/5 dark:bg-white/5"><div class="text-[9px] opacity-55">${escapeHtml(m.senderName||(m.sender==='me'?'আপনি':'User'))} • ${escapeHtml(m.time||'')}</div><div class="text-sm break-words">${escapeHtml(m.text||'📎 Media')}</div></div>`).join(''):'<div class="text-xs opacity-60 text-center py-5">কোনো মেসেজ পাওয়া যায়নি।</div>';
     }
     function showReadReceiptInfo(){showMessengerActionModal('রিড রিসিপ্ট','<div class="text-sm leading-6">রিড রিসিপ্ট বর্তমানে চালু আছে। আপনার পাঠানো মেসেজ পড়া হলে read status ব্যবহার করা যাবে।</div>');closeMessengerChatInfo();}
-    function reportMessengerUser(targetId){
-      const reports=JSON.parse(localStorage.getItem('oikko_reports')||'[]');reports.push({type:'messenger_user',targetId:String(targetId),reporterId:String(state.currentUser?.id||''),createdAt:Date.now()});localStorage.setItem('oikko_reports',JSON.stringify(reports));showToast('Report জমা হয়েছে।','success');closeMessengerChatInfo();
+    async function reportMessengerUser(targetId){
+      const report={type:'messenger_user',targetId:String(targetId),reporterId:String(state.currentUser?.id||''),createdAt:Date.now(),status:'pending',ownerUid:window.getFirebaseOwnerUid?window.getFirebaseOwnerUid():''};
+      try{
+        if(window.firebaseDb&&window.fb?.addDoc){await (window.firebaseAuthReady||Promise.resolve());await window.fb.addDoc(window.fb.collection(window.firebaseDb,'reports'),report);}
+        else throw Object.assign(new Error('Firebase unavailable'),{code:'unavailable'});
+        showToast('Report জমা হয়েছে।','success');
+      }catch(e){
+        console.error('Report submit failed:',e);
+        showToast(e?.code==='permission-denied'?'Report পাঠানোর Firestore Rules অনুমতি দিচ্ছে না।':'Report জমা দেওয়া যায়নি।','error');
+        return;
+      }
+      closeMessengerChatInfo();
     }
     function toggleDirectChatBlock(targetId){
       state.settings.blockedUsers=state.settings.blockedUsers||{};const id=String(targetId);state.settings.blockedUsers[id]=!state.settings.blockedUsers[id];saveOikkoSettings();showToast(state.settings.blockedUsers[id]?'User ব্লক করা হয়েছে।':'User আনব্লক করা হয়েছে।','success');closeMessengerChatInfo();renderApp();
@@ -5088,6 +5258,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       if (!text) return;
 
       state.messengerSending[sendKey] = true;
+      const draftBeforeSend = text;
       if (input) input.value = '';
 
       try {
@@ -5095,6 +5266,10 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         if (sent) {
           renderApp();
           scrollChatToBottom();
+        } else {
+          renderMessengerOnly();
+          const restored = document.getElementById('chat-input-field');
+          if (restored) { restored.value = draftBeforeSend; restored.focus(); restored.setSelectionRange(restored.value.length, restored.value.length); }
         }
       } finally {
         state.messengerSending[sendKey] = false;
@@ -5280,7 +5455,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       });
 
       const avatar = (u, size='w-10 h-10') =>
-        `<img src="${escapeHtml(u.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100')}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="${size} rounded-full object-cover shrink-0" />`;
+        `<img src="${escapeHtml(safeProfilePicture(u.profilePicture))}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="${size} rounded-full object-cover shrink-0" />`;
 
       return `
         <div class="messenger-shell min-h-screen flex flex-col bg-[#F5F5F0] dark:bg-[#12231C] text-[#42422F] dark:text-[#E2E2D5] ${state.isDarkMode ? 'messenger-theme-dark' : 'messenger-theme-light'} ${state.messengerMobileChat ? 'messenger-mobile-chat' : ''}">
@@ -5563,8 +5738,8 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
                       <div class="group flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}">
                         <div class="messenger-message-bubble relative max-w-[78%] sm:max-w-[65%] ${msg.sender === 'me' ? 'messenger-outgoing rounded-[20px] rounded-br-[6px]' : 'messenger-incoming rounded-[20px] rounded-bl-[6px]'} px-3.5 py-2 text-[14px] leading-5 cursor-pointer" onclick="toggleMessengerMessageMenu('${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}')">
                           ${msg.sender === 'me' ? `<button type="button" class="messenger-message-menu-trigger absolute -top-2 -right-2 w-7 h-7 rounded-full bg-white dark:bg-[#20352B] border border-[#D9E6DD] dark:border-[#3A4A41] shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-100 hover:opacity-100 transition z-20" aria-label="মেসেজ অপশন" onclick="event.stopPropagation(); toggleMessengerMessageMenu('${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}')"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>` : ''}
-                          ${msg.mediaType === 'video' && msg.videoUrl ? `<video src="${escapeHtml(msg.videoUrl)}" controls playsinline preload="metadata" class="rounded-xl max-h-80 max-w-full object-contain bg-black/10 mb-1.5"></video>` : ''}
-                          ${msg.mediaType !== 'video' && msg.imageUrl ? `<img src="${escapeHtml(msg.imageUrl)}" alt="ছবি" loading="lazy" class="rounded-xl max-h-80 max-w-full object-cover mb-1.5" />` : ''}
+                          ${msg.mediaType === 'video' && msg.videoUrl ? `<video src="${escapeHtml(safeRemoteMediaUrl(msg.videoUrl, ''))}" controls playsinline preload="metadata" class="rounded-xl max-h-80 max-w-full object-contain bg-black/10 mb-1.5"></video>` : ''}
+                          ${msg.mediaType !== 'video' && msg.imageUrl ? `<img src="${escapeHtml(safeRemoteMediaUrl(msg.imageUrl, ''))}" alt="ছবি" loading="lazy" class="rounded-xl max-h-80 max-w-full object-cover mb-1.5" />` : ''}
                           ${activeGroup && msg.sender !== 'me' && msg.senderName ? `<div class="text-[10px] font-black opacity-65 mb-0.5">${escapeHtml(msg.senderName)}</div>` : ''}${msg.text && !(msg.mediaType === 'video' && msg.text === 'ভিডিও পাঠিয়েছেন') && !(msg.mediaType === 'image' && msg.text === 'ছবি পাঠিয়েছেন') ? `<p class="break-words whitespace-pre-wrap">${escapeHtml(msg.text)}</p>` : ''}
                           <div class="text-[9px] mt-0.5 opacity-60 ${msg.sender === 'me' ? 'text-right' : 'text-left'}">${escapeHtml(msg.time || '')}</div>
                           ${msg.sender === 'me' ? `<div class="messenger-message-menu hidden absolute right-2 bottom-full mb-1 z-50 min-w-[135px] rounded-xl border border-[#E2E2D5] dark:border-[#3A4A41] bg-white dark:bg-[#17251E] shadow-xl p-1" data-message-id="${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}" onclick="event.stopPropagation()"><button type="button" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-sm font-semibold hover:bg-black/5 dark:hover:bg-white/5" onclick="pinMessengerMessage('${escapeHtml(target.id)}','${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}')"><i data-lucide="pin" class="w-4 h-4"></i><span>পিন</span></button><button type="button" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30" onclick="deleteMessengerMessage('${escapeHtml(target.id)}','${escapeHtml(msg.id || msg.firebaseId || msg.clientMessageId || '')}','${escapeHtml(msg.clientMessageId || '')}')"><i data-lucide="trash-2" class="w-4 h-4"></i><span>মেসেজ ডিলিট</span></button></div>` : ''}
@@ -5940,10 +6115,32 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
           </div>
         ` : ''}
 
-        ${isUniversity ? '' : ''}
+        ${isUniversity ? `
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+            ${regField('বিশ্ববিদ্যালয়ের নাম', 'reg-university', 'text', 'বিশ্ববিদ্যালয়ের নাম')}
+            ${regField('বিভাগ / Department', 'reg-department', 'text', 'বিভাগের নাম')}
+            ${regField('সেমিস্টার / বর্ষ', 'reg-semester', 'text', 'যেমন: ৩য় বর্ষ')}
+          </div>
+        ` : ''}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-          ${regField('জন্ম নিবন্ধন নম্বর', 'reg-birth-reg', 'text', '১৭ সংখ্যার নিবন্ধন', 'inputmode="numeric"')}
+          ${regField('জন্ম নিবন্ধন নম্বর', 'reg-birth-reg', 'text', '১৭ সংখ্যার নিবন্ধন', 'inputmode="numeric" maxlength="17" pattern="[0-9]{17}"')}
           ${regField('জন্ম তারিখ', 'reg-dob', 'date', '')}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">লিঙ্গ *</label>
+            <select id="reg-gender" required class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
+              <option value="">লিঙ্গ নির্বাচন করুন</option>
+              <option value="পুরুষ">পুরুষ</option><option value="নারী">নারী</option><option value="অন্যান্য">অন্যান্য</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[#42422F] mb-1">রক্তের গ্রুপ *</label>
+            <select id="reg-blood" required class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
+              <option value="">নির্বাচন করুন</option><option value="A+">A+</option><option value="B+">B+</option><option value="O+">O+</option><option value="AB+">AB+</option><option value="A-">A-</option><option value="B-">B-</option><option value="O-">O-</option><option value="AB-">AB-</option>
+            </select>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
@@ -5988,7 +6185,10 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
     function renderWorkerBachelorFields() {
       return `
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          ${regField('জন্ম নিবন্ধন নম্বর', 'reg-birth-reg', 'text', '১৭ সংখ্যার নিবন্ধন', 'inputmode="numeric" maxlength="17" pattern="[0-9]{17}"')}
           ${regField('জন্ম তারিখ', 'reg-dob', 'date')}
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
           <div>
             <label class="block text-xs font-bold text-[#42422F] mb-1">রক্তের গ্রুপ *</label>
             <select id="reg-blood" required class="w-full px-2.5 py-2 bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5A5A40]">
@@ -6331,7 +6531,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
                 <div class="space-y-2">
                   ${matches.users.length ? matches.users.map(user => `
                     <button type="button" onclick="openProfileModal('${user.id}')" class="w-full flex items-center gap-2 text-left p-2 rounded-xl hover:bg-[#F5F5F0] transition-colors">
-                      <img src="${user.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" class="w-8 h-8 rounded-full object-cover border border-[#E2E2D5]" />
+                      <img src="${safeProfilePicture(user.profilePicture)}" class="w-8 h-8 rounded-full object-cover border border-[#E2E2D5]" />
                       <span class="min-w-0"><b class="block text-xs truncate text-[#42422F]">${escapeHtml(user.fullName)}</b><small class="block text-[10px] text-[#8A8A6A]">${escapeHtml(user.studentId || '')} • ${escapeHtml(user.studentClass || '')}</small></span>
                     </button>
                   `).join('') : '<p class="text-xs text-[#8A8A6A]">মিল পাওয়া যায়নি</p>'}
@@ -6420,7 +6620,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
               <div class="app-card bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-[#E2E2D5]">
                 <form onsubmit="handleCreatePost(event)">
                   <div class="flex gap-3">
-                    <img src="${u.profilePicture}" class="w-10 h-10 rounded-full object-cover border border-[#E2E2D5] shrink-0" />
+                    <img src="${safeProfilePicture(u.profilePicture)}" class="w-10 h-10 rounded-full object-cover border border-[#E2E2D5] shrink-0" />
                     <div class="flex-1">
                       <textarea id="new-post-content" rows="3" oninput="handleMentionInputEvent(this)" onkeydown="handleMentionKeyDown(event, this)" placeholder="আপনার মনে কি চলছে তা শেয়ার করুন........." class="w-full p-3 rounded-xl bg-[#F5F5F0] border border-[#E2E2D5] text-[#42422F] placeholder-[#8A8A6A] text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-[#5A5A40] focus:bg-white resize-none"></textarea>
                     </div>
@@ -6554,7 +6754,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
             <!-- Header -->
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center gap-3 cursor-pointer group" onclick="openSocialProfile('${authorIdentifier}')" title="${post.authorName}-এর সম্পূর্ণ প্রোফাইল দেখুন">
-                <img src="${post.authorAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200'}" class="w-10 h-10 rounded-full object-cover border border-[#E2E2D5] group-hover:ring-2 group-hover:ring-[#5A5A40] transition-all" />
+                <img src="${safeProfilePicture(post.authorAvatar)}" class="w-10 h-10 rounded-full object-cover border border-[#E2E2D5] group-hover:ring-2 group-hover:ring-[#5A5A40] transition-all" />
                 <div>
                   <div class="flex items-center gap-1.5">
                     <span class="font-bold text-xs sm:text-sm text-[#42422F] group-hover:text-[#5A5A40] group-hover:underline">${post.authorName}</span>
@@ -6587,17 +6787,17 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
             ${post.content ? `<p class="text-xs sm:text-sm text-[#42422F] whitespace-pre-line leading-relaxed mb-3">${formatFormattedTextWithMentions(post.content)}</p>` : ''}
 
             <!-- Video or Image Media with Fullscreen & Aspect Ratio Preservation -->
-            ${(post.videoUrl || post.mediaType === 'video') ? `
+            ${(safeRemoteMediaUrl(post.videoUrl, '') || (post.mediaType === 'video' && safeRemoteMediaUrl(post.imageUrl, ''))) ? `
               <div class="relative rounded-2xl overflow-hidden mb-3 border border-[#E2E2D5] bg-black group flex items-center justify-center">
-                <video src="${post.videoUrl || post.imageUrl}" controls playsinline class="w-full max-h-[520px] object-contain rounded-2xl"></video>
+                <video src="${safeRemoteMediaUrl(post.videoUrl || post.imageUrl, '')}" controls playsinline class="w-full max-h-[520px] object-contain rounded-2xl"></video>
                 <button type="button" onclick="openMediaLightbox('${encodeURIComponent(post.videoUrl || post.imageUrl)}', 'video', '${encodeURIComponent(post.authorName || '')}', '${encodeURIComponent(post.authorAvatar || '')}', '${encodeURIComponent(formatPostTimestamp(post.createdAt, post.timestamp) || '')}', '${encodeURIComponent(post.content || '')}')" class="absolute top-2.5 right-2.5 px-3 py-1.5 rounded-xl bg-black/65 hover:bg-black/85 text-white backdrop-blur-xs transition-all opacity-90 sm:opacity-0 sm:group-hover:opacity-100 flex items-center gap-1.5 text-xs font-semibold shadow-md cursor-pointer z-10" title="ফুল স্ক্রীনে ভিডিও দেখুন">
                   <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
                   <span>ফুল স্ক্রীন</span>
                 </button>
               </div>
-            ` : (post.imageUrl || post.mediaType === 'image') ? `
-              <div class="relative rounded-2xl overflow-hidden mb-3 border border-[#E2E2D5] bg-[#F7F7F2] dark:bg-[#1C1C16] group flex items-center justify-center cursor-pointer select-none" onclick="openMediaLightbox('${encodeURIComponent(post.imageUrl)}', 'image', '${encodeURIComponent(post.authorName || '')}', '${encodeURIComponent(post.authorAvatar || '')}', '${encodeURIComponent(formatPostTimestamp(post.createdAt, post.timestamp) || '')}', '${encodeURIComponent(post.content || '')}')" title="ছবিটি আসল সাইজ ও ফুল স্ক্রীনে দেখতে ক্লিক করুন">
-                <img src="${post.imageUrl}" alt="${post.authorName}-এর পোস্টের ছবি" class="w-full h-auto max-h-[560px] object-contain transition-transform duration-200 group-hover:scale-[1.008]" />
+            ` : safeRemoteMediaUrl(post.imageUrl, '') ? `
+              <div class="relative rounded-2xl overflow-hidden mb-3 border border-[#E2E2D5] bg-[#F7F7F2] dark:bg-[#1C1C16] group flex items-center justify-center cursor-pointer select-none" onclick="openMediaLightbox('${encodeURIComponent(safeRemoteMediaUrl(post.imageUrl, ''))}', 'image', '${encodeURIComponent(post.authorName || '')}', '${encodeURIComponent(post.authorAvatar || '')}', '${encodeURIComponent(formatPostTimestamp(post.createdAt, post.timestamp) || '')}', '${encodeURIComponent(post.content || '')}')" title="ছবিটি আসল সাইজ ও ফুল স্ক্রীনে দেখতে ক্লিক করুন">
+                <img src="${safeRemoteMediaUrl(post.imageUrl, '')}" alt="${post.authorName}-এর পোস্টের ছবি" class="w-full h-auto max-h-[560px] object-contain transition-transform duration-200 group-hover:scale-[1.008]" />
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
                 <div class="absolute bottom-2.5 right-2.5 px-3 py-1.5 rounded-xl bg-black/70 hover:bg-black/85 text-white backdrop-blur-xs text-[11px] font-semibold flex items-center gap-1.5 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-all shadow-md pointer-events-none">
                   <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
@@ -6647,7 +6847,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
                   return `
                   <div class="bg-[#F9F9F4] p-3 rounded-xl border border-[#F0F0E0]">
                     <div class="flex items-start gap-2.5">
-                      <img onclick="openSocialProfile('${commentAuthorId}')" src="${c.authorAvatar}" class="w-7 h-7 rounded-full object-cover border border-[#E2E2D5] mt-0.5 cursor-pointer hover:ring-2 hover:ring-[#5A5A40] transition-all shrink-0" title="${c.authorName}-এর প্রোফাইল দেখুন" />
+                      <img onclick="openSocialProfile('${commentAuthorId}')" src="${safeProfilePicture(c.authorAvatar)}" class="w-7 h-7 rounded-full object-cover border border-[#E2E2D5] mt-0.5 cursor-pointer hover:ring-2 hover:ring-[#5A5A40] transition-all shrink-0" title="${c.authorName}-এর প্রোফাইল দেখুন" />
                       <div class="flex-1 text-xs min-w-0">
                         <div class="flex items-center justify-between gap-1">
                           <span onclick="openSocialProfile('${commentAuthorId}')" class="font-bold text-[#42422F] cursor-pointer hover:underline hover:text-[#5A5A40] flex items-center gap-1 truncate">
@@ -6685,7 +6885,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
 
                               return `
                                 <div class="flex items-start gap-2 bg-white p-2.5 rounded-lg border border-[#E2E2D5]/70">
-                                  <img onclick="openProfileModal('${replyAuthorId}')" src="${r.authorAvatar}" class="w-6 h-6 rounded-full object-cover border border-[#E2E2D5] mt-0.5 cursor-pointer shrink-0" />
+                                  <img onclick="openProfileModal('${replyAuthorId}')" src="${safeProfilePicture(r.authorAvatar)}" class="w-6 h-6 rounded-full object-cover border border-[#E2E2D5] mt-0.5 cursor-pointer shrink-0" />
                                   <div class="flex-1 min-w-0">
                                     <div class="flex items-center justify-between gap-1">
                                       <span onclick="openProfileModal('${replyAuthorId}')" class="font-bold text-[#42422F] text-[11px] cursor-pointer hover:underline flex items-center gap-1 truncate">
@@ -6834,7 +7034,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
                     <tr class="hover:bg-[#F9F9F4] transition-colors">
                       <td class="p-3.5">
                         <div class="flex items-center gap-2.5">
-                          <img src="${s.profilePicture}" class="w-8 h-8 rounded-full object-cover border border-[#E2E2D5]" />
+                          <img src="${safeProfilePicture(s.profilePicture)}" class="w-8 h-8 rounded-full object-cover border border-[#E2E2D5]" />
                           <div>
                             <div class="font-bold flex items-center gap-1">
                               <span>${s.fullName}</span>
@@ -6922,7 +7122,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
                       <tr class="hover:bg-[#F9F9F4] transition-colors">
                         <td class="p-3.5 font-bold text-[#42422F]">
                           <div class="flex items-center gap-2.5">
-                            ${ev.banner ? `<img src="${ev.banner}" class="w-9 h-9 rounded-lg object-cover border border-[#E2E2D5] shrink-0" />` : ''}
+                            ${ev.banner ? `<img src="${safeRemoteMediaUrl(ev.banner, '')}" class="w-9 h-9 rounded-lg object-cover border border-[#E2E2D5] shrink-0" />` : ''}
                             <span class="line-clamp-1">${ev.title}</span>
                           </div>
                         </td>
@@ -6935,7 +7135,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
                           <div class="flex items-center gap-2">
                             <div class="flex -space-x-2 overflow-hidden py-0.5">
                               ${pUsers.slice(0, 3).map(pu => `
-                                <img src="${pu.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" class="w-6 h-6 rounded-full border border-white object-cover" title="${pu.fullName}" />
+                                <img src="${safeProfilePicture(pu.profilePicture)}" class="w-6 h-6 rounded-full border border-white object-cover" title="${pu.fullName}" />
                               `).join('')}
                               ${pCount > 3 ? `<span class="w-6 h-6 rounded-full bg-[#5A5A40] text-white text-[10px] font-bold flex items-center justify-center border border-white">+${pCount - 3}</span>` : ''}
                             </div>
@@ -6988,7 +7188,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
                   ${(state.pastEventPhotos || []).map(photo => `
                     <div class="bg-[#F9F9F4] p-3 rounded-xl border border-[#E2E2D5] flex items-center gap-3 justify-between group">
                       <div class="flex items-center gap-2.5 min-w-0">
-                        <img src="${photo.imageUrl}" class="w-14 h-14 rounded-lg object-cover border border-[#E2E2D5] shrink-0 cursor-pointer hover:opacity-90" onclick="openMediaLightbox('${encodeURIComponent(photo.imageUrl)}', 'image', '${encodeURIComponent(photo.title)}', '', '${encodeURIComponent(photo.date)}', '${encodeURIComponent(photo.description || '')}')" title="ফুল স্ক্রীন দেখুন" />
+                        <img src="${safeRemoteMediaUrl(photo.imageUrl, '')}" class="w-14 h-14 rounded-lg object-cover border border-[#E2E2D5] shrink-0 cursor-pointer hover:opacity-90" onclick="openMediaLightbox('${encodeURIComponent(photo.imageUrl)}', 'image', '${encodeURIComponent(photo.title)}', '', '${encodeURIComponent(photo.date)}', '${encodeURIComponent(photo.description || '')}')" title="ফুল স্ক্রীন দেখুন" />
                         <div class="min-w-0">
                           <h4 class="font-bold text-xs text-[#42422F] truncate" title="${photo.title}">${photo.title}</h4>
                           <span class="text-[10px] text-[#5A5A40] bg-[#F0F0E0] px-1.5 py-0.5 rounded font-semibold">${photo.category || 'ইভেন্ট'}</span>
@@ -7089,7 +7289,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
             <!-- Modal Header -->
             <div class="oikko-profile-header bg-[#5A5A40] text-white p-5 flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <img src="${user.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200'}" class="w-14 h-14 rounded-2xl object-cover border-2 border-white/40 shadow-xs" />
+                <img src="${safeProfilePicture(user.profilePicture)}" class="w-14 h-14 rounded-2xl object-cover border-2 border-white/40 shadow-xs" />
                 <div>
                   <h3 class="oikko-profile-name font-bold text-base sm:text-lg flex items-center gap-1.5 leading-tight">
                     <span>${user.fullName}</span>
@@ -7298,7 +7498,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
           <!-- Top Bar -->
           <div class="p-3 sm:p-4 bg-gradient-to-b from-black/90 via-black/60 to-transparent flex items-center justify-between text-white z-20 gap-3 border-b border-white/10">
             <div class="flex items-center gap-2.5 min-w-0">
-              ${avatar ? `<img src="${avatar}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-white/30 shrink-0" />` : ''}
+              ${avatar ? `<img src="${safeProfilePicture(avatar)}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-white/30 shrink-0" />` : ''}
               <div class="min-w-0">
                 <div class="font-bold text-xs sm:text-sm text-white truncate">${author || 'পোস্ট মিডিয়া'}</div>
                 <div class="text-[10px] sm:text-xs text-white/70 flex items-center gap-1.5 truncate">
@@ -7458,7 +7658,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
               <div>
                 <label class="oikko-edit-label block mb-1">প্রোফাইল ছবি (ডিভাইস থেকে বা লিংক)</label>
                 <div class="oikko-edit-section flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                  <img id="edit-avatar-preview" src="${userToEdit.profilePicture}" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'" class="w-12 h-12 rounded-full object-cover border-2 border-[#E2E2D5] shrink-0 shadow-xs" />
+                  <img id="edit-avatar-preview" src="${safeProfilePicture(userToEdit.profilePicture)}" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'" class="w-12 h-12 rounded-full object-cover border-2 border-[#E2E2D5] shrink-0 shadow-xs" />
                   <div class="flex-1 space-y-1.5 w-full">
                     <input type="file" id="edit-avatar-file" accept="image/*" onchange="handleProfileAvatarFileSelect(event, 'edit')" class="hidden" />
                     <div class="flex items-center gap-2 flex-wrap">
@@ -7617,7 +7817,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       }
     }
 
-    function handleUpdateProfile(e, userId) {
+    async function handleUpdateProfile(e, userId) {
       e.preventDefault();
       const user = state.users.find(u => u.id === userId);
       if (!user) return;
@@ -7672,7 +7872,9 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       user.email = newEmail;
       user.facebookLink = newFb;
       if (newPass) {
-        user.password = newPass;
+        if (newPass.length < 6) { showToast('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।','error'); return; }
+        user.passwordHash = await hashOikkoPassword(newPass);
+        try { delete user.password; } catch (_) { user.password = undefined; }
       }
 
       // Update author details on all existing posts & comments by this user
@@ -7744,12 +7946,15 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
 
       const cleanId = id.toUpperCase();
 
-      const user = state.users.find(u => {
-        const idMatches = u.studentId.toUpperCase() === cleanId || u.mobileNumber === id;
-        const mobileMatches = !mobile || u.mobileNumber === mobile;
-        const passMatches = u.password === pass || pass === 'kmi159357' || pass === 'admin123';
-        return idMatches && mobileMatches && passMatches;
+      const candidates = state.users.filter(u => {
+        const idMatches = String(u.studentId || '').toUpperCase() === cleanId || String(u.mobileNumber || '') === id;
+        const mobileMatches = !mobile || String(u.mobileNumber || '') === mobile;
+        return idMatches && mobileMatches;
       });
+      let user = null;
+      for (const candidate of candidates) {
+        if (await verifyOikkoPassword(candidate, pass)) { user = candidate; break; }
+      }
 
       if (!user) {
         state.authError = 'স্টুডেন্ট আইডি, মোবাইল অথবা পাসওয়ার্ড সঠিক নয়!';
@@ -7783,16 +7988,19 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
       const cleanInput = idOrEmail.toLowerCase();
       const cleanId = idOrEmail.toUpperCase();
 
-      const admin = state.users.find(u => {
+      const adminCandidates = state.users.filter(u => {
         const isAdmin = u.role === 'admin' || u.studentId === 'ADMIN001' || u.studentId === 'CREATOR@KMI' || u.email === 'kmi96724@gmail.com';
         const identifierMatches = (
-          u.studentId.toUpperCase() === cleanId ||
-          (u.email && u.email.toLowerCase() === cleanInput) ||
-          u.mobileNumber === idOrEmail
+          String(u.studentId || '').toUpperCase() === cleanId ||
+          (u.email && String(u.email).toLowerCase() === cleanInput) ||
+          String(u.mobileNumber || '') === idOrEmail
         );
-        const passMatches = u.password === pass;
-        return isAdmin && identifierMatches && passMatches;
+        return isAdmin && identifierMatches;
       });
+      let admin = null;
+      for (const candidate of adminCandidates) {
+        if (await verifyOikkoPassword(candidate, pass)) { admin = candidate; break; }
+      }
 
       if (!admin) {
         state.authError = 'এডমিন আইডি/ইমেইল অথবা পাসওয়ার্ড সঠিক নয়!';
@@ -7902,17 +8110,20 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         roll: isStudent ? valueOf('reg-roll') : '',
         section: isStudent ? valueOf('reg-section') : '',
         shift: isStudent ? valueOf('reg-shift') : '',
-        birthRegistrationNumber: isStudent ? valueOf('reg-birth-reg') : '',
+        birthRegistrationNumber: valueOf('reg-birth-reg'),
         dateOfBirth: valueOf('reg-dob'),
         bloodGroup: valueOf('reg-blood'),
         religion: valueOf('reg-religion'),
-        gender: isWorkerLike ? valueOf('reg-gender') : '',
+        gender: valueOf('reg-gender'),
+        universityName: isStudent && studentClass === 'university' ? valueOf('reg-university') : '',
+        department: isStudent && studentClass === 'university' ? valueOf('reg-department') : '',
+        semester: isStudent && studentClass === 'university' ? valueOf('reg-semester') : '',
         presentAddress: valueOf('reg-present'),
         permanentAddress: isWorkerLike ? valueOf('reg-present') : valueOf('reg-permanent'),
         mobileNumber: valueOf('reg-mobile'),
         email: valueOf('reg-email'),
         facebookLink: isStudent ? valueOf('reg-fb') : '',
-        password: password,
+        passwordHash: await hashOikkoPassword(password),
         profilePicture: profilePicUrl,
         isVerified: false,
         role: isStudent ? 'student' : 'user',
@@ -8033,7 +8244,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         return `
           <div class="relative rounded-xl overflow-hidden border border-[#E2E2D5] bg-[#F5F5F0] p-2 flex items-center justify-between">
             <div class="flex items-center gap-3 overflow-hidden">
-              <img src="${m.url}" class="w-14 h-14 rounded-lg object-cover border border-[#E2E2D5] shrink-0" />
+              <img src="${safeRemoteMediaUrl(m.url, '')}" class="w-14 h-14 rounded-lg object-cover border border-[#E2E2D5] shrink-0" />
               <div class="overflow-hidden">
                 <span class="text-xs font-bold text-[#42422F] block truncate">${m.name}</span>
                 <span class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
@@ -8335,7 +8546,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
     function renderFriendUserCard(user, actions='') {
       if (!user) return '';
       return `<div class="oikko-friend-card">
-        <img src="${escapeHtml(user.profilePicture||'')}" class="oikko-friend-avatar" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200'">
+        <img src="${escapeHtml(safeProfilePicture(user.profilePicture))}" class="oikko-friend-avatar" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200'">
         <div class="min-w-0 flex-1">
           <button class="oikko-friend-name" onclick="openSocialProfile('${escapeHtml(user.id)}')">${escapeHtml(user.fullName||'Oikko user')} ${user.isVerified?getVerifiedBadgeHTML('xs'):''}</button>
           <div class="oikko-friend-meta">${escapeHtml(user.studentClass||'শিক্ষার্থী')}${user.studentId?` • ID: ${escapeHtml(user.studentId)}`:''}</div>
@@ -8385,7 +8596,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
         <section class="oikko-fb-profile-hero app-card">
           <div class="oikko-profile-cover"></div>
           <div class="oikko-profile-identity">
-            <div class="relative shrink-0"><img src="${escapeHtml(u.profilePicture||'')}" class="oikko-profile-avatar" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300'"></div>
+            <div class="relative shrink-0"><img src="${escapeHtml(safeProfilePicture(u.profilePicture))}" class="oikko-profile-avatar" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300'"></div>
             <div class="min-w-0 flex-1"><h1>${escapeHtml(u.fullName||'শিক্ষার্থী')} ${u.isVerified?getVerifiedBadgeHTML('sm'):''}</h1><p>${escapeHtml(u.bio||'Oikko Campus-এর সদস্য')} </p><div class="oikko-profile-meta-row"><span>${escapeHtml(u.studentClass||'শিক্ষার্থী')}</span><span>•</span><span>ID: ${escapeHtml(u.studentId||'N/A')}</span></div></div>
             <div class="oikko-profile-actions">${isOwn?`<button class="app-action app-action-soft" onclick="openProfileModal('${escapeHtml(u.id)}')"><i data-lucide="pencil" class="w-4 h-4"></i> তথ্য পরিবর্তন</button>`:`<div class="flex flex-wrap items-center gap-2 justify-end">${renderFriendActionHTML(u.id)}</div>`}</div>
           </div>
@@ -8408,7 +8619,7 @@ html.dark .oikko-person-card{background:#10251d;border-color:#29443a}.dark .oikk
               <div class="app-card bg-white rounded-2xl p-4 sm:p-5 border border-[#DCE7E0] shadow-sm">
                 <form onsubmit="handleCreatePost(event)">
                   <div class="flex gap-3">
-                    <img src="${escapeHtml(u.profilePicture||'')}" class="w-11 h-11 rounded-full object-cover border border-[#DCE7E0] shrink-0" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200'">
+                    <img src="${escapeHtml(safeProfilePicture(u.profilePicture))}" class="w-11 h-11 rounded-full object-cover border border-[#DCE7E0] shrink-0" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200'">
                     <div class="flex-1">
                       <textarea id="new-post-content" rows="3"
                         oninput="handleMentionInputEvent(this)"
@@ -8453,7 +8664,7 @@ function renderSettingsView(){
       const sw=(key)=>`<button type="button" class="oikko-switch ${st[key]?'on':''}" aria-label="টগল" onclick="toggleOikkoSetting('${key}')"></button>`;
       const select=(key,opts)=>`<select class="oikko-setting-select" onchange="updateOikkoSetting('${key}',this.value)">${opts.map(([v,t])=>`<option value="${v}" ${st[key]===v?'selected':''}>${t}</option>`).join('')}</select>`;
       const btn=(label,fn,cls='')=>`<button type="button" onclick="${fn}" class="oikko-setting-action ${cls}">${label}</button>`;
-      const blocked=(st.blockedUsers||[]).length;
+      const blocked=Object.keys(st.blockedUsers||{}).filter(k=>st.blockedUsers[k]).length;
       return `<main class="oikko-settings-page">
         <section class="oikko-settings-hero"><div><h1>সেটিংস</h1><p>অ্যাকাউন্ট, প্রাইভেসি, নোটিফিকেশন, অ্যাপিয়ারেন্স ও সাবস্ক্রিপশন এক জায়গা থেকে নিয়ন্ত্রণ করুন</p></div><div class="oikko-settings-icon"><i data-lucide="settings-2" class="w-9 h-9"></i></div></section>
         <div class="oikko-settings-grid">
@@ -8599,15 +8810,15 @@ function renderSettingsView(){
       m.innerHTML=`<div class="fixed inset-0 z-50 flex items-center justify-center p-4 oikko-modal-backdrop"><div class="oikko-mini-modal"><div class="oikko-mini-head"><b>পাসওয়ার্ড পরিবর্তন</b><button onclick="closeProfileModal()">×</button></div><form onsubmit="changeOikkoPassword(event)" class="oikko-mini-body"><input id="old-pass" type="password" placeholder="বর্তমান পাসওয়ার্ড" required><input id="new-pass" type="password" placeholder="নতুন পাসওয়ার্ড" minlength="6" required><input id="new-pass2" type="password" placeholder="নতুন পাসওয়ার্ড আবার লিখুন" minlength="6" required><button class="oikko-setting-primary">সংরক্ষণ করুন</button></form></div></div>`;
     }
     window.openAccountPasswordModal=openAccountPasswordModal;
-    function changeOikkoPassword(e){e.preventDefault();const old=document.getElementById('old-pass').value,n=document.getElementById('new-pass').value,n2=document.getElementById('new-pass2').value;if(old!==String(state.currentUser.password||'')){showToast('বর্তমান পাসওয়ার্ড সঠিক নয়','error');return}if(n!==n2){showToast('নতুন পাসওয়ার্ড মিলছে না','error');return}updateOikkoUserField('password',n);closeProfileModal();showToast('পাসওয়ার্ড পরিবর্তন হয়েছে','success');}
+    async function changeOikkoPassword(e){e.preventDefault();const old=document.getElementById('old-pass')?.value||'',n=document.getElementById('new-pass')?.value||'',n2=document.getElementById('new-pass2')?.value||'';if(!(await verifyOikkoPassword(state.currentUser,old))){showToast('বর্তমান পাসওয়ার্ড সঠিক নয়','error');return}if(n.length<6){showToast('নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে','error');return}if(n!==n2){showToast('নতুন পাসওয়ার্ড মিলছে না','error');return}await updateOikkoUserField('passwordHash',await hashOikkoPassword(n));closeProfileModal();showToast('পাসওয়ার্ড পরিবর্তন হয়েছে','success');}
     window.changeOikkoPassword=changeOikkoPassword;
     function deactivateOikkoAccount(){if(!confirm('অ্যাকাউন্ট ডিঅ্যাক্টিভেট করে লগআউট করতে চান?'))return;updateOikkoUserField('isDeactivated',true);logout();}
     window.deactivateOikkoAccount=deactivateOikkoAccount;
     async function deleteOikkoAccount(){if(!confirm('অ্যাকাউন্ট ডিলিট করতে চান? এই কাজটি স্থানীয়ভাবে স্থায়ীভাবে মুছে দেবে।'))return;const id=state.currentUser&&state.currentUser.id;state.users=(state.users||[]).filter(x=>x.id!==id);saveUsers(state.users);try{if(window.firebaseDb&&window.fb&&id)await (window.firebaseAuthReady || Promise.resolve());
         await window.fb.deleteDoc(window.fb.doc(window.firebaseDb,'users',id));}catch(e){console.warn(e)}saveCurrentUser(null);state.currentUser=null;state.authMode='user_login';showToast('অ্যাকাউন্ট ডিলিটের প্রক্রিয়া সম্পন্ন হয়েছে','info');renderApp();}
     window.deleteOikkoAccount=deleteOikkoAccount;
-    function openBlockedUsersModal(){const list=state.settings.blockedUsers||[];const m=document.getElementById('modal-container');m.innerHTML=`<div class="fixed inset-0 z-50 flex items-center justify-center p-4 oikko-modal-backdrop"><div class="oikko-mini-modal"><div class="oikko-mini-head"><b>ব্লক করা ব্যবহারকারী</b><button onclick="closeProfileModal()">×</button></div><div class="oikko-mini-body">${list.length?list.map((x,i)=>`<div class="oikko-blocked-row"><span>${String(x.name||x.id||'ব্যবহারকারী')}</span><button onclick="unblockOikkoUser(${i})">আনব্লক</button></div>`).join(''):'কোনো ব্যবহারকারী ব্লক করা নেই।'}</div></div></div>`}
-    function unblockOikkoUser(i){(state.settings.blockedUsers||[]).splice(i,1);saveOikkoSettings();openBlockedUsersModal();}
+    function openBlockedUsersModal(){const blocked=state.settings.blockedUsers||{};const ids=Object.keys(blocked).filter(id=>blocked[id]);const m=document.getElementById('modal-container');m.innerHTML=`<div class="fixed inset-0 z-50 flex items-center justify-center p-4 oikko-modal-backdrop"><div class="oikko-mini-modal"><div class="oikko-mini-head"><b>ব্লক করা ব্যবহারকারী</b><button onclick="closeProfileModal()">×</button></div><div class="oikko-mini-body">${ids.length?ids.map(id=>{const u=state.users.find(x=>String(x.id)===String(id));return `<div class="oikko-blocked-row"><span>${escapeHtml(u?.fullName||id)}</span><button onclick="unblockOikkoUser('${escapeHtml(id)}')">আনব্লক</button></div>`}).join(''):'কোনো ব্যবহারকারী ব্লক করা নেই।'}</div></div></div>`}
+    function unblockOikkoUser(id){state.settings.blockedUsers=state.settings.blockedUsers||{};delete state.settings.blockedUsers[String(id)];saveOikkoSettings();openBlockedUsersModal();}
     window.openBlockedUsersModal=openBlockedUsersModal;window.unblockOikkoUser=unblockOikkoUser;
     function openLoginActivityModal(){const activity=state.settings.loginActivity||[];const current={device:navigator.userAgent.includes('Mobile')?'Mobile Browser':'Desktop Browser',time:new Date().toLocaleString('bn-BD')};if(!activity.length) activity.push(current);state.settings.loginActivity=activity.slice(0,10);saveOikkoSettings();const m=document.getElementById('modal-container');m.innerHTML=`<div class="fixed inset-0 z-50 flex items-center justify-center p-4 oikko-modal-backdrop"><div class="oikko-mini-modal"><div class="oikko-mini-head"><b>লগইন অ্যাক্টিভিটি</b><button onclick="closeProfileModal()">×</button></div><div class="oikko-mini-body">${state.settings.loginActivity.map(x=>`<div class="oikko-activity-row"><i data-lucide="monitor-smartphone"></i><div><b>${x.device||'Browser'}</b><small>${x.time||''}</small></div></div>`).join('')}</div></div></div>`;if(window.lucide)lucide.createIcons()}
     window.openLoginActivityModal=openLoginActivityModal;
@@ -9035,7 +9246,7 @@ function renderSettingsView(){
       if (editPostMediaState.type === 'video') {
         return `
           <div class="relative rounded-xl overflow-hidden border border-[#E2E2D5] bg-black max-h-56 flex items-center justify-center">
-            <video src="${editPostMediaState.url}" controls class="max-h-56 w-full object-contain"></video>
+            <video src="${safeRemoteMediaUrl(editPostMediaState.url, '')}" controls class="max-h-56 w-full object-contain"></video>
             <button type="button" onclick="handleRemoveEditPostMedia()" class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-1.5 rounded-full shadow-md cursor-pointer" title="ভিডিও মুছে ফেলুন">
               <i data-lucide="x" class="w-3.5 h-3.5"></i>
             </button>
@@ -9044,7 +9255,7 @@ function renderSettingsView(){
       }
       return `
         <div class="relative rounded-xl overflow-hidden border border-[#E2E2D5] max-h-56 flex items-center justify-center bg-[#F5F5F0]">
-          <img src="${editPostMediaState.url}" class="max-h-56 w-full object-cover" />
+          <img src="${safeRemoteMediaUrl(editPostMediaState.url, '')}" class="max-h-56 w-full object-cover" />
           <button type="button" onclick="handleRemoveEditPostMedia()" class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-1.5 rounded-full shadow-md cursor-pointer" title="ছবি মুছে ফেলুন">
             <i data-lucide="x" class="w-3.5 h-3.5"></i>
           </button>
@@ -9264,7 +9475,7 @@ function renderSettingsView(){
                   <div class="bg-white rounded-2xl border border-[#E2E2D5] overflow-hidden shadow-xs flex flex-col transition-all hover:shadow-md">
                     ${ev.banner ? `
                       <div class="h-44 w-full overflow-hidden bg-[#F5F5F0] relative">
-                        <img src="${ev.banner}" class="w-full h-full object-cover" />
+                        <img src="${safeRemoteMediaUrl(ev.banner, '')}" class="w-full h-full object-cover" />
                         <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-black/60 text-white text-[10px] font-bold backdrop-blur-xs border border-white/20">
                           ${ev.category || 'ইভেন্ট'}
                         </span>
@@ -9304,7 +9515,7 @@ function renderSettingsView(){
                             >
                               <div class="flex -space-x-2 overflow-hidden py-0.5 items-center">
                                 ${participantUsers.slice(0, 4).map(p => `
-                                  <img src="${p.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" class="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover shadow-2xs" title="${p.fullName} (${p.studentId})" />
+                                  <img src="${safeProfilePicture(p.profilePicture)}" class="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover shadow-2xs" title="${p.fullName} (${p.studentId})" />
                                 `).join('')}
                                 ${participantCount > 4 ? `
                                   <span class="inline-flex items-center justify-center h-6 w-6 rounded-full ring-2 ring-white bg-[#5A5A40] text-white text-[10px] font-bold">+${participantCount - 4}</span>
@@ -9565,7 +9776,7 @@ function renderSettingsView(){
           class="w-64 sm:w-72 h-44 shrink-0 rounded-2xl overflow-hidden relative group cursor-pointer border border-[#E2E2D5] dark:border-[#36362B] shadow-xs bg-[#1C1C16] select-none"
           title="${photo.title} (${photo.date}) - ফুল স্ক্রীন দেখতে ক্লিক করুন"
         >
-          <img src="${photo.imageUrl}" alt="${photo.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <img src="${safeRemoteMediaUrl(photo.imageUrl, '')}" alt="${photo.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-between p-3">
             <div class="flex items-center justify-between">
               <span class="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold border border-white/20">
@@ -9922,7 +10133,7 @@ function renderSettingsView(){
                       <!-- Student Identity -->
                       <div class="flex items-center gap-3 min-w-0">
                         <div class="relative shrink-0 cursor-pointer" onclick="openProfileModal('${stu.id || stu.studentId}', '${ev.id}')">
-                          <img src="${stu.profilePicture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" class="w-12 h-12 rounded-2xl object-cover border border-[#E2E2D5] group-hover:ring-2 group-hover:ring-[#5A5A40] transition-all" />
+                          <img src="${safeProfilePicture(stu.profilePicture)}" class="w-12 h-12 rounded-2xl object-cover border border-[#E2E2D5] group-hover:ring-2 group-hover:ring-[#5A5A40] transition-all" />
                           ${stu.isVerified ? `<div class="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-xs">${getVerifiedBadgeHTML('sm')}</div>` : ''}
                         </div>
                         <div class="min-w-0">
@@ -10459,5 +10670,13 @@ function renderSettingsView(){
   })();
   </script>
 
+<script>
+  window.addEventListener('error', (event) => {
+    try { console.error('Oikko runtime error:', event.error || event.message); } catch (_) {}
+  });
+  window.addEventListener('unhandledrejection', (event) => {
+    try { console.error('Oikko unhandled promise rejection:', event.reason); } catch (_) {}
+  });
+</script>
 </body>
 </html>
