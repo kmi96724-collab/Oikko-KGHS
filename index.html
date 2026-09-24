@@ -4857,13 +4857,13 @@ function renderBrowseView() {
           <button class="oikko-browse-chip" onclick="oikkoBrowseSearchPreset('news')">News</button>
           <button class="oikko-browse-chip" onclick="oikkoBrowseSearchPreset('education')">Education</button>
         </div>
-        <div id="oikko-browse-hint" class="oikko-browse-hint">গুরুত্বপূর্ণ: সব website অন্য website-এর ভিতরে iframe হতে দেয় না। তাই Browse প্রথমে অ্যাপের ভিতরে খোলার চেষ্টা করবে; Google বা iframe-blocked website হলে Browser বাটন দিয়ে একই website নতুন browser tab-এ খোলা যাবে।</div>
+        <div id="oikko-browse-hint" class="oikko-browse-hint">Oikko Browse-এর ভিতরেই website খোলার চেষ্টা করা হবে। কোনো website নিজস্ব security policy দিয়ে embedding বন্ধ করলে browser সেই restriction প্রয়োগ করবে।</div>
         <div class="oikko-browse-frame-wrap">
           <div id="oikko-browse-empty" class="oikko-browse-empty">
             <div class="oikko-browse-empty-card">
               <i data-lucide="globe-2" class="w-12 h-12 mx-auto" style="color:#10b981"></i>
               <h2>Oikko Browse</h2>
-              <p>Search box-এ আপনার প্রয়োজনীয় বিষয় লিখুন অথবা কোনো website-এর URL দিন।</p>
+              <p>Search box-এ যেকোনো বিষয় লিখুন অথবা কোনো website-এর URL দিন—website Oikko-এর Browse panel-এর ভিতরেই খোলার চেষ্টা করা হবে।</p>
             </div>
           </div>
           <iframe id="oikko-browse-frame" class="oikko-browse-frame" title="Oikko Browse Web Viewer" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen; autoplay; encrypted-media; picture-in-picture"></iframe>
@@ -4876,56 +4876,35 @@ function oikkoBrowseFrame(){ return document.getElementById('oikko-browse-frame'
 function oikkoBrowseEmpty(show){ const el=document.getElementById('oikko-browse-empty'); if(el) el.classList.toggle('hidden',!show); }
 function oikkoBrowseSetUrl(url){ const el=document.getElementById('oikko-browse-url'); if(el) el.value=url||''; }
 function oikkoBrowseCurrentUrl(){ return String(document.getElementById('oikko-browse-url')?.value||'').trim(); }
-function oikkoBrowseIsLikelyFrameBlocked(url){
-  try{
-    const u=new URL(url);
-    const h=u.hostname.toLowerCase();
-    /* Major search/social sites commonly prevent third-party iframe embedding. */
-    return h==='google.com'||h.endsWith('.google.com')||h==='www.google.com'||
-           h==='youtube.com'||h.endsWith('.youtube.com')||
-           h==='facebook.com'||h.endsWith('.facebook.com')||
-           h==='instagram.com'||h.endsWith('.instagram.com')||
-           h==='x.com'||h.endsWith('.x.com')||h==='twitter.com'||h.endsWith('.twitter.com')||
-           h==='linkedin.com'||h.endsWith('.linkedin.com');
-  }catch(e){ return true; }
-}
+
+/*
+ * Oikko Browse uses a real cross-origin iframe as the in-app web surface.
+ * Do not pre-block domains here: whether a site can be framed is decided by
+ * that site's own HTTP security headers and the browser. Google Search uses
+ * its iframe-compatible search endpoint (igu=1) so searches can stay in-app.
+ */
 function oikkoBrowseLoad(url, options={}){
-  const frame=oikkoBrowseFrame(); if(!frame || !url) return;
+  const frame=oikkoBrowseFrame(); if(!frame || !url) return false;
+  let target=String(url).trim();
+  if(!/^https?:\/\//i.test(target)) target='https://'+target;
+  try{ new URL(target); }catch(e){ showToast('সঠিক website URL দিন','error'); return false; }
+
+  oikkoBrowseSetUrl(target);
+  try{localStorage.setItem('oikko_browse_last_url',target);}catch(e){}
   oikkoBrowseEmpty(false);
-  oikkoBrowseSetUrl(url);
-  try{localStorage.setItem('oikko_browse_last_url',url);}catch(e){}
-  if(oikkoBrowseIsLikelyFrameBlocked(url)){
-    const hint=document.getElementById('oikko-browse-hint');
-    if(hint) hint.innerHTML='এই website iframe-এ নিজেকে embed করতে দেয় না। <b>Browser</b> বাটনে ক্লিক করলে এটি সরাসরি browser tab-এ খুলবে।';
-    /* Do not pretend that a blocked page loaded. Keep the app stable. */
-    frame.removeAttribute('src');
-    oikkoBrowseEmpty(true);
-    const empty=document.getElementById('oikko-browse-empty');
-    if(empty){
-      empty.innerHTML=`<div class="oikko-browse-empty-card">
-        <i data-lucide="external-link" class="w-12 h-12 mx-auto" style="color:#10b981"></i>
-        <h2>এই website-টি iframe-এ খোলা যায় না</h2>
-        <p>Website-এর নিরাপত্তা নীতির কারণে Oikko-এর ভিতরের frame-এ এটি দেখানো সম্ভব নয়। নিচের বাটন দিয়ে সরাসরি browser-এ খুলুন।</p>
-        <button type="button" class="oikko-browse-btn primary" style="margin-top:14px" onclick="oikkoBrowseOpenExternal()"><i data-lucide="external-link" class="w-4 h-4"></i> Browser-এ খুলুন</button>
-      </div>`;
-      try{if(window.lucide)window.lucide.createIcons();}catch(e){}
-    }
-    if(options.openExternal) oikkoBrowseOpenExternal(url);
-    return;
-  }
   const hint=document.getElementById('oikko-browse-hint');
-  if(hint) hint.textContent='Website-টি অ্যাপের ভিতরে খোলার চেষ্টা করা হচ্ছে। কোনো site iframe block করলে Browser বাটন ব্যবহার করুন।';
-  frame.src=url;
+  if(hint) hint.textContent='Website-টি Oikko Browse-এর ভিতরেই খোলা হচ্ছে। কিছু website তাদের নিজস্ব security policy অনুযায়ী embedding বন্ধ রাখতে পারে।';
+  frame.src=target;
+  return true;
 }
+
 function oikkoBrowseSearch(){
   const input=document.getElementById('oikko-browse-search-input');
   const q=String(input?.value||'').trim();
   if(!q){ input?.focus(); return; }
-  const url='https://www.google.com/search?hl=en&q='+encodeURIComponent(q);
-  /* Google deliberately restricts framing. Open it directly from the user's click/submit. */
-  oikkoBrowseSetUrl(url);
-  try{localStorage.setItem('oikko_browse_last_url',url);}catch(e){}
-  oikkoBrowseOpenExternal(url);
+  /* Google supports an iframe-friendly search URL with igu=1. */
+  const url='https://www.google.com/search?igu=1&hl=en&q='+encodeURIComponent(q);
+  oikkoBrowseLoad(url);
 }
 function oikkoBrowseSearchPreset(q){
   const input=document.getElementById('oikko-browse-search-input');
@@ -4937,31 +4916,28 @@ function oikkoBrowseGoUrl(){
   let url=String(input?.value||'').trim();
   if(!url) return;
   if(!/^https?:\/\//i.test(url)) url='https://'+url;
-  try{new URL(url);}catch(e){showToast('সঠিক website URL দিন','error');return;}
-  oikkoBrowseSetUrl(url);
-  if(oikkoBrowseIsLikelyFrameBlocked(url)) oikkoBrowseOpenExternal(url);
-  else oikkoBrowseLoad(url);
+  oikkoBrowseLoad(url);
 }
 function oikkoBrowseGoBack(){
   try{
     const frame=oikkoBrowseFrame();
-    if(frame?.contentWindow) frame.contentWindow.history.back();
-    else showToast('Browser tab-এর Back button ব্যবহার করুন','info');
-  }catch(e){showToast('Browser tab-এর Back button ব্যবহার করুন','info');}
+    if(frame?.contentWindow){ frame.contentWindow.history.back(); return; }
+  }catch(e){}
+  showToast('এই page-এর Back navigation browser দ্বারা নিয়ন্ত্রিত হচ্ছে।','info');
 }
 function oikkoBrowseGoForward(){
   try{
     const frame=oikkoBrowseFrame();
-    if(frame?.contentWindow) frame.contentWindow.history.forward();
-    else showToast('Browser tab-এর Forward button ব্যবহার করুন','info');
-  }catch(e){showToast('Browser tab-এর Forward button ব্যবহার করুন','info');}
+    if(frame?.contentWindow){ frame.contentWindow.history.forward(); return; }
+  }catch(e){}
+  showToast('এই page-এর Forward navigation browser দ্বারা নিয়ন্ত্রিত হচ্ছে।','info');
 }
 function oikkoBrowseReload(){
+  const frame=oikkoBrowseFrame();
   try{
-    const frame=oikkoBrowseFrame();
-    if(frame?.src) frame.contentWindow.location.reload();
-    else { const u=oikkoBrowseCurrentUrl(); if(u) oikkoBrowseOpenExternal(u); }
-  }catch(e){ const u=oikkoBrowseCurrentUrl(); if(u) oikkoBrowseOpenExternal(u); }
+    if(frame?.contentWindow){ frame.contentWindow.location.reload(); return; }
+  }catch(e){}
+  const u=oikkoBrowseCurrentUrl(); if(u) oikkoBrowseLoad(u);
 }
 function oikkoBrowseOpenExternal(url){
   let target=String(url||oikkoBrowseCurrentUrl()||'').trim();
@@ -4969,7 +4945,6 @@ function oikkoBrowseOpenExternal(url){
   if(!/^https?:\/\//i.test(target)) target='https://'+target;
   try{new URL(target);}catch(e){showToast('সঠিক website URL দিন','error');return;}
   try{localStorage.setItem('oikko_browse_last_url',target);}catch(e){}
-  /* Named window reuses one Oikko Browser tab instead of opening endless tabs. */
   const w=window.open(target,'OikkoBrowser');
   if(!w) showToast('Browser window খুলতে popup permission দিন','error');
 }
