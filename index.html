@@ -4848,7 +4848,7 @@ function renderBrowseView() {
           <button type="button" class="oikko-browse-btn" onclick="oikkoBrowseGoBack()" title="Back"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
           <button type="button" class="oikko-browse-btn" onclick="oikkoBrowseGoForward()" title="Forward"><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
           <button type="button" class="oikko-browse-btn" onclick="oikkoBrowseReload()" title="Reload"><i data-lucide="rotate-cw" class="w-4 h-4"></i></button>
-          <button type="button" class="oikko-browse-btn" onclick="oikkoBrowseOpenExternal()" title="Open in new tab"><i data-lucide="external-link" class="w-4 h-4"></i></button>
+          <button type="button" class="oikko-browse-btn" onclick="oikkoBrowseOpenExternal()" title="Browser-এ খুলুন"><i data-lucide="external-link" class="w-4 h-4"></i><span class="hidden sm:inline">Browser</span></button>
         </div>
         <div class="oikko-browse-quick" aria-label="Quick browse links">
           <button class="oikko-browse-chip" onclick="oikkoBrowseSearchPreset('Wikipedia')">Wikipedia</button>
@@ -4857,7 +4857,7 @@ function renderBrowseView() {
           <button class="oikko-browse-chip" onclick="oikkoBrowseSearchPreset('news')">News</button>
           <button class="oikko-browse-chip" onclick="oikkoBrowseSearchPreset('education')">Education</button>
         </div>
-        <div class="oikko-browse-hint">Search করলে ওয়েব ফলাফল এই অ্যাপের ভেতরেই খোলার চেষ্টা করবে। কিছু website নিরাপত্তার কারণে iframe-এ খুলতে না দিলে উপরের ↗ বাটন দিয়ে নতুন tab-এ খুলতে পারবেন।</div>
+        <div id="oikko-browse-hint" class="oikko-browse-hint">গুরুত্বপূর্ণ: সব website অন্য website-এর ভিতরে iframe হতে দেয় না। তাই Browse প্রথমে অ্যাপের ভিতরে খোলার চেষ্টা করবে; Google বা iframe-blocked website হলে Browser বাটন দিয়ে একই website নতুন browser tab-এ খোলা যাবে।</div>
         <div class="oikko-browse-frame-wrap">
           <div id="oikko-browse-empty" class="oikko-browse-empty">
             <div class="oikko-browse-empty-card">
@@ -4875,19 +4875,57 @@ function renderBrowseView() {
 function oikkoBrowseFrame(){ return document.getElementById('oikko-browse-frame'); }
 function oikkoBrowseEmpty(show){ const el=document.getElementById('oikko-browse-empty'); if(el) el.classList.toggle('hidden',!show); }
 function oikkoBrowseSetUrl(url){ const el=document.getElementById('oikko-browse-url'); if(el) el.value=url||''; }
-function oikkoBrowseLoad(url){
+function oikkoBrowseCurrentUrl(){ return String(document.getElementById('oikko-browse-url')?.value||'').trim(); }
+function oikkoBrowseIsLikelyFrameBlocked(url){
+  try{
+    const u=new URL(url);
+    const h=u.hostname.toLowerCase();
+    /* Major search/social sites commonly prevent third-party iframe embedding. */
+    return h==='google.com'||h.endsWith('.google.com')||h==='www.google.com'||
+           h==='youtube.com'||h.endsWith('.youtube.com')||
+           h==='facebook.com'||h.endsWith('.facebook.com')||
+           h==='instagram.com'||h.endsWith('.instagram.com')||
+           h==='x.com'||h.endsWith('.x.com')||h==='twitter.com'||h.endsWith('.twitter.com')||
+           h==='linkedin.com'||h.endsWith('.linkedin.com');
+  }catch(e){ return true; }
+}
+function oikkoBrowseLoad(url, options={}){
   const frame=oikkoBrowseFrame(); if(!frame || !url) return;
   oikkoBrowseEmpty(false);
-  frame.src=url;
   oikkoBrowseSetUrl(url);
   try{localStorage.setItem('oikko_browse_last_url',url);}catch(e){}
+  if(oikkoBrowseIsLikelyFrameBlocked(url)){
+    const hint=document.getElementById('oikko-browse-hint');
+    if(hint) hint.innerHTML='এই website iframe-এ নিজেকে embed করতে দেয় না। <b>Browser</b> বাটনে ক্লিক করলে এটি সরাসরি browser tab-এ খুলবে।';
+    /* Do not pretend that a blocked page loaded. Keep the app stable. */
+    frame.removeAttribute('src');
+    oikkoBrowseEmpty(true);
+    const empty=document.getElementById('oikko-browse-empty');
+    if(empty){
+      empty.innerHTML=`<div class="oikko-browse-empty-card">
+        <i data-lucide="external-link" class="w-12 h-12 mx-auto" style="color:#10b981"></i>
+        <h2>এই website-টি iframe-এ খোলা যায় না</h2>
+        <p>Website-এর নিরাপত্তা নীতির কারণে Oikko-এর ভিতরের frame-এ এটি দেখানো সম্ভব নয়। নিচের বাটন দিয়ে সরাসরি browser-এ খুলুন।</p>
+        <button type="button" class="oikko-browse-btn primary" style="margin-top:14px" onclick="oikkoBrowseOpenExternal()"><i data-lucide="external-link" class="w-4 h-4"></i> Browser-এ খুলুন</button>
+      </div>`;
+      try{if(window.lucide)window.lucide.createIcons();}catch(e){}
+    }
+    if(options.openExternal) oikkoBrowseOpenExternal(url);
+    return;
+  }
+  const hint=document.getElementById('oikko-browse-hint');
+  if(hint) hint.textContent='Website-টি অ্যাপের ভিতরে খোলার চেষ্টা করা হচ্ছে। কোনো site iframe block করলে Browser বাটন ব্যবহার করুন।';
+  frame.src=url;
 }
 function oikkoBrowseSearch(){
   const input=document.getElementById('oikko-browse-search-input');
   const q=String(input?.value||'').trim();
   if(!q){ input?.focus(); return; }
-  const url='https://www.google.com/search?igu=1&hl=en&q='+encodeURIComponent(q);
-  oikkoBrowseLoad(url);
+  const url='https://www.google.com/search?hl=en&q='+encodeURIComponent(q);
+  /* Google deliberately restricts framing. Open it directly from the user's click/submit. */
+  oikkoBrowseSetUrl(url);
+  try{localStorage.setItem('oikko_browse_last_url',url);}catch(e){}
+  oikkoBrowseOpenExternal(url);
 }
 function oikkoBrowseSearchPreset(q){
   const input=document.getElementById('oikko-browse-search-input');
@@ -4900,17 +4938,40 @@ function oikkoBrowseGoUrl(){
   if(!url) return;
   if(!/^https?:\/\//i.test(url)) url='https://'+url;
   try{new URL(url);}catch(e){showToast('সঠিক website URL দিন','error');return;}
-  oikkoBrowseLoad(url);
+  oikkoBrowseSetUrl(url);
+  if(oikkoBrowseIsLikelyFrameBlocked(url)) oikkoBrowseOpenExternal(url);
+  else oikkoBrowseLoad(url);
 }
-function oikkoBrowseGoBack(){try{oikkoBrowseFrame()?.contentWindow.history.back();}catch(e){showToast('এই website-এর Back browser-এর ভেতর থেকে নিয়ন্ত্রণ করা যাচ্ছে না','info');}}
-function oikkoBrowseGoForward(){try{oikkoBrowseFrame()?.contentWindow.history.forward();}catch(e){showToast('এই website-এর Forward browser-এর ভেতর থেকে নিয়ন্ত্রণ করা যাচ্ছে না','info');}}
-function oikkoBrowseReload(){try{oikkoBrowseFrame()?.contentWindow.location.reload();}catch(e){const f=oikkoBrowseFrame();if(f)f.src=f.src;}}
-function oikkoBrowseOpenExternal(){
-  const input=document.getElementById('oikko-browse-url');
-  let url=String(input?.value||'').trim();
-  if(!url){url='https://www.google.com/';}
-  if(!/^https?:\/\//i.test(url)) url='https://'+url;
-  window.open(url,'_blank','noopener,noreferrer');
+function oikkoBrowseGoBack(){
+  try{
+    const frame=oikkoBrowseFrame();
+    if(frame?.contentWindow) frame.contentWindow.history.back();
+    else showToast('Browser tab-এর Back button ব্যবহার করুন','info');
+  }catch(e){showToast('Browser tab-এর Back button ব্যবহার করুন','info');}
+}
+function oikkoBrowseGoForward(){
+  try{
+    const frame=oikkoBrowseFrame();
+    if(frame?.contentWindow) frame.contentWindow.history.forward();
+    else showToast('Browser tab-এর Forward button ব্যবহার করুন','info');
+  }catch(e){showToast('Browser tab-এর Forward button ব্যবহার করুন','info');}
+}
+function oikkoBrowseReload(){
+  try{
+    const frame=oikkoBrowseFrame();
+    if(frame?.src) frame.contentWindow.location.reload();
+    else { const u=oikkoBrowseCurrentUrl(); if(u) oikkoBrowseOpenExternal(u); }
+  }catch(e){ const u=oikkoBrowseCurrentUrl(); if(u) oikkoBrowseOpenExternal(u); }
+}
+function oikkoBrowseOpenExternal(url){
+  let target=String(url||oikkoBrowseCurrentUrl()||'').trim();
+  if(!target) target='https://www.google.com/';
+  if(!/^https?:\/\//i.test(target)) target='https://'+target;
+  try{new URL(target);}catch(e){showToast('সঠিক website URL দিন','error');return;}
+  try{localStorage.setItem('oikko_browse_last_url',target);}catch(e){}
+  /* Named window reuses one Oikko Browser tab instead of opening endless tabs. */
+  const w=window.open(target,'OikkoBrowser');
+  if(!w) showToast('Browser window খুলতে popup permission দিন','error');
 }
 function hydrateOikkoBrowse(){
   if(state.activeView!=='browse') return;
@@ -4919,7 +4980,11 @@ function hydrateOikkoBrowse(){
   const last=(()=>{try{return localStorage.getItem('oikko_browse_last_url')||''}catch(e){return ''}})();
   if(frame.dataset.ready==='1') return;
   frame.dataset.ready='1';
-  if(last){oikkoBrowseLoad(last);}else{oikkoBrowseEmpty(true);}
+  if(last){
+    oikkoBrowseSetUrl(last);
+    /* Do not auto-open an old external site on every visit. */
+    oikkoBrowseEmpty(true);
+  }else{oikkoBrowseEmpty(true);}
 }
 window.oikkoBrowseSearch=oikkoBrowseSearch;
 window.oikkoBrowseSearchPreset=oikkoBrowseSearchPreset;
