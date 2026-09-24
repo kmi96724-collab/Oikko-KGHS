@@ -1643,6 +1643,53 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
   .oikko-translator-frame{height:1650px;min-height:calc(100dvh - 60px);}}
 @media(max-width:380px){.oikko-top-utilities>button{width:36px;height:36px;padding:8px!important;}}
 </style>
+
+<style id="oikko-browse-style">
+  .oikko-browse-page{width:100%;min-height:calc(100vh - 92px);padding:16px 18px 24px;background:var(--oikko-bg,#f4faf7)}
+  .oikko-browse-shell{width:100%;max-width:1500px;margin:0 auto;border:1px solid rgba(16,185,129,.16);border-radius:20px;background:#fff;box-shadow:0 12px 35px rgba(15,118,110,.08);overflow:hidden}
+  .oikko-browse-toolbar{display:flex;align-items:center;gap:8px;padding:10px;border-bottom:1px solid #e1eee8;background:#fff;flex-wrap:wrap}
+  .oikko-browse-search{display:flex;align-items:center;gap:7px;flex:1 1 360px;min-width:220px}
+  .oikko-browse-input,.oikko-browse-url{height:42px;border:1px solid #d7e8e0;border-radius:11px;background:#f8fcfa;color:#17372c;outline:none;padding:0 12px;font-size:13px}
+  .oikko-browse-input{flex:1;min-width:0}
+  .oikko-browse-input:focus,.oikko-browse-url:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.12)}
+  .oikko-browse-btn{height:42px;min-width:42px;padding:0 12px;border:1px solid #d7e8e0;border-radius:11px;background:#fff;color:#24463a;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:800;transition:.18s;white-space:nowrap}
+  .oikko-browse-btn:hover{border-color:#10b981;color:#087653;transform:translateY(-1px)}
+  .oikko-browse-btn.primary{background:#10b981;color:#fff;border-color:#10b981}
+  .oikko-browse-btn.primary:hover{background:#0da978;color:#fff}
+  .oikko-browse-url{flex:0 1 320px;min-width:180px}
+  .oikko-browse-hint{padding:7px 12px;font-size:11px;color:#6b8179;background:#fbfefc;border-bottom:1px solid #edf4f1}
+  .oikko-browse-frame-wrap{height:calc(100vh - 210px);min-height:560px;background:#fff;position:relative}
+  .oikko-browse-frame{display:block;width:100%;height:100%;border:0;background:#fff}
+  .oikko-browse-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:#6b8179;background:#fff;pointer-events:none}
+  .oikko-browse-empty.hidden{display:none}
+  .oikko-browse-empty-card{max-width:480px}
+  .oikko-browse-empty-card h2{margin:10px 0 6px;font-size:20px;color:#214438}
+  .oikko-browse-empty-card p{margin:0;font-size:13px;line-height:1.7}
+  .oikko-browse-quick{display:flex;gap:7px;padding:8px 10px;overflow:auto;border-bottom:1px solid #edf4f1;background:#fbfefc}
+  .oikko-browse-chip{flex:0 0 auto;border:1px solid #d7e8e0;background:#fff;border-radius:999px;padding:7px 11px;color:#34564a;font-size:11px;font-weight:800;cursor:pointer}
+  .oikko-browse-chip:hover{border-color:#10b981;color:#087653}
+  @media(max-width:768px){
+    .oikko-browse-page{padding:8px 8px 16px;min-height:calc(100vh - 74px)}
+    .oikko-browse-shell{border-radius:14px}
+    .oikko-browse-toolbar{padding:8px;gap:6px}
+    .oikko-browse-search{flex-basis:100%;order:1}
+    .oikko-browse-input{height:40px}
+    .oikko-browse-btn{height:40px;min-width:40px;padding:0 9px}
+    .oikko-browse-url{order:2;flex:1 1 100%;height:38px;min-width:0}
+    .oikko-browse-toolbar > .oikko-browse-btn{order:3}
+    .oikko-browse-frame-wrap{height:calc(100dvh - 225px);min-height:500px}
+    .oikko-browse-hint{font-size:10px;line-height:1.55}
+  }
+  html.dark .oikko-browse-page{background:#071610}
+  html.dark .oikko-browse-shell,html.dark .oikko-browse-toolbar,html.dark .oikko-browse-frame-wrap{background:#0b201a}
+  html.dark .oikko-browse-toolbar{border-color:#1c3d32}
+  html.dark .oikko-browse-input,html.dark .oikko-browse-url{background:#102820;color:#e9fff6;border-color:#285043}
+  html.dark .oikko-browse-btn,html.dark .oikko-browse-chip{background:#102820;color:#dff8ed;border-color:#285043}
+  html.dark .oikko-browse-hint,html.dark .oikko-browse-quick{background:#0b1c17;border-color:#1c3d32;color:#9bb8ae}
+  html.dark .oikko-browse-empty{background:#0b201a;color:#9bb8ae}
+  html.dark .oikko-browse-empty-card h2{color:#e9fff6}
+</style>
+
 </head>
 <body class="min-h-screen flex flex-col">
 
@@ -4788,6 +4835,100 @@ function renderOikkoTranslatorView() {
 
     window.openOikkoTranslator = function(){ switchView('translator'); };
 
+function renderBrowseView() {
+  return `
+    <main class="oikko-browse-page" aria-label="Browse">
+      <section class="oikko-browse-shell">
+        <div class="oikko-browse-toolbar">
+          <form class="oikko-browse-search" onsubmit="event.preventDefault(); oikkoBrowseSearch();">
+            <input id="oikko-browse-search-input" class="oikko-browse-input" type="search" autocomplete="off" placeholder="যেকোনো বিষয় সার্চ করুন..." aria-label="Browse search">
+            <button type="submit" class="oikko-browse-btn primary" title="Search"><i data-lucide="search" class="w-4 h-4"></i><span class="hidden sm:inline">Search</span></button>
+          </form>
+          <input id="oikko-browse-url" class="oikko-browse-url" type="url" placeholder="https://example.com" aria-label="Website URL" onkeydown="if(event.key==='Enter'){event.preventDefault();oikkoBrowseGoUrl();}">
+          <button type="button" class="oikko-browse-btn" onclick="oikkoBrowseGoBack()" title="Back"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
+          <button type="button" class="oikko-browse-btn" onclick="oikkoBrowseGoForward()" title="Forward"><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+          <button type="button" class="oikko-browse-btn" onclick="oikkoBrowseReload()" title="Reload"><i data-lucide="rotate-cw" class="w-4 h-4"></i></button>
+          <button type="button" class="oikko-browse-btn" onclick="oikkoBrowseOpenExternal()" title="Open in new tab"><i data-lucide="external-link" class="w-4 h-4"></i></button>
+        </div>
+        <div class="oikko-browse-quick" aria-label="Quick browse links">
+          <button class="oikko-browse-chip" onclick="oikkoBrowseSearchPreset('Wikipedia')">Wikipedia</button>
+          <button class="oikko-browse-chip" onclick="oikkoBrowseSearchPreset('YouTube')">YouTube</button>
+          <button class="oikko-browse-chip" onclick="oikkoBrowseSearchPreset('Google')">Google</button>
+          <button class="oikko-browse-chip" onclick="oikkoBrowseSearchPreset('news')">News</button>
+          <button class="oikko-browse-chip" onclick="oikkoBrowseSearchPreset('education')">Education</button>
+        </div>
+        <div class="oikko-browse-hint">Search করলে ওয়েব ফলাফল এই অ্যাপের ভেতরেই খোলার চেষ্টা করবে। কিছু website নিরাপত্তার কারণে iframe-এ খুলতে না দিলে উপরের ↗ বাটন দিয়ে নতুন tab-এ খুলতে পারবেন।</div>
+        <div class="oikko-browse-frame-wrap">
+          <div id="oikko-browse-empty" class="oikko-browse-empty">
+            <div class="oikko-browse-empty-card">
+              <i data-lucide="globe-2" class="w-12 h-12 mx-auto" style="color:#10b981"></i>
+              <h2>Oikko Browse</h2>
+              <p>Search box-এ আপনার প্রয়োজনীয় বিষয় লিখুন অথবা কোনো website-এর URL দিন।</p>
+            </div>
+          </div>
+          <iframe id="oikko-browse-frame" class="oikko-browse-frame" title="Oikko Browse Web Viewer" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen; autoplay; encrypted-media; picture-in-picture"></iframe>
+        </div>
+      </section>
+    </main>`;
+}
+
+function oikkoBrowseFrame(){ return document.getElementById('oikko-browse-frame'); }
+function oikkoBrowseEmpty(show){ const el=document.getElementById('oikko-browse-empty'); if(el) el.classList.toggle('hidden',!show); }
+function oikkoBrowseSetUrl(url){ const el=document.getElementById('oikko-browse-url'); if(el) el.value=url||''; }
+function oikkoBrowseLoad(url){
+  const frame=oikkoBrowseFrame(); if(!frame || !url) return;
+  oikkoBrowseEmpty(false);
+  frame.src=url;
+  oikkoBrowseSetUrl(url);
+  try{localStorage.setItem('oikko_browse_last_url',url);}catch(e){}
+}
+function oikkoBrowseSearch(){
+  const input=document.getElementById('oikko-browse-search-input');
+  const q=String(input?.value||'').trim();
+  if(!q){ input?.focus(); return; }
+  const url='https://www.google.com/search?igu=1&hl=en&q='+encodeURIComponent(q);
+  oikkoBrowseLoad(url);
+}
+function oikkoBrowseSearchPreset(q){
+  const input=document.getElementById('oikko-browse-search-input');
+  if(input) input.value=q;
+  oikkoBrowseSearch();
+}
+function oikkoBrowseGoUrl(){
+  const input=document.getElementById('oikko-browse-url');
+  let url=String(input?.value||'').trim();
+  if(!url) return;
+  if(!/^https?:\/\//i.test(url)) url='https://'+url;
+  try{new URL(url);}catch(e){showToast('সঠিক website URL দিন','error');return;}
+  oikkoBrowseLoad(url);
+}
+function oikkoBrowseGoBack(){try{oikkoBrowseFrame()?.contentWindow.history.back();}catch(e){showToast('এই website-এর Back browser-এর ভেতর থেকে নিয়ন্ত্রণ করা যাচ্ছে না','info');}}
+function oikkoBrowseGoForward(){try{oikkoBrowseFrame()?.contentWindow.history.forward();}catch(e){showToast('এই website-এর Forward browser-এর ভেতর থেকে নিয়ন্ত্রণ করা যাচ্ছে না','info');}}
+function oikkoBrowseReload(){try{oikkoBrowseFrame()?.contentWindow.location.reload();}catch(e){const f=oikkoBrowseFrame();if(f)f.src=f.src;}}
+function oikkoBrowseOpenExternal(){
+  const input=document.getElementById('oikko-browse-url');
+  let url=String(input?.value||'').trim();
+  if(!url){url='https://www.google.com/';}
+  if(!/^https?:\/\//i.test(url)) url='https://'+url;
+  window.open(url,'_blank','noopener,noreferrer');
+}
+function hydrateOikkoBrowse(){
+  if(state.activeView!=='browse') return;
+  const frame=oikkoBrowseFrame();
+  if(!frame) return;
+  const last=(()=>{try{return localStorage.getItem('oikko_browse_last_url')||''}catch(e){return ''}})();
+  if(frame.dataset.ready==='1') return;
+  frame.dataset.ready='1';
+  if(last){oikkoBrowseLoad(last);}else{oikkoBrowseEmpty(true);}
+}
+window.oikkoBrowseSearch=oikkoBrowseSearch;
+window.oikkoBrowseSearchPreset=oikkoBrowseSearchPreset;
+window.oikkoBrowseGoUrl=oikkoBrowseGoUrl;
+window.oikkoBrowseGoBack=oikkoBrowseGoBack;
+window.oikkoBrowseGoForward=oikkoBrowseGoForward;
+window.oikkoBrowseReload=oikkoBrowseReload;
+window.oikkoBrowseOpenExternal=oikkoBrowseOpenExternal;
+
 function renderApp() {
       state.posts = (state.posts || []).map(sanitizePostMedia);
       const active = document.activeElement;
@@ -4800,6 +4941,7 @@ function renderApp() {
       const app = document.getElementById('app');
       app.classList.toggle('oikko-sidebar-app', !!state.currentUser);
       if (state.currentUser && state.activeView === 'translator' && document.getElementById('oikko-translator-frame')) { pendingAppRender = false; return; }
+      if (state.currentUser && state.activeView === 'browse' && document.getElementById('oikko-browse-frame')) { pendingAppRender = false; return; }
       /* Sidebar is fixed on desktop and belongs to the authenticated app shell.
          Messenger and Tube must NOT become separate fullscreen pages. */
       app.classList.remove('oikko-fullscreen-view');
@@ -4812,7 +4954,14 @@ function renderApp() {
         return;
       } else {
         let viewHtml = '';
-        if (state.activeView === 'translator') {
+        if (state.activeView === 'browse') {
+          viewHtml = renderTopHeader() + renderBrowseView() + renderSidebar();
+          app.innerHTML = viewHtml;
+          if (window.lucide) lucide.createIcons();
+          setTimeout(hydrateOikkoBrowse, 0);
+          pendingAppRender = false;
+          return;
+        } else if (state.activeView === 'translator') {
           viewHtml = renderTopHeader() + renderOikkoTranslatorView() + renderSidebar();
           app.innerHTML = viewHtml;
           if (window.lucide) lucide.createIcons();
@@ -6824,6 +6973,7 @@ function renderApp() {
               ${navItem('users-round', 'Friends', "switchView('friends')", state.activeView === 'friends')}
               ${navItem('contact-round', 'People', "switchView('people')", state.activeView === 'people')}
               ${navItem('play-square', 'ঐক্য টিউব', "switchView('youtube')", state.activeView === 'youtube')}
+              ${navItem('globe-2', 'Browse', "switchView('browse')", state.activeView === 'browse')}
               ${navItem('languages', 'Translator', "switchView('translator')", state.activeView === 'translator')}
               ${navItem('calendar-days', 'ইভেন্ট', "switchView('events')", state.activeView === 'events')}
               ${navItem('bell', 'নোটিশ', "switchView('admin_posts')", state.activeView === 'admin_posts')}
