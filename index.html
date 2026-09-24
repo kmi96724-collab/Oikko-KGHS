@@ -10,8 +10,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Oikko Campus">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='''http://www.w3.org/2000/svg''' viewBox='''0 0 64 64'''%3E%3Crect width='''64''' height='''64''' rx='''18''' fill='''%232f6f57'''/%3E%3Cpath d='''M18 24h28v16c0 8-6 14-14 14S18 48 18 40V24Z''' fill='''white'''/%3E%3Cpath d='''M14 23h36v7H14z''' fill='''white'''/%3E%3C/svg%3E" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='''http://www.w3.org/2000/svg''' viewBox='''0 0 64 64'''%3E%3Crect width='''64''' height='''64''' rx='''18''' fill='''%232f6f57'''/%3E%3Cpath d='''M18 24h28v16c0 8-6 14-14 14S18 48 18 40V24Z''' fill='''white'''/%3E%3Cpath d='''M14 23h36v7H14z''' fill='''white'''/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%232f6f57'/%3E%3Cpath d='M18 24h28v16c0 8-6 14-14 14S18 48 18 40V24Z' fill='white'/%3E%3Cpath d='M14 23h36v7H14z' fill='white'/%3E%3C/svg%3E" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%232f6f57'/%3E%3Cpath d='M18 24h28v16c0 8-6 14-14 14S18 48 18 40V24Z' fill='white'/%3E%3Cpath d='M14 23h36v7H14z' fill='white'/%3E%3C/svg%3E">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
@@ -1632,6 +1632,14 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
   .oikko-people-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 </style>
+<style id="oikko-translator-integration">
+.oikko-translator-page{background:var(--bg-canvas,#f3f6f2);min-height:calc(100vh - 70px);padding:0;}
+.oikko-translator-shell{width:100%;max-width:1240px;margin:0 auto;}
+.oikko-translator-frame{display:block;width:100%;height:1500px;min-height:calc(100vh - 70px);border:0;background:transparent;}
+.oikko-top-utilities{gap:4px!important;}
+@media(max-width:640px){.oikko-top-utilities{gap:3px!important;}.oikko-top-utilities>button{width:40px;height:40px;padding:9px!important;display:flex;align-items:center;justify-content:center;}.oikko-top-utilities .oikko-download-wrap{display:none!important;}.oikko-translator-frame{height:1650px;min-height:calc(100dvh - 60px);}}
+@media(max-width:380px){.oikko-top-utilities>button{width:36px;height:36px;padding:8px!important;}}
+</style>
 </head>
 <body class="min-h-screen flex flex-col">
 
@@ -2520,6 +2528,7 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
       state.isDarkMode = !state.isDarkMode;
       localStorage.setItem('student_portal_theme', state.isDarkMode ? 'dark' : 'light');
       document.documentElement.classList.toggle('dark', state.isDarkMode);
+      syncOikkoTranslatorTheme();
       renderApp();
       showToast(state.isDarkMode ? 'ডার্ক মোড সক্রিয় করা হয়েছে' : 'লাইট মোড সক্রিয় করা হয়েছে', 'info');
     }
@@ -4738,7 +4747,45 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
     window.addEventListener('firebaseReady', ensureOikkoTubeReady);
     setTimeout(ensureOikkoTubeReady, 1000);
 
-    function renderApp() {
+    const OIKKO_TRANSLATOR_HTML = "<!DOCTYPE html>\n<html lang=\"bn\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta name=\"theme-color\" content=\"#10b981\">\n<meta name=\"description\" content=\"অনুবাদক — সম্পূর্ণ Offline বাংলা ও ইংরেজি Translator\">\n<title>Translator — Offline Translator</title>\n\n\n<style>\n:root{\n    --primary:#10b981;\n    --primary-2:#34d399;\n    --primary-dark:#047857;\n    --bg:#f3faf7;\n    --surface:#ffffff;\n    --surface-2:#f7fcfa;\n    --surface-3:#ecfdf5;\n    --text:#102a22;\n    --muted:#6b817a;\n    --border:#d9ebe4;\n    --danger:#ef4444;\n    --warning:#f59e0b;\n    --shadow:0 18px 55px rgba(15,118,110,.10);\n    --shadow-soft:0 8px 28px rgba(15,118,110,.08);\n    --radius:24px;\n}\nbody.dark{\n    --bg:#061410;\n    --surface:#0b201a;\n    --surface-2:#0a1a16;\n    --surface-3:#0d3025;\n    --text:#e9fff6;\n    --muted:#9bb8ae;\n    --border:#1b4035;\n    --shadow:0 20px 60px rgba(0,0,0,.35);\n    --shadow-soft:0 10px 32px rgba(0,0,0,.25);\n}\n*{box-sizing:border-box}\nhtml{scroll-behavior:smooth}\nbody{\n    margin:0;\n    min-height:100vh;\n    font-family:\"Noto Sans Bengali\",\"Nirmala UI\",\"Segoe UI\",Arial,sans-serif;\n    background:\n        radial-gradient(circle at 10% 0%,rgba(16,185,129,.13),transparent 28%),\n        radial-gradient(circle at 90% 20%,rgba(52,211,153,.08),transparent 25%),\n        var(--bg);\n    color:var(--text);\n    transition:background .25s,color .25s;\n}\nbutton,select,textarea,input{font:inherit}\nbutton{cursor:pointer}\nbutton:focus-visible,select:focus-visible,textarea:focus-visible{\n    outline:3px solid rgba(16,185,129,.22);\n    outline-offset:2px;\n}\n.app{width:min(1180px,94%);margin:auto;padding:26px 0 42px}\n\n/* Header */\n.topbar{\n    display:flex;align-items:center;justify-content:space-between;\n    gap:16px;margin-bottom:20px\n}\n.brand{display:flex;align-items:center;gap:13px}\n.brand-mark{\n    width:55px;height:55px;border-radius:17px;display:grid;place-items:center;\n    color:white;font-size:27px;font-weight:800;\n    background:linear-gradient(135deg,var(--primary),var(--primary-2));\n    box-shadow:0 12px 30px rgba(16,185,129,.24)\n}\n.brand h1{margin:0;font-size:clamp(27px,4vw,38px);line-height:1}\n.brand p{margin:5px 0 0;color:var(--muted);font-size:12px}\n.top-actions{display:flex;gap:8px}\n.icon-btn{\n    width:46px;height:46px;border:1px solid var(--border);border-radius:14px;\n    background:var(--surface);color:var(--text);display:grid;place-items:center;\n    font-size:19px;transition:.2s;box-shadow:var(--shadow-soft)\n}\n.icon-btn:hover{transform:translateY(-2px);border-color:var(--primary);color:var(--primary)}\n.icon-btn.active{background:var(--surface-3);color:var(--primary-dark)}\n\n/* Main */\n.shell{\n    background:rgba(255,255,255,.02);\n    border:1px solid var(--border);border-radius:30px;\n    box-shadow:var(--shadow);overflow:hidden\n}\nbody.dark .shell{background:rgba(255,255,255,.015)}\n.language-row{\n    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);\n    gap:13px;align-items:end;padding:22px 24px 18px;\n    border-bottom:1px solid var(--border);background:var(--surface)\n}\n.lang-label{display:block;font-size:13px;font-weight:800;color:var(--muted);margin:0 0 7px}\n.select-wrap{position:relative}\n.select-wrap select{\n    width:100%;height:50px;border:1px solid var(--border);border-radius:15px;\n    background:var(--surface-2);color:var(--text);padding:0 42px 0 15px;\n    appearance:none;outline:none;font-weight:700\n}\n.select-wrap::after{\n    content:\"⌄\";position:absolute;right:15px;top:50%;transform:translateY(-55%);\n    color:var(--muted);pointer-events:none\n}\n\n/* Translator */\n.workspace{padding:20px 24px 24px;background:var(--surface)}\n.editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}\n.panel{\n    min-width:0;border:1px solid var(--border);border-radius:20px;\n    overflow:hidden;background:var(--surface-2);box-shadow:var(--shadow-soft)\n}\n.panel-head{\n    min-height:50px;padding:0 14px;display:flex;align-items:center;\n    justify-content:space-between;gap:10px;border-bottom:1px solid var(--border);\n    background:var(--surface-3)\n}\n.panel-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:900}\n.dot{width:8px;height:8px;border-radius:50%;background:var(--primary)}\n.counter{font-size:11px;color:var(--muted);white-space:nowrap}\n.editor-wrap{position:relative}\ntextarea{\n    width:100%;height:270px;min-height:220px;resize:vertical;border:0;outline:0;\n    background:transparent;color:var(--text);padding:17px 17px 38px;\n    line-height:1.75;font-size:16px\n}\ntextarea::placeholder{color:#91a59e}\nbody.dark textarea::placeholder{color:#68847a}\n#output{cursor:text}\n.output-tools{\n    position:absolute;right:10px;bottom:9px;display:flex;align-items:center;justify-content:flex-end;gap:6px;\n    max-width:calc(100% - 20px);\n}\n.mini-btn{\n    width:auto;min-width:54px;height:32px;padding:0 9px;border:1px solid var(--border);border-radius:9px;\n    background:var(--surface);color:var(--muted);font-size:11px;font-weight:800;line-height:1;\n    white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;transition:.2s\n}\n.mini-btn:hover{color:var(--primary);border-color:var(--primary)}\n\n/* Actions */\n.main-actions{\n    display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;\n    gap:9px;margin-top:16px\n}\n.btn{\n    min-height:48px;border:1px solid var(--border);border-radius:14px;\n    padding:0 17px;background:var(--surface);color:var(--text);\n    font-weight:800;transition:.2s;white-space:nowrap\n}\n.btn:hover{transform:translateY(-2px);border-color:var(--primary)}\n.btn.primary{\n    color:#fff;border-color:transparent;\n    background:linear-gradient(135deg,var(--primary),var(--primary-2));\n    box-shadow:0 10px 25px rgba(16,185,129,.20)\n}\n.btn.primary:hover{box-shadow:0 14px 30px rgba(16,185,129,.28)}\n.btn.danger:hover{border-color:var(--danger);color:var(--danger)}\n.status{\n    min-height:24px;margin:10px 2px 0;text-align:center;\n    color:var(--muted);font-size:12px\n}\n.status.success{color:var(--primary-dark)}\n.status.error{color:var(--danger)}\n\n/* Suggestions */\n.quick-section{margin-top:17px}\n.quick-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}\n.quick-head strong{font-size:13px}\n.quick-head span{font-size:11px;color:var(--muted)}\n.quick-list{display:flex;gap:8px;overflow:auto;padding-bottom:3px}\n.quick-list::-webkit-scrollbar{height:5px}\n.quick-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}\n.chip{\n    flex:0 0 auto;border:1px solid var(--border);background:var(--surface-2);\n    color:var(--text);padding:8px 12px;border-radius:999px;font-size:12px;\n    transition:.2s\n}\n.chip:hover{border-color:var(--primary);color:var(--primary-dark);background:var(--surface-3)}\n\n/* Bottom information */\n.bottom-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:18px}\n.info-card{\n    border:1px solid var(--border);border-radius:20px;background:var(--surface);\n    padding:17px;box-shadow:var(--shadow-soft)\n}\n.info-title{font-size:14px;font-weight:900;margin-bottom:8px}\n.info-text{font-size:12px;color:var(--muted);line-height:1.75}\n.info-pills{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}\n.info-pill{\n    padding:6px 9px;border-radius:999px;background:var(--surface-3);\n    color:var(--primary-dark);font-size:11px;font-weight:800\n}\n\n/* History */\n.history-panel{margin-top:18px;border:1px solid var(--border);border-radius:20px;background:var(--surface);overflow:hidden}\n.history-head{\n    padding:14px 16px;border-bottom:1px solid var(--border);\n    display:flex;align-items:center;justify-content:space-between;gap:10px\n}\n.history-title{font-size:14px;font-weight:900}\n.clear-history{\n    border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:800\n}\n.clear-history:hover{color:var(--danger)}\n.history-list{max-height:240px;overflow:auto}\n.history-empty{padding:22px;text-align:center;color:var(--muted);font-size:12px}\n.history-item{\n    padding:12px 15px;border-bottom:1px solid var(--border);cursor:pointer;\n    transition:.2s\n}\n.history-item:last-child{border-bottom:0}\n.history-item:hover{background:var(--surface-2)}\n.history-meta{font-size:10px;color:var(--muted);margin-bottom:5px}\n.history-text{font-size:12px;line-height:1.55}\n.history-text strong{font-weight:900}\n.history-arrow{color:var(--primary);padding:0 5px}\n\n/* Toast */\n.toast{\n    position:fixed;left:50%;bottom:24px;z-index:999;\n    transform:translate(-50%,130px);opacity:0;pointer-events:none;\n    background:#102b23;color:#fff;padding:12px 17px;border-radius:13px;\n    font-size:12px;box-shadow:0 15px 40px rgba(0,0,0,.25);transition:.3s\n}\n.toast.show{transform:translate(-50%,0);opacity:1}\n\n/* Modal */\n.modal-backdrop{\n    position:fixed;inset:0;background:rgba(2,20,15,.60);\n    backdrop-filter:blur(7px);display:none;align-items:center;justify-content:center;\n    padding:18px;z-index:500\n}\n.modal-backdrop.show{display:flex}\n.modal{\n    width:min(430px,100%);background:var(--surface);border:1px solid var(--border);\n    border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.3);overflow:hidden\n}\n.modal-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}\n.modal-head strong{font-size:15px}\n.modal-close{border:0;background:transparent;color:var(--muted);font-size:20px}\n.modal-body{padding:18px}\n.modal-body p{font-size:12px;color:var(--muted);line-height:1.7;margin:0 0 12px}\n.install-note{padding:12px;border-radius:13px;background:var(--surface-3);font-size:12px;line-height:1.7}\n\n/* Footer */\nfooter{text-align:center;color:var(--muted);font-size:11px;padding-top:18px}\n\n\n/* Large dictionary architecture */\n.dict-card{grid-column:1/-1;display:grid;gap:14px}\n.dict-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}\n.dict-stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}\n.dict-stat{padding:7px 10px;border:1px solid var(--border);background:var(--surface-2);border-radius:999px;font-size:12px;color:var(--muted)}\n.dict-actions{display:flex;gap:8px;flex-wrap:wrap}\n.dict-actions .btn{min-height:42px}\n.import-zone{border:1.5px dashed var(--border);border-radius:18px;padding:15px;background:var(--surface-2);display:grid;gap:7px}\n.import-zone.drag{border-color:var(--primary);background:var(--surface-3)}\n.import-zone strong{font-size:14px}\n.import-zone small{color:var(--muted);line-height:1.6}\n.custom-form{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}\n.custom-form input{min-width:0;border:1px solid var(--border);border-radius:13px;padding:12px;background:var(--surface);color:var(--text)}\n.custom-add-card{margin-top:16px;border:1px solid var(--border);border-radius:18px;background:var(--surface);padding:16px;box-shadow:var(--shadow-sm)}\n.custom-add-head{margin-bottom:12px}\n.custom-add-title{font-size:14px;font-weight:900;color:var(--text)}\n.custom-add-subtitle{margin-top:4px;font-size:11px;line-height:1.55;color:var(--muted)}\n.custom-add-card .custom-form{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}\n.custom-add-card .custom-form input{height:46px;font:inherit;outline:none;transition:border-color .2s,box-shadow .2s}\n.custom-add-card .custom-form input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(16,185,129,.12)}\n.custom-add-card .custom-form .btn{min-height:46px;white-space:nowrap}\n@media(max-width:720px){.custom-add-card .custom-form{grid-template-columns:1fr}.custom-add-card .custom-form .btn{width:100%}}\n@media(max-width:720px){.custom-form{grid-template-columns:1fr}.dict-top{display:grid}.dict-actions{width:100%}.dict-actions .btn{flex:1}}\n\n/* Mobile */\n@media(max-width:800px){\n    .editor-grid,.bottom-grid{grid-template-columns:1fr}\n    .main-actions{grid-template-columns:1fr 1fr 1fr}\n    .main-actions .primary{grid-column:1/-1}\n}\n@media(max-width:560px){\n    .app{width:94%;padding:16px 0 30px}\n    .topbar{margin-bottom:15px}\n    .brand-mark{width:47px;height:47px;border-radius:14px;font-size:23px}\n    .brand h1{font-size:27px}\n    .brand p{font-size:10px}\n    .icon-btn{width:43px;height:43px}\n    .shell{border-radius:22px}\n    .language-row{\n        grid-template-columns:1fr;padding:15px;gap:9px\n    }\n    .workspace{padding:15px}\n    textarea{height:210px;min-height:180px}\n    .panel{border-radius:17px}\n    .main-actions{grid-template-columns:1fr 1fr}\n    .main-actions .primary{grid-column:1/-1}\n    .btn{padding:0 11px}\n}\n@media(max-width:360px){\n    .brand p{display:none}\n    .main-actions{grid-template-columns:1fr}\n    .main-actions .primary{grid-column:auto}\n}\n\n\n/* Firebase + responsive polish */\n.firebase-badge{\n    display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;\n    background:var(--surface-3);border:1px solid var(--border);color:var(--muted);\n    font-size:11px;font-weight:800;transition:.2s\n}\n.firebase-badge .fb-dot{width:7px;height:7px;border-radius:50%;background:#f59e0b;box-shadow:0 0 0 4px rgba(245,158,11,.10)}\n.firebase-badge.ready{color:var(--primary-dark)}\n.firebase-badge.ready .fb-dot{background:var(--primary);box-shadow:0 0 0 4px rgba(16,185,129,.10)}\n\n@media (min-width:1200px){\n    .app{width:min(1240px,94%);padding-top:32px}\n    .workspace{padding:24px 28px 28px}\n    .language-row{padding:24px 28px 20px}\n    textarea{height:300px}\n}\n@media (max-width:900px){\n    .app{width:min(96%,760px)}\n    .topbar{align-items:flex-start}\n    .language-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}\n    .editor-grid{grid-template-columns:1fr}\n    .panel textarea{height:240px}\n    .bottom-grid{grid-template-columns:1fr}\n    .main-actions{grid-template-columns:1.5fr 1fr 1fr 1fr}\n}\n@media (max-width:640px){\n    body{background:var(--bg)}\n    .app{width:100%;padding:12px 10px calc(24px + env(safe-area-inset-bottom))}\n    .topbar{padding:2px 2px 0;gap:10px}\n    .brand{min-width:0}\n    .brand-mark{flex:0 0 auto;width:44px;height:44px;font-size:21px;border-radius:13px}\n    .brand h1{font-size:24px}\n    .brand p{max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n    .top-actions{flex:0 0 auto}\n    .icon-btn{width:41px;height:41px;border-radius:12px}\n    .shell{border-radius:20px}\n    .language-row{grid-template-columns:1fr;padding:13px;gap:8px}\n    .workspace{padding:13px}\n    .panel{border-radius:16px}\n    .panel-head{min-height:46px;padding:0 12px}\n    .panel-title{font-size:13px}\n    .counter{font-size:10px}\n    textarea{height:190px;min-height:160px;padding:14px 14px 42px;font-size:15px}\n    .output-tools{right:9px;bottom:8px}\n    .mini-btn{min-width:54px;width:auto;height:32px;padding:0 8px;font-size:10px}\n    .main-actions{grid-template-columns:1fr 1fr;gap:8px}\n    .main-actions .primary{grid-column:1/-1}\n    .btn{min-height:46px;font-size:13px;padding:0 9px}\n    .quick-list{margin-right:-2px;padding-right:2px}\n    .dict-actions{display:grid;grid-template-columns:1fr 1fr}\n    .dict-actions .btn{width:100%}\n    .custom-form{gap:7px}\n    .info-card{padding:14px;border-radius:17px}\n}\n@media (max-width:420px){\n    .brand p{display:none}\n    .top-actions{gap:6px}\n    .language-row{padding:11px}\n    .workspace{padding:11px}\n    .main-actions{grid-template-columns:1fr}\n    .main-actions .primary{grid-column:auto}\n    .dict-actions{grid-template-columns:1fr}\n    .dict-stats{gap:6px}\n    .dict-stat{font-size:10px;padding:6px 8px}\n    textarea{height:175px}\n}\n@media (max-width:340px){\n    .app{padding-left:7px;padding-right:7px}\n    .brand-mark{width:40px;height:40px}\n    .brand h1{font-size:22px}\n    .icon-btn{width:38px;height:38px}\n}\n\n</style>\n</head>\n\n<body>\n<div class=\"app\">\n\n    <header class=\"topbar\">\n        <div class=\"brand\">\n            <div class=\"brand-mark\">文</div>\n            <div>\n                <h1>Translator</h1>\n                <p>Offline Bengali ↔ English Translator</p>\n            </div>\n        </div>\n\n    </header>\n\n    <main class=\"shell\">\n\n        <section class=\"language-row\">\n            <div>\n                <label class=\"lang-label\" for=\"fromLang\">From Language</label>\n                <div class=\"select-wrap\">\n                    <select id=\"fromLang\">\n                        <option value=\"bn\">🇧🇩 Bengali</option>\n                        <option value=\"en\">🇬🇧 English</option>\n                    </select>\n                </div>\n            </div>\n\n            <div>\n                <label class=\"lang-label\" for=\"toLang\">To Language</label>\n                <div class=\"select-wrap\">\n                    <select id=\"toLang\">\n                        <option value=\"en\">🇬🇧 English</option>\n                        <option value=\"bn\">🇧🇩 Bengali</option>\n                    </select>\n                </div>\n            </div>\n        </section>\n\n        <section class=\"workspace\">\n\n            <div class=\"editor-grid\">\n\n                <section class=\"panel\">\n                    <div class=\"panel-head\">\n                        <div class=\"panel-title\"><span class=\"dot\"></span> Your Text</div>\n                        <span class=\"counter\" id=\"inputCounter\">0 words · 0 characters</span>\n                    </div>\n                    <div class=\"editor-wrap\">\n                        <textarea id=\"input\" spellcheck=\"false\" placeholder=\"Type in Bengali or English here...\"></textarea>\n                        <div class=\"output-tools\">\n                            <button class=\"mini-btn\" id=\"pasteBtn\" title=\"Paste\">Paste</button>\n                            <button class=\"mini-btn\" id=\"selectInputBtn\" title=\"Select All\">Select All</button>\n                        </div>\n                    </div>\n                </section>\n\n                <section class=\"panel\">\n                    <div class=\"panel-head\">\n                        <div class=\"panel-title\"><span class=\"dot\"></span> Translation</div>\n                        <span class=\"counter\" id=\"outputCounter\">0 words · 0 characters</span>\n                    </div>\n                    <div class=\"editor-wrap\">\n                        <textarea id=\"output\" readonly placeholder=\"Translation will appear here...\"></textarea>\n                        <div class=\"output-tools\">\n                            <button class=\"mini-btn\" id=\"copyMiniBtn\" title=\"Copy\">Copy</button>\n                            <button class=\"mini-btn\" id=\"speakBtn\" title=\"Speak\">Speak</button>\n                        </div>\n                    </div>\n                </section>\n\n            </div>\n\n            <div class=\"main-actions\">\n                <button class=\"btn primary\" id=\"translateBtn\">Translate</button>\n                <button class=\"btn\" id=\"copyBtn\">Copy</button>\n                <button class=\"btn\" id=\"clearBtn\">Clear</button>\n            </div>\n\n            <section class=\"custom-add-card\" aria-label=\"Add New Word\">\n                <div class=\"custom-add-head\">\n                    <div>\n                        <div class=\"custom-add-title\">Add New Word / Phrase</div>\n                        <div class=\"custom-add-subtitle\">Adding your own Bengali and English words will make them available for future translations.</div>\n                    </div>\n                </div>\n                <div class=\"custom-form\">\n                    <input id=\"customBn\" type=\"text\" autocomplete=\"off\" placeholder=\"Bengali word / phrase\">\n                    <input id=\"customEn\" type=\"text\" autocomplete=\"off\" placeholder=\"English meaning / phrase\">\n                    <button class=\"btn primary\" id=\"addCustomPairBtn\" type=\"button\">যোগ করুন</button>\n                </div>\n            </section>\n\n            <div class=\"status\" id=\"status\" aria-live=\"polite\"></div>\n\n        </section>\n    </main>\n\n</div>\n\n<div class=\"toast\" id=\"toast\"></div>\n\n<div class=\"modal-backdrop\" id=\"modal\">\n    <div class=\"modal\" role=\"dialog\" aria-modal=\"true\">\n        <div class=\"modal-head\">\n            <strong>অফলাইন Translator</strong>\n            <button class=\"modal-close\" id=\"modalClose\">×</button>\n        </div>\n        <div class=\"modal-body\">\n            <p>\n                এই অ্যাপের translation engine local JavaScript dictionary-তে চলে।\n                আপনার লেখা বা translation কোনো server-এ পাঠানো হয় না।\n            </p>\n            <div class=\"install-note\">\n                📱 মোবাইলে ব্যবহার করতে browser-এর <b>Add to Home Screen</b>\n                অপশন ব্যবহার করতে পারেন। একটি মাত্র HTML ফাইলের সীমাবদ্ধতার কারণে\n                আলাদা service-worker file ছাড়া পূর্ণ PWA installation সব browser-এ\n                নিশ্চিত করা যায় না।\n            </div>\n        </div>\n    </div>\n</div>\n\n<script>\n\"use strict\";\n\n/* ============================================================\n   LARGE OFFLINE DICTIONARY ENGINE\n   - IndexedDB persistence for large local dictionaries\n   - Chunked imports (works with very large JSON/CSV files)\n   - In-memory Maps for fast exact lookup\n   - Longest phrase matching before single-word fallback\n   - Unknown words, names, numbers and punctuation are preserved\n   - No API / CDN / fetch / network dependency\n   ============================================================ */\n\nconst CORE_PAIRS = [[\"আমি\",\"I\"],[\"তুমি\",\"you\"],[\"আপনি\",\"you\"],[\"সে\",\"he/she\"],[\"তিনি\",\"he/she\"],[\"আমরা\",\"we\"],[\"তোমরা\",\"you\"],[\"তারা\",\"they\"],[\"আমার\",\"my\"],[\"তোমার\",\"your\"],[\"আপনার\",\"your\"],[\"তার\",\"his/her\"],[\"আমাদের\",\"our\"],[\"তাদের\",\"their\"],[\"বাবা\",\"father\"],[\"মা\",\"mother\"],[\"ভাই\",\"brother\"],[\"বোন\",\"sister\"],[\"বন্ধু\",\"friend\"],[\"পরিবার\",\"family\"],[\"ছেলে\",\"boy\"],[\"মেয়ে\",\"girl\"],[\"শিশু\",\"child\"],[\"মানুষ\",\"person\"],[\"বাড়ি\",\"home\"],[\"ঘর\",\"room\"],[\"স্কুল\",\"school\"],[\"কলেজ\",\"college\"],[\"বিশ্ববিদ্যালয়\",\"university\"],[\"অফিস\",\"office\"],[\"দোকান\",\"shop\"],[\"বাজার\",\"market\"],[\"রাস্তা\",\"road\"],[\"শহর\",\"city\"],[\"গ্রাম\",\"village\"],[\"দেশ\",\"country\"],[\"পানি\",\"water\"],[\"খাবার\",\"food\"],[\"ভাত\",\"rice\"],[\"রুটি\",\"bread\"],[\"চা\",\"tea\"],[\"কফি\",\"coffee\"],[\"দুধ\",\"milk\"],[\"ফল\",\"fruit\"],[\"মাছ\",\"fish\"],[\"মাংস\",\"meat\"],[\"বই\",\"book\"],[\"কলম\",\"pen\"],[\"খাতা\",\"notebook\"],[\"টেবিল\",\"table\"],[\"চেয়ার\",\"chair\"],[\"দরজা\",\"door\"],[\"জানালা\",\"window\"],[\"ফোন\",\"phone\"],[\"কম্পিউটার\",\"computer\"],[\"গাড়ি\",\"car\"],[\"সকাল\",\"morning\"],[\"দুপুর\",\"afternoon\"],[\"বিকেল\",\"afternoon\"],[\"সন্ধ্যা\",\"evening\"],[\"রাত\",\"night\"],[\"আজ\",\"today\"],[\"আগামীকাল\",\"tomorrow\"],[\"গতকাল\",\"yesterday\"],[\"এখন\",\"now\"],[\"পরে\",\"later\"],[\"আগে\",\"before\"],[\"সবসময়\",\"always\"],[\"কখনও না\",\"never\"],[\"আবার\",\"again\"],[\"ভালো\",\"good\"],[\"খারাপ\",\"bad\"],[\"বড়\",\"big\"],[\"ছোট\",\"small\"],[\"নতুন\",\"new\"],[\"পুরাতন\",\"old\"],[\"সুন্দর\",\"beautiful\"],[\"সহজ\",\"easy\"],[\"কঠিন\",\"difficult\"],[\"দ্রুত\",\"fast\"],[\"ধীর\",\"slow\"],[\"গরম\",\"hot\"],[\"ঠান্ডা\",\"cold\"],[\"খুশি\",\"happy\"],[\"দুঃখিত\",\"sorry\"],[\"দুঃখী\",\"sad\"],[\"রাগ\",\"anger\"],[\"ভয়\",\"fear\"],[\"ভালোবাসা\",\"love\"],[\"আশা\",\"hope\"],[\"সমস্যা\",\"problem\"],[\"সাহায্য\",\"help\"],[\"কাজ\",\"work\"],[\"সময়\",\"time\"],[\"খাওয়া\",\"eat\"],[\"পান করা\",\"drink\"],[\"যাওয়া\",\"go\"],[\"আসা\",\"come\"],[\"দেখা\",\"see\"],[\"শোনা\",\"hear\"],[\"বলা\",\"say\"],[\"করা\",\"do\"],[\"দেওয়া\",\"give\"],[\"নেওয়া\",\"take\"],[\"হাঁটা\",\"walk\"],[\"দৌড়ানো\",\"run\"],[\"ঘুমানো\",\"sleep\"],[\"পড়া\",\"read\"],[\"পড়াশোনা করা\",\"study\"],[\"লেখা\",\"write\"],[\"শেখা\",\"learn\"],[\"শেখানো\",\"teach\"],[\"কেনা\",\"buy\"],[\"বেচা\",\"sell\"],[\"হ্যাঁ\",\"yes\"],[\"না\",\"no\"],[\"দয়া করে\",\"please\"],[\"ধন্যবাদ\",\"thank you\"],[\"স্বাগতম\",\"welcome\"],[\"ঠিক আছে\",\"okay\"],[\"অবশ্যই\",\"of course\"],[\"সম্ভবত\",\"perhaps\"],[\"কেন\",\"why\"],[\"কী\",\"what\"],[\"কে\",\"who\"],[\"কোথায়\",\"where\"],[\"কখন\",\"when\"],[\"কিভাবে\",\"how\"],[\"হ্যালো\",\"hello\"],[\"হাই\",\"hi\"],[\"শুভ সকাল\",\"good morning\"],[\"শুভ রাত্রি\",\"good night\"],[\"শুভ সন্ধ্যা\",\"good evening\"],[\"তুমি কেমন আছো\",\"How are you?\"],[\"আপনি কেমন আছেন\",\"How are you?\"],[\"আমি ভালো আছি\",\"I am fine.\"],[\"আমি ভালো আছি, ধন্যবাদ\",\"I am fine, thank you.\"],[\"তোমার নাম কী\",\"What is your name?\"],[\"আপনার নাম কী\",\"What is your name?\"],[\"আমার নাম\",\"My name is\"],[\"তুমি কোথায় থাকো\",\"Where do you live?\"],[\"আপনি কোথায় থাকেন\",\"Where do you live?\"],[\"আমি বাংলাদেশে থাকি\",\"I live in Bangladesh.\"],[\"তুমি কী করো\",\"What do you do?\"],[\"আমি একজন ছাত্র\",\"I am a student.\"],[\"আমি একজন ছাত্রী\",\"I am a student.\"],[\"আমি একজন কর্মী\",\"I am a worker.\"],[\"আমি বুঝতে পারছি\",\"I understand.\"],[\"আমি বুঝতে পারছি না\",\"I don't understand.\"],[\"আমি জানি\",\"I know.\"],[\"আমি জানি না\",\"I don't know.\"],[\"আমাকে সাহায্য করো\",\"Help me.\"],[\"আমাকে সাহায্য করুন\",\"Please help me.\"],[\"একটু অপেক্ষা করো\",\"Wait a moment.\"],[\"একটু অপেক্ষা করুন\",\"Please wait a moment.\"],[\"এটা কী\",\"What is this?\"],[\"ওটা কী\",\"What is that?\"],[\"এটা আমার\",\"This is mine.\"],[\"এটা তোমার\",\"This is yours.\"],[\"আমি তোমাকে ভালোবাসি\",\"I love you.\"],[\"তোমাকে ধন্যবাদ\",\"Thank you.\"],[\"আপনাকে ধন্যবাদ\",\"Thank you.\"],[\"পরে দেখা হবে\",\"See you later.\"],[\"আবার দেখা হবে\",\"See you again.\"],[\"সাবধানে থেকো\",\"Take care.\"],[\"সুন্দর দিন কাটুক\",\"Have a nice day.\"],[\"আমার ক্ষুধা লেগেছে\",\"I am hungry.\"],[\"আমার তৃষ্ণা পেয়েছে\",\"I am thirsty.\"],[\"আমার ঘুম পাচ্ছে\",\"I am sleepy.\"],[\"আমার সময় নেই\",\"I don't have time.\"],[\"আমার সাহায্য দরকার\",\"I need help.\"],[\"এটা খুব ভালো\",\"This is very good.\"],[\"আমি রাজি\",\"I agree.\"],[\"আমি রাজি নই\",\"I disagree.\"],[\"চলো যাই\",\"Let's go.\"],[\"এখানে আসো\",\"Come here.\"],[\"এখানে আসুন\",\"Come here.\"],[\"ওখানে যাও\",\"Go there.\"],[\"দরজা খোলো\",\"Open the door.\"],[\"দরজা বন্ধ করো\",\"Close the door.\"],[\"লাইট জ্বালাও\",\"Turn on the light.\"],[\"লাইট বন্ধ করো\",\"Turn off the light.\"],[\"আমাকে কিছু সময় দাও\",\"Give me some time.\"],[\"তুমি কি ব্যস্ত\",\"Are you busy?\"],[\"আপনি কি ব্যস্ত\",\"Are you busy?\"],[\"তুমি কি প্রস্তুত\",\"Are you ready?\"],[\"আপনি কি প্রস্তুত\",\"Are you ready?\"],[\"আমি প্রস্তুত\",\"I am ready.\"],[\"সব ঠিক আছে\",\"Everything is okay.\"],[\"কোন সমস্যা নেই\",\"No problem.\"],[\"আমি দুঃখিত\",\"I am sorry.\"],[\"চিন্তা করো না\",\"Don't worry.\"],[\"শুভকামনা\",\"Good luck.\"],[\"অভিনন্দন\",\"Congratulations.\"],[\"তুমি কোথায় যাচ্ছ\",\"Where are you going?\"],[\"আমি বাড়ি যাচ্ছি\",\"I am going home.\"],[\"তুমি কি আমাকে শুনতে পাচ্ছ\",\"Can you hear me?\"],[\"আমি তোমাকে পরে ফোন করব\",\"I will call you later.\"],[\"আমার ফোন কোথায়\",\"Where is my phone?\"],[\"এটা কত দাম\",\"How much does this cost?\"],[\"আমি এটা চাই\",\"I want this.\"],[\"আমি এটা চাই না\",\"I don't want this.\"],[\"দয়া করে বসুন\",\"Please sit down.\"],[\"দয়া করে আসুন\",\"Please come.\"],[\"দয়া করে অপেক্ষা করুন\",\"Please wait.\"],[\"আজ আবহাওয়া ভালো\",\"The weather is good today.\"],[\"আজ অনেক গরম\",\"It is very hot today.\"],[\"আজ অনেক ঠান্ডা\",\"It is very cold today.\"],[\"আমার ভালো লাগছে\",\"I feel good.\"],[\"আমার ভালো লাগছে না\",\"I don't feel good.\"],[\"আমরা পরে কথা বলব\",\"We will talk later.\"],[\"তোমার দিন কেমন গেল\",\"How was your day?\"],[\"আমার দিন ভালো গেছে\",\"My day was good.\"],[\"তোমার সাহায্যের জন্য ধন্যবাদ\",\"Thank you for your help.\"],[\"আমি এখন ব্যস্ত\",\"I am busy now.\"],[\"আমি এখন ফ্রি\",\"I am free now.\"],[\"আমি তোমার সাথে একমত\",\"I agree with you.\"],[\"আমি নিশ্চিত নই\",\"I am not sure.\"],[\"দয়া করে আবার বলুন\",\"Please say it again.\"],[\"ধীরে কথা বলুন\",\"Please speak slowly.\"],[\"আমি ইংরেজি শিখছি\",\"I am learning English.\"],[\"আমি বাংলা শিখছি\",\"I am learning Bengali.\"],[\"এটা খুব সহজ\",\"This is very easy.\"],[\"এটা খুব কঠিন\",\"This is very difficult.\"],[\"আমার একটি প্রশ্ন আছে\",\"I have a question.\"],[\"আমার উত্তর জানা নেই\",\"I don't know the answer.\"],[\"তুমি কি আমাকে সাহায্য করবে\",\"Will you help me?\"],[\"আমি চেষ্টা করব\",\"I will try.\"],[\"আবার চেষ্টা করো\",\"Try again.\"],[\"এখন যাও\",\"Go now.\"],[\"এখন এসো\",\"Come now.\"],[\"শুভ জন্মদিন\",\"Happy birthday.\"],[\"শুভেচ্ছা রইল\",\"Best wishes.\"]];\nconst NAME_PAIRS = [[\"আব্দুল্লাহ\",\"Abdullah\"],[\"আব্দুর রহমান\",\"Abdur Rahman\"],[\"আব্দুর রহিম\",\"Abdur Rahim\"],[\"আবু বকর\",\"Abu Bakar\"],[\"আহমেদ\",\"Ahmed\"],[\"মোহাম্মদ\",\"Mohammad\"],[\"মুহাম্মদ\",\"Muhammad\"],[\"মোহাম্মদ\",\"Mohammed\"],[\"আলী\",\"Ali\"],[\"হাসান\",\"Hasan\"],[\"হোসেন\",\"Hossain\"],[\"ইমরান\",\"Imran\"],[\"ইরফান\",\"Irfan\"],[\"ইসমাইল\",\"Ismail\"],[\"ইব্রাহিম\",\"Ibrahim\"],[\"ইউসুফ\",\"Yusuf\"],[\"উমর\",\"Omar\"],[\"উসমান\",\"Usman\"],[\"বিলাল\",\"Bilal\"],[\"খালিদ\",\"Khalid\"],[\"সাইফ\",\"Saif\"],[\"সাকিব\",\"Sakib\"],[\"তানভীর\",\"Tanvir\"],[\"রাকিব\",\"Rakib\"],[\"রাফি\",\"Rafi\"],[\"রাফসান\",\"Rafsan\"],[\"রাহাত\",\"Rahat\"],[\"রিয়াদ\",\"Riyad\"],[\"নাঈম\",\"Naeem\"],[\"নাসির\",\"Nasir\"],[\"নাবিল\",\"Nabil\"],[\"ফাহিম\",\"Fahim\"],[\"ফয়সাল\",\"Faisal\"],[\"শাহরিয়ার\",\"Shahriar\"],[\"আরিফ\",\"Arif\"],[\"আসিফ\",\"Asif\"],[\"আদনান\",\"Adnan\"],[\"আয়ান\",\"Ayan\"],[\"আফনান\",\"Afnan\"],[\"সাদ\",\"Saad\"],[\"সাদিক\",\"Sadiq\"],[\"সামির\",\"Samir\"],[\"সামিউল\",\"Samiul\"],[\"শাকিল\",\"Shakil\"],[\"শাহেদ\",\"Shahed\"],[\"মাহিন\",\"Mahin\"],[\"মাহমুদ\",\"Mahmud\"],[\"মাসুদ\",\"Masud\"],[\"মারুফ\",\"Maruf\"],[\"মেহেদী\",\"Mehedi\"],[\"মিরাজ\",\"Miraj\"],[\"রিফাত\",\"Rifat\"],[\"রুবেল\",\"Rubel\"],[\"জাহিদ\",\"Zahid\"],[\"জামাল\",\"Jamal\"],[\"করিম\",\"Karim\"],[\"রহিম\",\"Rahim\"],[\"রশিদ\",\"Rashid\"],[\"সালমান\",\"Salman\"],[\"সালেহ\",\"Saleh\"],[\"শরিফ\",\"Sharif\"],[\"শাওন\",\"Shaon\"],[\"সোহেল\",\"Sohel\"],[\"তৌহিদ\",\"Touhid\"],[\"তৌফিক\",\"Tawfiq\"],[\"তাসিন\",\"Tasin\"],[\"তামিম\",\"Tamim\"],[\"তাহমিদ\",\"Tahmid\"],[\"তাহসিন\",\"Tahsin\"],[\"তানজিম\",\"Tanzim\"],[\"তানজিল\",\"Tanjil\"],[\"আবির\",\"Abir\"],[\"অনিক\",\"Anik\"],[\"অর্ণব\",\"Arnab\"],[\"অভি\",\"Abhi\"],[\"অমিত\",\"Amit\"],[\"অনন্ত\",\"Ananta\"],[\"অয়ন\",\"Ayon\"],[\"রুদ্র\",\"Rudra\"],[\"সৌরভ\",\"Sourav\"],[\"শুভ\",\"Shuvo\"],[\"শুভ্র\",\"Shubho\"],[\"সুমন\",\"Sumon\"],[\"সজীব\",\"Sajib\"],[\"জয়\",\"Joy\"],[\"রাজ\",\"Raj\"],[\"রনি\",\"Rony\"],[\"রাকেশ\",\"Rakesh\"],[\"রাহুল\",\"Rahul\"],[\"বিপ্লব\",\"Biplob\"],[\"দীপ\",\"Dip\"],[\"দেব\",\"Deb\"],[\"দেবাশীষ\",\"Debashish\"],[\"প্রণব\",\"Pranab\"],[\"প্রদীপ\",\"Pradip\"],[\"সঞ্জয়\",\"Sanjay\"],[\"সুমিত\",\"Sumit\"],[\"অভিষেক\",\"Abhishek\"],[\"আকাশ\",\"Akash\"],[\"বিজয়\",\"Bijoy\"],[\"চয়ন\",\"Chayan\"],[\"তন্ময়\",\"Tanmay\"],[\"ঋত্বিক\",\"Ritwik\"],[\"ফাতিমা\",\"Fatima\"],[\"আয়েশা\",\"Ayesha\"],[\"খাদিজা\",\"Khadija\"],[\"মরিয়ম\",\"Maryam\"],[\"সুমাইয়া\",\"Sumaiya\"],[\"তাসনিম\",\"Tasnim\"],[\"নুসরাত\",\"Nusrat\"],[\"সাদিয়া\",\"Sadia\"],[\"সাবা\",\"Saba\"],[\"সারা\",\"Sara\"],[\"সানজিদা\",\"Sanjida\"],[\"সামিয়া\",\"Samia\"],[\"সামিয়া\",\"Samiya\"],[\"সাফা\",\"Safa\"],[\"সাফিয়া\",\"Safia\"],[\"সাফিয়া\",\"Safiya\"],[\"মাইশা\",\"Maisha\"],[\"মাহিরা\",\"Mahira\"],[\"মাহিয়া\",\"Mahiya\"],[\"মাহমুদা\",\"Mahmuda\"],[\"মুনিয়া\",\"Muniya\"],[\"মুনতাহা\",\"Muntaha\"],[\"মুশফিকা\",\"Mushfika\"],[\"নাদিয়া\",\"Nadia\"],[\"নাবিলা\",\"Nabila\"],[\"নাইমা\",\"Naima\"],[\"নাওমি\",\"Naomi\"],[\"নিশাত\",\"Nishat\"],[\"রাইসা\",\"Raisa\"],[\"রাইসা\",\"Raisha\"],[\"রিমি\",\"Rimi\"],[\"রিয়া\",\"Riya\"],[\"রিয়া\",\"Ria\"],[\"রুবাইয়া\",\"Rubaiya\"],[\"রুমানা\",\"Rumana\"],[\"শারমিন\",\"Sharmin\"],[\"শারমিলা\",\"Sharmila\"],[\"শ্রাবণী\",\"Shraboni\"],[\"সাবরিনা\",\"Sabrina\"],[\"সানিয়া\",\"Sania\"],[\"সানজানা\",\"Sanjana\"],[\"সায়মা\",\"Sayma\"],[\"সায়রা\",\"Sayra\"],[\"তানিয়া\",\"Tania\"],[\"তামান্না\",\"Tamanna\"],[\"তাহমিনা\",\"Tahmina\"],[\"তাসফিয়া\",\"Tasfia\"],[\"তাবাসসুম\",\"Tabassum\"],[\"তানজিলা\",\"Tanjila\"],[\"তানহা\",\"Tanha\"],[\"ইশরাত\",\"Ishrat\"],[\"ইফফাত\",\"Iffat\"],[\"ইসরাত\",\"Israt\"],[\"জান্নাত\",\"Jannat\"],[\"জেরিন\",\"Jerin\"],[\"জুঁই\",\"Jui\"],[\"মিম\",\"Mim\"],[\"মৌ\",\"Mou\"],[\"মৌসুমী\",\"Mousumi\"],[\"মেহজাবিন\",\"Mehjabin\"],[\"মেহেরিন\",\"Meherin\"],[\"মেহরিন\",\"Mehrin\"],[\"নওশীন\",\"Naushin\"],[\"নাজিয়া\",\"Nazia\"],[\"নাজমা\",\"Najma\"],[\"ফারিয়া\",\"Faria\"],[\"ফারজানা\",\"Farzana\"],[\"ফারিহা\",\"Fariha\"],[\"হুমায়রা\",\"Humaira\"],[\"হুমাইরা\",\"Humaira\"],[\"লাবিবা\",\"Labiba\"],[\"লাবণ্য\",\"Labanya\"],[\"লিমা\",\"Lima\"],[\"মায়া\",\"Maya\"],[\"মিতু\",\"Mitu\"],[\"পূজা\",\"Puja\"],[\"প্রিয়া\",\"Priya\"],[\"প্রিয়াঙ্কা\",\"Priyanka\"],[\"রূপা\",\"Rupa\"],[\"সাথী\",\"Sathi\"],[\"সীমা\",\"Sima\"],[\"শিলা\",\"Shila\"],[\"শিউলি\",\"Shiuli\"],[\"স্নিগ্ধা\",\"Snigdha\"],[\"সোহা\",\"Soha\"],[\"সোহানা\",\"Sohana\"],[\"সুমনা\",\"Sumona\"],[\"তিথি\",\"Tithi\"],[\"উর্মি\",\"Urmi\"],[\"ঊষা\",\"Usha\"],[\"বৃষ্টি\",\"Brishti\"],[\"দিয়া\",\"Diya\"],[\"দিশা\",\"Disha\"],[\"ইশিতা\",\"Ishita\"],[\"ঐশী\",\"Oishi\"],[\"অনন্যা\",\"Anannya\"],[\"অদিতি\",\"Aditi\"],[\"অর্পিতা\",\"Arpita\"],[\"মেঘলা\",\"Meghla\"],[\"মেঘা\",\"Megha\"],[\"কেয়া\",\"Keya\"],[\"রিমঝিম\",\"Rimjhim\"],[\"রূপন্তী\",\"Rupanti\"],[\"সুরাইয়া\",\"Suraiya\"],[\"শামিমা\",\"Shamima\"],[\"নাজরিন\",\"Nazrin\"],[\"রোকসানা\",\"Roksana\"],[\"রোকেয়া\",\"Rokeya\"],[\"জাহানারা\",\"Jahanara\"],[\"আফরোজা\",\"Afroza\"],[\"আমেনা\",\"Amena\"],[\"আনিকা\",\"Anika\"],[\"আনিসা\",\"Anisa\"],[\"আরিশা\",\"Arisha\"],[\"আরিবা\",\"Ariba\"],[\"আলিয়া\",\"Alia\"],[\"আলিশা\",\"Alisha\"],[\"আয়রা\",\"Ayra\"],[\"ইনায়া\",\"Inaya\"],[\"ইরা\",\"Ira\"],[\"ইশাল\",\"Ishal\"],[\"ইশা\",\"Isha\"],[\"কায়রা\",\"Kyra\"],[\"কিয়ারা\",\"Kiara\"],[\"মালিহা\",\"Maliha\"],[\"মাইরা\",\"Maira\"],[\"মারিয়া\",\"Maria\"],[\"মারিয়াম\",\"Mariam\"],[\"মিশু\",\"Mishu\"],[\"নিহা\",\"Niha\"],[\"নিহারা\",\"Nihara\"],[\"রাফিয়া\",\"Rafia\"],[\"রাইমা\",\"Raima\"],[\"রুহি\",\"Ruhi\"],[\"সাইমা\",\"Saima\"],[\"সাইরা\",\"Saira\"],[\"সানভি\",\"Sanvi\"],[\"সারা\",\"Sarah\"],[\"সেলিনা\",\"Selina\"],[\"সিমি\",\"Simi\"],[\"সিমা\",\"Sima\"],[\"সুহানা\",\"Suhana\"],[\"তানিশা\",\"Tanisha\"],[\"তৃষা\",\"Trisha\"],[\"উম্মে হাবিবা\",\"Umme Habiba\"],[\"ইয়াসমিন\",\"Yasmin\"],[\"জেসমিন\",\"Jasmine\"],[\"জন\",\"John\"],[\"মাইকেল\",\"Michael\"],[\"ডেভিড\",\"David\"],[\"জেমস\",\"James\"],[\"রবার্ট\",\"Robert\"],[\"উইলিয়াম\",\"William\"],[\"রিচার্ড\",\"Richard\"],[\"জোসেফ\",\"Joseph\"],[\"থমাস\",\"Thomas\"],[\"চার্লস\",\"Charles\"],[\"ক্রিস্টোফার\",\"Christopher\"],[\"ড্যানিয়েল\",\"Daniel\"],[\"ম্যাথিউ\",\"Matthew\"],[\"অ্যান্থনি\",\"Anthony\"],[\"মার্ক\",\"Mark\"],[\"ডোনাল্ড\",\"Donald\"],[\"স্টিভেন\",\"Steven\"],[\"পল\",\"Paul\"],[\"অ্যান্ড্রু\",\"Andrew\"],[\"জোশুয়া\",\"Joshua\"],[\"জর্জ\",\"George\"],[\"কেনেথ\",\"Kenneth\"],[\"কেভিন\",\"Kevin\"],[\"ব্রায়ান\",\"Brian\"],[\"এডওয়ার্ড\",\"Edward\"],[\"রোনাল্ড\",\"Ronald\"],[\"টিমোথি\",\"Timothy\"],[\"জেসন\",\"Jason\"],[\"জেফরি\",\"Jeffrey\"],[\"রায়ান\",\"Ryan\"],[\"জ্যাকব\",\"Jacob\"],[\"গ্যারি\",\"Gary\"],[\"নিকোলাস\",\"Nicholas\"],[\"এরিক\",\"Eric\"],[\"জোনাথন\",\"Jonathan\"],[\"স্টিফেন\",\"Stephen\"],[\"ল্যারি\",\"Larry\"],[\"জাস্টিন\",\"Justin\"],[\"স্কট\",\"Scott\"],[\"ব্র্যান্ডন\",\"Brandon\"],[\"বেনজামিন\",\"Benjamin\"],[\"স্যামুয়েল\",\"Samuel\"],[\"গ্রেগরি\",\"Gregory\"],[\"অলিভার\",\"Oliver\"],[\"জ্যাক\",\"Jack\"],[\"হেনরি\",\"Henry\"],[\"লুক\",\"Luke\"],[\"লিও\",\"Leo\"],[\"এমা\",\"Emma\"],[\"অলিভিয়া\",\"Olivia\"],[\"সোফিয়া\",\"Sophia\"],[\"শার্লট\",\"Charlotte\"],[\"অ্যামেলিয়া\",\"Amelia\"],[\"এভা\",\"Ava\"],[\"মিয়া\",\"Mia\"],[\"ইসাবেলা\",\"Isabella\"],[\"এভেলিন\",\"Evelyn\"],[\"হার্পার\",\"Harper\"],[\"ক্যামিলা\",\"Camila\"],[\"জিয়ানা\",\"Gianna\"],[\"অ্যাবিগেইল\",\"Abigail\"],[\"লুনা\",\"Luna\"],[\"এলা\",\"Ella\"],[\"এলিজাবেথ\",\"Elizabeth\"],[\"সোফিয়া\",\"Sofia\"],[\"এমিলি\",\"Emily\"],[\"এভরী\",\"Avery\"],[\"মিলি\",\"Mila\"],[\"এলিয়ানা\",\"Eliana\"],[\"এথেনা\",\"Athena\"],[\"নোরা\",\"Nora\"],[\"হ্যাজেল\",\"Hazel\"],[\"ভিক্টোরিয়া\",\"Victoria\"],[\"রিলি\",\"Riley\"],[\"লাইলা\",\"Layla\"],[\"লিলি\",\"Lily\"],[\"অরোরা\",\"Aurora\"],[\"ভায়োলেট\",\"Violet\"],[\"নোভা\",\"Nova\"],[\"গ্রেস\",\"Grace\"],[\"ইউনা\",\"Yuna\"],[\"হান্না\",\"Hannah\"],[\"জো\",\"Zoe\"],[\"স্টেলা\",\"Stella\"]];\nconst DB_NAME = \"offline-translator-large-dictionary-v4\";\nconst DB_VERSION = 1;\nconst ENTRY_STORE = \"entries\";\nconst META_STORE = \"meta\";\nconst CORE_VERSION = \"core-2026-09-23-v4-names\";\nconst IMPORT_BATCH = 1000;\n\n/*\n * Large-dictionary architecture\n * -----------------------------\n * 1) Built-in dictionary is ALWAYS loaded into memory first.\n * 2) IndexedDB is optional persistence/cache, never a requirement for translation.\n * 3) Imported dictionaries are merged into the same in-memory indexes.\n * 4) Translation uses exact match -> phrase matching -> word matching.\n * 5) Unknown words/names are preserved; no substring replacement is performed.\n */\nlet dbPromise = null;\nlet dictionaryReady = false;\nlet dictionaryPersistent = false;\nlet dictionaryStats = {total:0,bn:0,en:0,names:NAME_PAIRS.length};\nlet bnMap = new Map();\nlet enMap = new Map();\nlet bnPhraseIndex = new Map();\nlet enPhraseIndex = new Map();\n\nfunction normalize(text){\n    return String(text ?? \"\")\n        .normalize(\"NFC\")\n        .trim()\n        .toLowerCase()\n        .replace(/[\\u00A0\\t\\r\\n ]+/g,\" \");\n}\nfunction cleanTerm(text){return String(text ?? \"\").normalize(\"NFC\").trim().replace(/[\\u00A0\\t\\r\\n ]+/g,\" \");}\nfunction escapeRegExp(str){return String(str).replace(/[.*+?^${}()|[\\]\\\\]/g,\"\\\\$&\");}\n\nfunction addToMap(map,term,translation){\n    if(!term || !translation) return;\n    if(!map.has(term)) map.set(term,[]);\n    const list=map.get(term);\n    if(!list.includes(translation)) list.push(translation);\n}\n\nfunction addPairToMemory(a,b){\n    const bn=cleanTerm(a), en=cleanTerm(b);\n    if(!bn || !en) return;\n    addToMap(bnMap,normalize(bn),en);\n    addToMap(enMap,normalize(en),bn);\n}\n\nfunction buildPhraseIndex(sourceMap){\n    const index=new Map();\n    for(const [key,values] of sourceMap){\n        if(!values?.length || !key.includes(\" \")) continue;\n        const tokens=key.split(\" \").filter(Boolean);\n        if(tokens.length<2) continue;\n        const first=tokens[0];\n        if(!index.has(first)) index.set(first,[]);\n        index.get(first).push({tokens,translation:values[0]});\n    }\n    for(const list of index.values()){\n        list.sort((a,b)=>b.tokens.length-a.tokens.length);\n    }\n    return index;\n}\n\nfunction rebuildIndexes(){\n    bnPhraseIndex=buildPhraseIndex(bnMap);\n    enPhraseIndex=buildPhraseIndex(enMap);\n    dictionaryStats={\n        total:[...bnMap.values()].reduce((n,v)=>n+v.length,0),\n        bn:bnMap.size,\n        en:enMap.size,\n        names:NAME_PAIRS.length\n    };\n    dictionaryReady=true;\n    updateDictionaryUI();\n}\n\nfunction loadBuiltInDictionary(){\n    bnMap=new Map();\n    enMap=new Map();\n    for(const [bn,en] of CORE_PAIRS) addPairToMemory(bn,en);\n    for(const [bn,en] of NAME_PAIRS) addPairToMemory(bn,en);\n    rebuildIndexes();\n}\n\nfunction tokenizeForTranslation(text){\n    /* Keep whitespace and punctuation as separate tokens. */\n    return String(text).split(/(\\s+|[,.!?;:()[\\]{}'\"“”‘’\\-—/]+)/);\n}\nfunction isSeparator(part){\n    return /^\\s+$/.test(part) || /^[,.!?;:()[\\]{}'\"“”‘’\\-—/]+$/.test(part);\n}\n\nfunction translateText(text,from,to){\n    text=String(text ?? \"\");\n    if(!text.trim()) return \"\";\n    if(from===to) return text;\n\n    const sourceMap=from===\"bn\" ? bnMap : enMap;\n    const phraseIndex=from===\"bn\" ? bnPhraseIndex : enPhraseIndex;\n    const exact=sourceMap.get(normalize(text));\n    if(exact?.length) return exact[0];\n\n    const parts=tokenizeForTranslation(text);\n    let changed=false;\n\n    /* Phrase-first. Longest phrase wins. */\n    for(let i=0;i<parts.length;i++){\n        if(!parts[i] || isSeparator(parts[i])) continue;\n        const first=normalize(parts[i]);\n        const candidates=phraseIndex.get(first);\n        if(!candidates?.length) continue;\n\n        for(const candidate of candidates){\n            let pos=i;\n            let ok=true;\n            for(const token of candidate.tokens){\n                while(pos<parts.length && /^\\s+$/.test(parts[pos])) pos++;\n                if(pos>=parts.length || isSeparator(parts[pos]) || normalize(parts[pos])!==token){\n                    ok=false;\n                    break;\n                }\n                pos++;\n            }\n            if(!ok) continue;\n\n            parts.splice(i,pos-i,candidate.translation);\n            changed=true;\n            break;\n        }\n    }\n\n    /* Word-level fallback. Never replace inside another word. */\n    let wordChanged=false;\n    for(let i=0;i<parts.length;i++){\n        const part=parts[i];\n        if(!part || isSeparator(part)) continue;\n        const values=sourceMap.get(normalize(part));\n        if(values?.length){\n            parts[i]=values[0];\n            wordChanged=true;\n        }\n    }\n\n    const result=parts.join(\"\");\n    return (changed || wordChanged) ? result : \"\";\n}\n\n/* ---------------- Optional IndexedDB persistence ---------------- */\nfunction openDB(){\n    if(dbPromise) return dbPromise;\n    if(!window.indexedDB) return Promise.reject(new Error(\"IndexedDB unavailable\"));\n    dbPromise=new Promise((resolve,reject)=>{\n        const req=indexedDB.open(DB_NAME,DB_VERSION);\n        req.onupgradeneeded=()=>{\n            const db=req.result;\n            if(!db.objectStoreNames.contains(ENTRY_STORE)){\n                const store=db.createObjectStore(ENTRY_STORE,{keyPath:\"id\"});\n                store.createIndex(\"from_term\",\"from_term\",{unique:false});\n            }\n            if(!db.objectStoreNames.contains(META_STORE)) db.createObjectStore(META_STORE,{keyPath:\"key\"});\n        };\n        req.onsuccess=()=>resolve(req.result);\n        req.onerror=()=>reject(req.error || new Error(\"IndexedDB open failed\"));\n    });\n    return dbPromise;\n}\nfunction txDone(tx){\n    return new Promise((resolve,reject)=>{\n        tx.oncomplete=()=>resolve();\n        tx.onerror=()=>reject(tx.error || new Error(\"IndexedDB transaction failed\"));\n        tx.onabort=()=>reject(tx.error || new Error(\"IndexedDB transaction aborted\"));\n    });\n}\nfunction entryId(from,a,b){return from+\"|\"+normalize(a)+\"|\"+normalize(b);}\nasync function getMeta(key){\n    const db=await openDB();\n    return new Promise((resolve,reject)=>{\n        const req=db.transaction(META_STORE,\"readonly\").objectStore(META_STORE).get(key);\n        req.onsuccess=()=>resolve(req.result?.value);\n        req.onerror=()=>reject(req.error);\n    });\n}\nasync function setMeta(key,value){\n    const db=await openDB();\n    const tx=db.transaction(META_STORE,\"readwrite\");\n    tx.objectStore(META_STORE).put({key,value});\n    return txDone(tx);\n}\nasync function readAllEntries(){\n    const db=await openDB();\n    return new Promise((resolve,reject)=>{\n        const req=db.transaction(ENTRY_STORE,\"readonly\").objectStore(ENTRY_STORE).getAll();\n        req.onsuccess=()=>resolve(req.result || []);\n        req.onerror=()=>reject(req.error || new Error(\"Dictionary read failed\"));\n    });\n}\nasync function putEntries(entries,onProgress){\n    const db=await openDB();\n    for(let i=0;i<entries.length;i+=IMPORT_BATCH){\n        const chunk=entries.slice(i,i+IMPORT_BATCH);\n        const tx=db.transaction(ENTRY_STORE,\"readwrite\");\n        const store=tx.objectStore(ENTRY_STORE);\n        for(const e of chunk) store.put(e);\n        await txDone(tx);\n        onProgress?.(Math.min(i+chunk.length,entries.length),entries.length);\n        await new Promise(r=>setTimeout(r,0));\n    }\n}\n\nasync function persistBuiltInDictionary(){\n    try{\n        const current=await getMeta(\"coreVersion\");\n        if(current===CORE_VERSION){dictionaryPersistent=true;return;}\n        const entries=[];\n        for(const [bn,en] of [...CORE_PAIRS,...NAME_PAIRS]){\n            const b=cleanTerm(bn),e=cleanTerm(en);\n            if(!b||!e) continue;\n            entries.push({id:entryId(\"bn\",b,e),from:\"bn\",term:normalize(b),original:b,translation:e});\n            entries.push({id:entryId(\"en\",e,b),from:\"en\",term:normalize(e),original:e,translation:b});\n        }\n        await putEntries(entries);\n        await setMeta(\"coreVersion\",CORE_VERSION);\n        dictionaryPersistent=true;\n    }catch(err){\n        /* Local file:// environments may block IndexedDB. Translation still works. */\n        dictionaryPersistent=false;\n        console.warn(\"IndexedDB persistence unavailable; memory dictionary remains active.\",err);\n    }\n    updateDictionaryUI();\n}\n\nasync function restorePersistentDictionary(){\n    try{\n        const entries=await readAllEntries();\n        if(!entries.length) return;\n        /* Start from built-in and merge imported/custom entries. */\n        for(const e of entries){\n            if(e.from===\"bn\") addToMap(bnMap,e.term,e.translation);\n            else if(e.from===\"en\") addToMap(enMap,e.term,e.translation);\n        }\n        rebuildIndexes();\n        dictionaryPersistent=true;\n    }catch(err){\n        dictionaryPersistent=false;\n        console.warn(\"Could not restore IndexedDB dictionary; using built-in memory dictionary.\",err);\n    }\n    updateDictionaryUI();\n}\n\nfunction updateDictionaryUI(){\n    const total=$(\"dictTotal\"),bn=$(\"dictBn\"),en=$(\"dictEn\"),namesEl=$(\"dictNames\"),state=$(\"dictState\");\n    if(total) total.textContent=`${dictionaryStats.total.toLocaleString()} entries`;\n    if(bn) bn.textContent=`বাংলা: ${dictionaryStats.bn.toLocaleString()}`;\n    if(en) en.textContent=`English: ${dictionaryStats.en.toLocaleString()}`;\n    if(namesEl) namesEl.textContent=`নাম: ${NAME_PAIRS.length.toLocaleString()}`;\n    if(state) state.textContent=dictionaryReady ? (dictionaryPersistent ? \"Ready · Offline · Saved\" : \"Ready · Offline\") : \"Loading…\";\n}\n\nfunction parseDictionaryData(raw,name=\"dictionary\"){\n    const text=String(raw||\"\").replace(/^\\uFEFF/,\"\").trim();\n    if(!text) return [];\n    const rows=[];\n    const push=(a,b)=>{\n        a=cleanTerm(a); b=cleanTerm(b);\n        if(a&&b) rows.push([a,b]);\n    };\n    if(/\\.json$/i.test(name) || text[0]===\"[\" || text[0]===\"{\"){\n        const data=JSON.parse(text);\n        if(Array.isArray(data)){\n            for(const item of data){\n                if(Array.isArray(item)) push(item[0],item[1]);\n                else if(item&&typeof item===\"object\"){\n                    push(item.bn??item.bengali??item.bangla??item.source,\n                         item.en??item.english??item.target);\n                }\n            }\n        }else if(data&&typeof data===\"object\"){\n            if(Array.isArray(data.entries)) return parseDictionaryData(JSON.stringify(data.entries),\"entries.json\");\n            if(data.bnToEn || data.enToBn){\n                for(const [a,b] of Object.entries(data.bnToEn||{})) push(a,Array.isArray(b)?b[0]:b);\n                for(const [a,b] of Object.entries(data.enToBn||{})) push(Array.isArray(b)?b[0]:b,a);\n            }else{\n                for(const [a,b] of Object.entries(data)) push(a,Array.isArray(b)?b[0]:b);\n            }\n        }\n        return rows;\n    }\n    for(const lineRaw of text.split(/\\r?\\n/)){\n        const line=lineRaw.trim();\n        if(!line || line.startsWith(\"#\")) continue;\n        let cells=line.split(\"\\t\");\n        if(cells.length<2) cells=line.split(/\\s*[,;]\\s*/);\n        if(cells.length<2) continue;\n        const a=cleanTerm(cells[0].replace(/^['\"]|['\"]$/g,\"\"));\n        const b=cleanTerm(cells.slice(1).join(\" \").replace(/^['\"]|['\"]$/g,\"\"));\n        if(a&&b) rows.push([a,b]);\n    }\n    return rows;\n}\n\nasync function importDictionaryFile(file){\n    const rows=parseDictionaryData(await file.text(),file.name);\n    if(!rows.length) throw new Error(\"No valid dictionary entries found\");\n\n    /* Merge immediately so the app works even if IndexedDB is unavailable. */\n    for(const [a,b] of rows) addPairToMemory(a,b);\n    rebuildIndexes();\n\n    const entries=[];\n    for(const [a,b] of rows){\n        entries.push({id:entryId(\"bn\",a,b),from:\"bn\",term:normalize(a),original:a,translation:b});\n        entries.push({id:entryId(\"en\",b,a),from:\"en\",term:normalize(b),original:b,translation:a});\n    }\n\n    try{\n        setStatus(`Dictionary save: 0 / ${entries.length.toLocaleString()}`);\n        await putEntries(entries,(done,total)=>setStatus(`Dictionary save: ${done.toLocaleString()} / ${total.toLocaleString()}`));\n        dictionaryPersistent=true;\n    }catch(err){\n        dictionaryPersistent=false;\n        console.warn(\"Import merged into memory, but IndexedDB save failed.\",err);\n    }\n    updateDictionaryUI();\n    setStatus(`${rows.length.toLocaleString()}টি pair Offline Dictionary-তে যোগ হয়েছে।`,\"success\");\n    showToast(\"Dictionary import সম্পন্ন হয়েছে\");\n}\n\ndocument.addEventListener(\"DOMContentLoaded\",()=>{\n    const addBtn=$(\"addCustomPairBtn\");\n    const bnInput=$(\"customBn\");\n    const enInput=$(\"customEn\");\n    if(addBtn) addBtn.addEventListener(\"click\",addCustomPair);\n    if(bnInput) bnInput.addEventListener(\"keydown\",e=>{if(e.key===\"Enter\"){e.preventDefault();enInput?.focus();}});\n    if(enInput) enInput.addEventListener(\"keydown\",e=>{if(e.key===\"Enter\"){e.preventDefault();addCustomPair();}});\n});\n\nasync function addCustomPair(){\n    const bn=cleanTerm($(\"customBn\").value),en=cleanTerm($(\"customEn\").value);\n    if(!bn||!en){showToast(\"বাংলা এবং English—দুটিই দিন\");return;}\n    addPairToMemory(bn,en);\n    rebuildIndexes();\n    try{\n        await putEntries([\n            {id:entryId(\"bn\",bn,en),from:\"bn\",term:normalize(bn),original:bn,translation:en},\n            {id:entryId(\"en\",en,bn),from:\"en\",term:normalize(en),original:en,translation:bn}\n        ]);\n        dictionaryPersistent=true;\n    }catch(err){dictionaryPersistent=false;console.warn(err);}\n    $(\"customBn\").value=\"\";\n    $(\"customEn\").value=\"\";\n    updateDictionaryUI();\n    showToast(\"নতুন শব্দ/phrase যোগ হয়েছে\");\n}\n\nasync function exportDictionary(){\n    const pairs=[];\n    for(const [bn,values] of bnMap){\n        for(const en of values) pairs.push([bn,en]);\n    }\n    const blob=new Blob([JSON.stringify(pairs,null,2)],{type:\"application/json;charset=utf-8\"});\n    const a=document.createElement(\"a\");\n    a.href=URL.createObjectURL(blob);\n    a.download=\"offline-dictionary-export.json\";\n    a.click();\n    setTimeout(()=>URL.revokeObjectURL(a.href),1000);\n}\n\nasync function resetDictionary(){\n    if(!confirm(\"সব imported/custom dictionary মুছে built-in dictionary-তে ফিরে যাবেন?\")) return;\n    loadBuiltInDictionary();\n    try{\n        const db=await openDB();\n        const tx=db.transaction([ENTRY_STORE,META_STORE],\"readwrite\");\n        tx.objectStore(ENTRY_STORE).clear();\n        tx.objectStore(META_STORE).clear();\n        await txDone(tx);\n        await persistBuiltInDictionary();\n    }catch(err){dictionaryPersistent=false;console.warn(err);}\n    updateDictionaryUI();\n    showToast(\"Dictionary reset হয়েছে\");\n}\n\n/* DOM */\nconst $=id=>document.getElementById(id);\nconst input=$(\"input\"),output=$(\"output\"),fromLang=$(\"fromLang\"),toLang=$(\"toLang\");\nconst translateBtn=$(\"translateBtn\"),copyBtn=$(\"copyBtn\"),copyMiniBtn=$(\"copyMiniBtn\");\nconst clearBtn=$(\"clearBtn\"),pasteBtn=$(\"pasteBtn\"),selectInputBtn=$(\"selectInputBtn\"),speakBtn=$(\"speakBtn\");\nconst inputCounter=$(\"inputCounter\"),outputCounter=$(\"outputCounter\"),status=$(\"status\"),toast=$(\"toast\");\nconst modal=$(\"modal\"),modalClose=$(\"modalClose\");\n\nfunction wordCount(text){const t=text.trim();return t?t.split(/\\s+/).length:0;}\nfunction updateCounters(){inputCounter.textContent=`${wordCount(input.value)} শব্দ · ${input.value.length} অক্ষর`;outputCounter.textContent=`${wordCount(output.value)} শব্দ · ${output.value.length} অক্ষর`;}\nfunction setStatus(message,type=\"\"){status.textContent=message;status.className=\"status\"+(type?\" \"+type:\"\");clearTimeout(setStatus.timer);if(message)setStatus.timer=setTimeout(()=>{status.textContent=\"\";status.className=\"status\"},5000);}\nfunction showToast(message){toast.textContent=message;toast.classList.add(\"show\");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove(\"show\"),2300);}\n\nasync function doTranslate(){\n    const text=input.value.trim();\n    if(!text){output.value=\"\";updateCounters();setStatus(\"অনুবাদ করার জন্য আগে কিছু লিখুন।\",\"error\");input.focus();return;}\n    if(!dictionaryReady){loadBuiltInDictionary();}\n    const translated=translateText(text,fromLang.value,toLang.value);\n    if(!translated){\n        output.value=\"\"; setStatus(\"এই শব্দ/বাক্যটি local dictionary-তে পাওয়া যায়নি। চাইলে Dictionary Import বা নতুন pair যোগ করুন।\",\"error\");\n        updateCounters(); return;\n    }\n    output.value=translated; updateCounters();\n    setStatus(\"অনুবাদ সম্পন্ন · সম্পূর্ণ Offline\",\"success\");\n}\n\nfunction escapeHtml(v){return String(v).replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',\"'\":'&#39;','\"':'&quot;'}[c]));}\n\n\nasync function copyOutput(){if(!output.value){showToast(\"কপি করার মতো কিছু নেই\");return;}try{await navigator.clipboard.writeText(output.value);showToast(\"Translation কপি হয়েছে\");}catch{output.select();document.execCommand(\"copy\");showToast(\"কপি হয়েছে\");}}\nasync function pasteInput(){try{input.value=await navigator.clipboard.readText();updateCounters();input.focus();showToast(\"Paste হয়েছে\");}catch{showToast(\"Clipboard permission পাওয়া যায়নি\");}}\nfunction clearAll(){input.value=\"\";output.value=\"\";updateCounters();setStatus(\"\");input.focus();}\nfunction speakOutput(){\n    if(!output.value||!(\"speechSynthesis\" in window)){showToast(\"Speech এই browser-এ available নয়\");return;}\n    speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(output.value); u.lang=toLang.value===\"bn\"?\"bn-BD\":\"en-US\"; speechSynthesis.speak(u);\n}\nfunction applyTheme(theme){document.body.classList.toggle(\"dark\",theme===\"dark\");}\nwindow.addEventListener(\"message\",event=>{\n    if(event.data?.type!==\"oikko-parent-theme\") return;\n    applyTheme(event.data.dark?\"dark\":\"light\");\n});\n\ntranslateBtn.addEventListener(\"click\",doTranslate);\ncopyBtn.addEventListener(\"click\",copyOutput);copyMiniBtn.addEventListener(\"click\",copyOutput);\nclearBtn.addEventListener(\"click\",clearAll);pasteBtn.addEventListener(\"click\",pasteInput);\nspeakBtn.addEventListener(\"click\",speakOutput);selectInputBtn.addEventListener(\"click\",()=>{input.focus();input.select();});\nmodalClose.addEventListener(\"click\",()=>modal.classList.remove(\"show\"));\nmodal.addEventListener(\"click\",e=>{if(e.target===modal)modal.classList.remove(\"show\");});\n\ninput.addEventListener(\"input\",updateCounters);\ninput.addEventListener(\"keydown\",e=>{if(e.ctrlKey&&e.key===\"Enter\"){e.preventDefault();doTranslate();}if(e.key===\"Escape\")clearAll();});\n\n\n(async function init(){\n    updateCounters();\n    applyTheme(\"light\");\n\n    /* Critical: load the built-in + name dictionary before touching IndexedDB. */\n    loadBuiltInDictionary();\n    setStatus(`Offline Dictionary ready · ${dictionaryStats.total.toLocaleString()} stored entries`,\"success\");\n\n    /* IndexedDB is only a persistence enhancement. If it fails, translation remains fully usable. */\n    await persistBuiltInDictionary();\n    await restorePersistentDictionary();\n    updateDictionaryUI();\n})();\n\n/* Developer smoke test: the old bug must stay fixed. */\nwindow.__translatorTest=()=>translateText(\"আমার নাম ইসমাইল\",\"bn\",\"en\");\n<\/script>\n</body>\n</html>\n";
+
+function renderOikkoTranslatorView() {
+      return `
+        <main class="oikko-translator-page min-h-screen">
+          <div class="oikko-translator-shell">
+            <iframe id="oikko-translator-frame" title="Oikko Offline Translator" class="oikko-translator-frame" loading="eager" referrerpolicy="no-referrer"></iframe>
+          </div>
+        </main>`;
+    }
+
+    function syncOikkoTranslatorTheme() {
+      const frame = document.getElementById('oikko-translator-frame');
+      if (!frame || !frame.contentWindow) return;
+      try {
+        frame.contentWindow.postMessage({
+          type: 'oikko-parent-theme',
+          dark: document.documentElement.classList.contains('dark')
+        }, '*');
+      } catch (_) {}
+    }
+    window.syncOikkoTranslatorTheme = syncOikkoTranslatorTheme;
+
+    function hydrateOikkoTranslator() {
+      if (state.activeView !== 'translator') return;
+      const frame = document.getElementById('oikko-translator-frame');
+      if (!frame) return;
+      if (frame.dataset.ready === '1') {
+        syncOikkoTranslatorTheme();
+        return;
+      }
+      frame.addEventListener('load', syncOikkoTranslatorTheme, { once: true });
+      frame.srcdoc = OIKKO_TRANSLATOR_HTML;
+      frame.dataset.ready = '1';
+    }
+
+    window.openOikkoTranslator = function(){ switchView('translator'); };
+
+function renderApp() {
       state.posts = (state.posts || []).map(sanitizePostMedia);
       const active = document.activeElement;
       const typingSearch = active && (active.id === 'global-search' || active.id === 'global-search-mobile');
@@ -4749,6 +4796,7 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
 
       const app = document.getElementById('app');
       app.classList.toggle('oikko-sidebar-app', !!state.currentUser);
+      if (state.currentUser && state.activeView === 'translator' && document.getElementById('oikko-translator-frame')) { pendingAppRender = false; return; }
       /* Sidebar is fixed on desktop and belongs to the authenticated app shell.
          Messenger and Tube must NOT become separate fullscreen pages. */
       app.classList.remove('oikko-fullscreen-view');
@@ -4761,7 +4809,14 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
         return;
       } else {
         let viewHtml = '';
-        if (state.activeView === 'youtube') {
+        if (state.activeView === 'translator') {
+          viewHtml = renderTopHeader() + renderOikkoTranslatorView() + renderSidebar();
+          app.innerHTML = viewHtml;
+          if (window.lucide) lucide.createIcons();
+          setTimeout(hydrateOikkoTranslator, 0);
+          pendingAppRender = false;
+          return;
+        } else if (state.activeView === 'youtube') {
           ensureOikkoTubeReady();
           viewHtml = renderOikkoTubeView();
           app.innerHTML = viewHtml + renderSidebar();
@@ -6675,13 +6730,7 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
 
 
             <!-- Top Right Utility Controls -->
-            <div class="flex items-center gap-1 sm:gap-2 shrink-0">
-              <!-- Realtime Cloud Status Indicator -->
-              <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/10 text-[11px] font-medium border border-white/10" title="ফায়ারবেস ক্লাউড স্ট্যাটাস">
-                <span class="w-2 h-2 rounded-full ${state.cloudStatus === 'connected' ? 'bg-emerald-400 animate-pulse' : state.cloudStatus === 'connecting' ? 'bg-amber-400' : 'bg-rose-400'}"></span>
-                <span class="hidden sm:inline">${state.cloudStatus === 'connected' ? 'অনলাইন' : state.cloudStatus === 'connecting' ? 'সংযুক্ত হচ্ছে...' : 'অফলাইন'}</span>
-              </div>
-              
+            <div class="oikko-top-utilities flex items-center gap-1 shrink-0">
               <!-- Notification Bell Button -->
               <button onclick="requestNotificationPermission()" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer" title="ডিভাইস নোটিফিকেশন সক্রিয় করুন">
                 <i data-lucide="bell" class="w-4 h-4"></i>
@@ -6693,7 +6742,7 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
               </button>
 
               <!-- Desktop Download Oikko App -->
-              ${oikkoDownloadVisible()?`<div class="oikko-download-wrap"><a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-header-download hidden md:flex items-center justify-center whitespace-nowrap px-3 py-2.5 rounded-xl bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] text-xs font-black transition-colors cursor-pointer" aria-label="Download Oikko App">Download Oikko App</a></div>`:``}
+              ${oikkoDownloadVisible()?`<div class="oikko-download-wrap hidden md:block"><a href="https://appsgeyser.io/20177615/Oikko" target="_blank" rel="noopener noreferrer" class="oikko-header-download flex items-center justify-center whitespace-nowrap px-3 py-2.5 rounded-xl bg-[#D8F3E4] hover:bg-[#BFE8D0] text-[#12231C] text-xs font-black transition-colors cursor-pointer" aria-label="Download Oikko App">Download Oikko App</a></div>`:``}
 
               <!-- Logout Button -->
               <button onclick="handleLogout()" title="লগআউট" class="p-2.5 rounded-xl bg-[#F27D61]/90 hover:bg-[#df674f] text-white transition-colors cursor-pointer">
@@ -6714,12 +6763,15 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
         ${state.activeView !== 'youtube' ? `
         <div class="w-full px-3 sm:px-6 py-1.5 bg-transparent">
           <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-2 gap-2">
-              <button type="button" onclick="openMessenger()" class="w-full h-8 rounded-xl bg-emerald-600/95 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-sm" title="Oikko Messenger">
-                <i data-lucide="message-square" class="w-3.5 h-3.5"></i><span>Oikko Messenger</span>
+            <div class="grid grid-cols-3 gap-2">
+              <button type="button" onclick="openMessenger()" class="w-full h-8 rounded-xl bg-emerald-600/95 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-1 transition cursor-pointer shadow-sm" title="Oikko Messenger">
+                <i data-lucide="message-square" class="w-3.5 h-3.5"></i><span>Messenger</span>
               </button>
-              <button type="button" onclick="switchView('youtube')" class="w-full h-8 rounded-xl bg-[#2F6F57] hover:bg-[#245844] text-white text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-sm" title="Oikko Tube">
+              <button type="button" onclick="switchView('youtube')" class="w-full h-8 rounded-xl bg-[#2F6F57] hover:bg-[#245844] text-white text-xs font-bold flex items-center justify-center gap-1 transition cursor-pointer shadow-sm" title="Oikko Tube">
                 <i data-lucide="play-square" class="w-3.5 h-3.5"></i><span>Oikko Tube</span>
+              </button>
+              <button type="button" onclick="openOikkoTranslator()" class="w-full h-8 rounded-xl bg-[#0f8f6a] hover:bg-[#087456] text-white text-xs font-bold flex items-center justify-center gap-1 transition cursor-pointer shadow-sm" title="Offline Translator">
+                <i data-lucide="languages" class="w-3.5 h-3.5"></i><span>Translator</span>
               </button>
             </div>
           </div>
@@ -6769,6 +6821,7 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
               ${navItem('users-round', 'Friends', "switchView('friends')", state.activeView === 'friends')}
               ${navItem('contact-round', 'People', "switchView('people')", state.activeView === 'people')}
               ${navItem('play-square', 'ঐক্য টিউব', "switchView('youtube')", state.activeView === 'youtube')}
+              ${navItem('languages', 'Translator', "switchView('translator')", state.activeView === 'translator')}
               ${navItem('calendar-days', 'ইভেন্ট', "switchView('events')", state.activeView === 'events')}
               ${navItem('bell', 'নোটিশ', "switchView('admin_posts')", state.activeView === 'admin_posts')}
             </div>
@@ -10946,213 +10999,77 @@ function renderSettingsView(){
   (() => {
     'use strict';
 
-    // Preserve scroll position across the app's full re-render cycles.
-    const originalRender = window.renderApp;
-    if (typeof originalRender === 'function' && !window.__oikkoRenderPatched) {
-      window.__oikkoRenderPatched = true;
-      window.renderApp = function(...args) {
-        const y = window.scrollY || 0;
-        const result = originalRender.apply(this,args);
-        requestAnimationFrame(() => {
-          if (y > 0 && Math.abs((window.scrollY||0)-y) > 20) window.scrollTo({top:y,behavior:'instant'});
-          enhanceIconsAndImages();
-          updateConnectionUI();
-        });
-        return result;
-      };
-    }
-
-    function enhanceIconsAndImages(){
-      document.querySelectorAll('img').forEach(img => {
-        if (img.dataset.oikkoFallbackBound) return;
-        img.dataset.oikkoFallbackBound='1';
-        img.addEventListener('error', () => {
-          img.onerror=null;
-          img.src='https://ui-avatars.com/api/?background=2f6f57&color=ffffff&name=Oikko&bold=true';
-        });
-      });
-      try{ if(window.lucide) window.lucide.createIcons(); }catch(e){}
-    }
-
-    // Show download buttons only for desktop/PC users. Mobile users see no download control.
-    const oikkoDesktopDownloadStyle = document.createElement('style');
-    oikkoDesktopDownloadStyle.id = 'oikko-desktop-download-only-style';
-    oikkoDesktopDownloadStyle.textContent = `
-      #oikko-apk-download { display: none !important; }
-      .oikko-header-download, .oikko-messenger-download { display: none !important; }
-      .oikko-login-download, .oikko-tube-download { display: none !important; }
-      .oikko-tube-back {
-        background: rgba(47,111,87,.10);
-        color: #2F6F57;
-        border: 1px solid rgba(47,111,87,.18);
-      }
-      .oikko-tube-back:hover {
-        background: rgba(47,111,87,.18);
-      }
-      @media (min-width: 768px) {
-        .oikko-header-download, .oikko-messenger-download,
-        .oikko-login-download, .oikko-tube-download { display: flex !important; }
-      }
-      @media (max-width: 767px) {
-        .oikko-header-download, .oikko-messenger-download,
-        .oikko-login-download, .oikko-tube-download { display: none !important; }
-      }
-      .dark .oikko-tube-back, body.dark .oikko-tube-back {
-        background: rgba(216,243,228,.10);
-        color: #D8F3E4;
-        border-color: rgba(216,243,228,.18);
-      }
-    `;
-    document.head.appendChild(oikkoDesktopDownloadStyle);
-
-    function ensureUtilityUI(){
-      if(!document.getElementById('oikko-status-pill')){
-        const pill=document.createElement('div');
-        pill.id='oikko-status-pill'; pill.className='oikko-status-pill';
-        pill.innerHTML='<span class="oikko-status-dot"></span><span class="oikko-status-text">অনলাইন</span>';
+    // Lightweight UI recovery. Do not monkey-patch renderApp or Storage:
+    // those core APIs must remain untouched to avoid stale renders/corruption.
+    function ensureUtilityUI() {
+      if (!document.getElementById('oikko-status-pill')) {
+        const pill = document.createElement('div');
+        pill.id = 'oikko-status-pill';
+        pill.className = 'oikko-status-pill';
+        pill.innerHTML = '<span class="oikko-status-dot"></span><span class="oikko-status-text"></span>';
         document.body.appendChild(pill);
       }
-      if(!document.getElementById('oikko-backtop')){
-        const btn=document.createElement('button');
-        btn.id='oikko-backtop'; btn.className='oikko-backtop'; btn.type='button';
-        btn.setAttribute('aria-label','উপরে যান');
-        btn.innerHTML='<i data-lucide="arrow-up" class="w-5 h-5"></i>';
-        btn.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+      if (!document.getElementById('oikko-backtop')) {
+        const btn = document.createElement('button');
+        btn.id = 'oikko-backtop';
+        btn.type = 'button';
+        btn.className = 'oikko-backtop';
+        btn.setAttribute('aria-label', 'উপরে যান');
+        btn.innerHTML = '<i data-lucide="arrow-up" class="w-5 h-5"></i>';
+        btn.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
         document.body.appendChild(btn);
       }
-      try{if(window.lucide) window.lucide.createIcons();}catch(e){}
-    }
-
-    function updateConnectionUI(){
-      ensureUtilityUI();
-      const online=navigator.onLine;
-      const pill=document.getElementById('oikko-status-pill');
-      if(!pill)return;
-      pill.classList.toggle('offline',!online);
-      const text=pill.querySelector('.oikko-status-text');
-      if(text) text.textContent=online?'অনলাইন':'অফলাইন মোড';
-    }
-
-    window.addEventListener('online',()=>{updateConnectionUI(); if(window.showToast)window.showToast('ইন্টারনেট সংযোগ ফিরে এসেছে','success');});
-    window.addEventListener('offline',()=>{updateConnectionUI(); if(window.showToast)window.showToast('আপনি অফলাইন মোডে আছেন','info');});
-    window.addEventListener('scroll',()=>{
-      const btn=document.getElementById('oikko-backtop');
-      if(btn) btn.classList.toggle('show',(window.scrollY||0)>500);
-    },{passive:true});
-
-    // Prevent accidental duplicate submit/clicks while asynchronous Firebase calls are in flight.
-    document.addEventListener('click', e => {
-      const btn=e.target.closest('button');
-      if(!btn || btn.dataset.oikkoBusy || btn.disabled) return;
-      const label=(btn.textContent||'').trim();
-      if(/লগইন|রেজিস্ট্রেশন|পোস্ট করুন|সংরক্ষণ|আপডেট/.test(label)){
-        btn.dataset.oikkoBusy='1';
-        setTimeout(()=>delete btn.dataset.oikkoBusy,700);
-      }
-    },true);
-
-    // Escape closes open modals/lightboxes when possible without disturbing normal forms.
-    document.addEventListener('keydown', e => {
-      if(e.key==='Escape'){
-        const lightbox=document.getElementById('lightbox-container');
-        const modal=document.getElementById('modal-container');
-        if(lightbox && lightbox.innerHTML.trim()){lightbox.innerHTML=''; if(window.state)window.state.selectedMedia=null;}
-        else if(modal && modal.innerHTML.trim()) modal.innerHTML='';
-      }
-      if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){
-        e.preventDefault();
-        const search=document.querySelector('.app-search input, input[placeholder*="খুঁজ"], input[type="search"]');
-        if(search){search.focus();search.select();}
-      }
-    });
-
-    window.addEventListener('error', ev => {
-      console.warn('Oikko UI recovery:',ev.message);
       updateConnectionUI();
+      refreshIcons();
+    }
+
+    function updateConnectionUI() {
+      const pill = document.getElementById('oikko-status-pill');
+      if (!pill) return;
+      const online = navigator.onLine;
+      pill.classList.toggle('offline', !online);
+      const label = pill.querySelector('.oikko-status-text');
+      if (label) label.textContent = online ? 'অনলাইন' : 'অফলাইন মোড';
+    }
+
+    function refreshIcons() {
+      try { if (window.lucide) window.lucide.createIcons(); } catch (_) {}
+    }
+
+    window.updateConnectionUI = updateConnectionUI;
+    window.addEventListener('online', () => {
+      updateConnectionUI();
+      if (typeof window.showToast === 'function') window.showToast('ইন্টারনেট সংযোগ ফিরে এসেছে', 'success');
+    }, {passive:true});
+    window.addEventListener('offline', () => {
+      updateConnectionUI();
+      if (typeof window.showToast === 'function') window.showToast('আপনি অফলাইন মোডে আছেন', 'info');
+    }, {passive:true});
+    window.addEventListener('scroll', () => {
+      const btn = document.getElementById('oikko-backtop');
+      if (btn) btn.classList.toggle('show', window.scrollY > 500);
+    }, {passive:true});
+
+    document.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        const input = document.querySelector('.app-search input, input[placeholder*="খুঁজ"], input[type="search"]');
+        if (input) { input.focus(); input.select(); }
+      }
     });
 
-    document.addEventListener('DOMContentLoaded',()=>{
-      ensureUtilityUI(); updateConnectionUI(); enhanceIconsAndImages();
-      setTimeout(enhanceIconsAndImages,500);
+    window.addEventListener('error', event => {
+      try { console.error('Oikko runtime error:', event.error || event.message); } catch (_) {}
     });
+    window.addEventListener('unhandledrejection', event => {
+      try { console.error('Oikko unhandled promise rejection:', event.reason); } catch (_) {}
+    });
+
+    const boot = () => ensureUtilityUI();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
+    else boot();
   })();
   </script>
 
-<script>
-  window.addEventListener('error', (event) => {
-    try { console.error('Oikko runtime error:', event.error || event.message); } catch (_) {}
-  });
-  window.addEventListener('unhandledrejection', (event) => {
-    try { console.error('Oikko unhandled promise rejection:', event.reason); } catch (_) {}
-  });
-</script>
-
-<script>
-(() => {
-  'use strict';
-
-  // Final defensive layer: never allow one malformed cache/render error to
-  // permanently break the entire single-page application.
-  const originalSetItem = Storage.prototype.setItem;
-  Storage.prototype.setItem = function(key, value) {
-    try { return originalSetItem.call(this, key, value); }
-    catch (err) {
-      console.warn('Oikko storage write blocked:', key, err);
-      try {
-        if (String(key).startsWith('student_portal_') || String(key).startsWith('oikko_')) {
-          const compact = String(value).length > 120000 ? String(value).slice(0, 120000) : String(value);
-          return originalSetItem.call(this, key, compact);
-        }
-      } catch (_) {}
-      return undefined;
-    }
-  };
-
-  let lastRuntimeToast = 0;
-  function recoverRuntimeError(kind, reason) {
-    try { console.error('Oikko recovered runtime error:', kind, reason); } catch (_) {}
-    const now = Date.now();
-    if (now - lastRuntimeToast < 5000) return;
-    lastRuntimeToast = now;
-    try {
-      if (typeof window.showToast === 'function') {
-        window.showToast('একটি সাময়িক সমস্যা হয়েছে। অ্যাপটি স্বয়ংক্রিয়ভাবে ঠিক রাখার চেষ্টা করছে।', 'error');
-      }
-    } catch (_) {}
-  }
-
-  window.addEventListener('error', e => recoverRuntimeError('error', e.error || e.message));
-  window.addEventListener('unhandledrejection', e => {
-    recoverRuntimeError('promise', e.reason);
-    try { e.preventDefault(); } catch (_) {}
-  });
-
-  // Re-render only once per animation frame when multiple Firebase/UI updates
-  // arrive together. This reduces duplicate DOM work and race-like flicker.
-  if (typeof window.renderApp === 'function' && !window.__oikkoRenderCoalesced) {
-    const originalRender = window.renderApp;
-    let queued = false;
-    let latestArgs = [];
-    window.renderApp = function(...args) {
-      latestArgs = args;
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(() => {
-        queued = false;
-        try { originalRender.apply(this, latestArgs); }
-        catch (err) { recoverRuntimeError('render', err); }
-      });
-    };
-    window.__oikkoRenderCoalesced = true;
-  }
-
-  // Avoid stale offline state after the browser regains connectivity.
-  const refreshConnection = () => {
-    try { if (typeof window.updateConnectionUI === 'function') window.updateConnectionUI(); } catch (_) {}
-  };
-  window.addEventListener('online', refreshConnection, {passive:true});
-  window.addEventListener('offline', refreshConnection, {passive:true});
-})();
-</script>
 </body>
 </html>
