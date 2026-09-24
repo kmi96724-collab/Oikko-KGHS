@@ -4883,18 +4883,44 @@ function oikkoBrowseCurrentUrl(){ return String(document.getElementById('oikko-b
  * that site's own HTTP security headers and the browser. Google Search uses
  * its iframe-compatible search endpoint (igu=1) so searches can stay in-app.
  */
+function oikkoBrowseYouTubeInfo(url){
+  try{
+    const u=new URL(url);
+    const h=u.hostname.toLowerCase().replace(/^www\./,'');
+    if(h==='youtu.be'){
+      const id=u.pathname.split('/').filter(Boolean)[0]||'';
+      return id ? {id, embed:'https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?rel=0&playsinline=1'} : null;
+    }
+    if(h==='youtube.com' || h==='m.youtube.com' || h==='youtube-nocookie.com'){
+      let id='';
+      if(u.pathname==='/watch') id=u.searchParams.get('v')||'';
+      else if(u.pathname.startsWith('/shorts/')) id=u.pathname.split('/')[2]||'';
+      else if(u.pathname.startsWith('/embed/')) id=u.pathname.split('/')[2]||'';
+      else if(u.pathname.startsWith('/live/')) id=u.pathname.split('/')[2]||'';
+      if(id) return {id, embed:'https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?rel=0&playsinline=1'};
+    }
+  }catch(e){}
+  return null;
+}
+
 function oikkoBrowseLoad(url, options={}){
   const frame=oikkoBrowseFrame(); if(!frame || !url) return false;
   let target=String(url).trim();
   if(!/^https?:\/\//i.test(target)) target='https://'+target;
   try{ new URL(target); }catch(e){ showToast('সঠিক website URL দিন','error'); return false; }
 
+  const yt=oikkoBrowseYouTubeInfo(target);
   oikkoBrowseSetUrl(target);
   try{localStorage.setItem('oikko_browse_last_url',target);}catch(e){}
   oikkoBrowseEmpty(false);
   const hint=document.getElementById('oikko-browse-hint');
-  if(hint) hint.textContent='Website-টি Oikko Browse-এর ভিতরেই খোলা হচ্ছে। কিছু website তাদের নিজস্ব security policy অনুযায়ী embedding বন্ধ রাখতে পারে।';
-  frame.src=target;
+  if(yt){
+    if(hint) hint.textContent='YouTube ভিডিও Oikko Browse-এর ভিতরেই নিরাপদ embedded player হিসেবে চালানো হচ্ছে।';
+    frame.src=yt.embed;
+  }else{
+    if(hint) hint.textContent='Website-টি Oikko Browse-এর ভিতরেই খোলা হচ্ছে। কিছু website তাদের নিজস্ব security policy অনুযায়ী embedding বন্ধ রাখতে পারে।';
+    frame.src=target;
+  }
   return true;
 }
 
@@ -4902,6 +4928,12 @@ function oikkoBrowseSearch(){
   const input=document.getElementById('oikko-browse-search-input');
   const q=String(input?.value||'').trim();
   if(!q){ input?.focus(); return; }
+  const isYoutube=/^youtube(?:\.com)?$/i.test(q) || /^https?:\/\/(?:www\.)?youtube\.com/i.test(q);
+  if(isYoutube){
+    const url='https://www.google.com/search?igu=1&hl=en&q='+encodeURIComponent('site:youtube.com/watch YouTube');
+    oikkoBrowseLoad(url);
+    return;
+  }
   /* Google supports an iframe-friendly search URL with igu=1. */
   const url='https://www.google.com/search?igu=1&hl=en&q='+encodeURIComponent(q);
   oikkoBrowseLoad(url);
@@ -4909,6 +4941,11 @@ function oikkoBrowseSearch(){
 function oikkoBrowseSearchPreset(q){
   const input=document.getElementById('oikko-browse-search-input');
   if(input) input.value=q;
+  if(String(q).toLowerCase()==='youtube'){
+    const url='https://www.google.com/search?igu=1&hl=en&q='+encodeURIComponent('site:youtube.com/watch YouTube videos');
+    oikkoBrowseLoad(url);
+    return;
+  }
   oikkoBrowseSearch();
 }
 function oikkoBrowseGoUrl(){
