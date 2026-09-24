@@ -1637,7 +1637,10 @@ main .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
 .oikko-translator-shell{width:100%;max-width:1240px;margin:0 auto;}
 .oikko-translator-frame{display:block;width:100%;height:1500px;min-height:calc(100vh - 70px);border:0;background:transparent;}
 .oikko-top-utilities{gap:4px!important;}
-@media(max-width:640px){.oikko-top-utilities{gap:3px!important;}.oikko-top-utilities>button{width:40px;height:40px;padding:9px!important;display:flex;align-items:center;justify-content:center;}.oikko-top-utilities .oikko-download-wrap{display:none!important;}.oikko-translator-frame{height:1650px;min-height:calc(100dvh - 60px);}}
+@media(max-width:640px){.oikko-top-utilities{gap:3px!important;}.oikko-top-utilities>button{width:40px;height:40px;padding:9px!important;display:flex;align-items:center;justify-content:center;}.oikko-top-utilities .oikko-download-wrap{display:none!important;}
+  /* Mobile: App download is available only from the sidebar. */
+  .oikko-header-download,.oikko-login-download,.oikko-tube-download{display:none!important;}
+  .oikko-translator-frame{height:1650px;min-height:calc(100dvh - 60px);}}
 @media(max-width:380px){.oikko-top-utilities>button{width:36px;height:36px;padding:8px!important;}}
 </style>
 </head>
@@ -11002,13 +11005,8 @@ function renderSettingsView(){
     // Lightweight UI recovery. Do not monkey-patch renderApp or Storage:
     // those core APIs must remain untouched to avoid stale renders/corruption.
     function ensureUtilityUI() {
-      if (!document.getElementById('oikko-status-pill')) {
-        const pill = document.createElement('div');
-        pill.id = 'oikko-status-pill';
-        pill.className = 'oikko-status-pill';
-        pill.innerHTML = '<span class="oikko-status-dot"></span><span class="oikko-status-text"></span>';
-        document.body.appendChild(pill);
-      }
+      // The floating online/offline status pill is intentionally removed.
+      // Keep only the back-to-top utility.
       if (!document.getElementById('oikko-backtop')) {
         const btn = document.createElement('button');
         btn.id = 'oikko-backtop';
@@ -11024,12 +11022,9 @@ function renderSettingsView(){
     }
 
     function updateConnectionUI() {
-      const pill = document.getElementById('oikko-status-pill');
-      if (!pill) return;
-      const online = navigator.onLine;
-      pill.classList.toggle('offline', !online);
-      const label = pill.querySelector('.oikko-status-text');
-      if (label) label.textContent = online ? 'অনলাইন' : 'অফলাইন মোড';
+      // Status pill removed by design; keep this function as a harmless
+      // compatibility hook for existing online/offline listeners.
+      return;
     }
 
     function refreshIcons() {
